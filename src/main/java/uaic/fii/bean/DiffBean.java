@@ -2,14 +2,18 @@ package uaic.fii.bean;
 
 import org.eclipse.jgit.diff.EditList;
 
-import java.util.List;
-
 public class DiffBean {
     String changeType;
     String filePath;
-    List<EditList> edits;
+    EditList edits;
 
     public DiffBean() {}
+
+    public DiffBean(String changeType, String filePath, EditList edits) {
+        this.changeType = changeType;
+        this.filePath = filePath;
+        this.edits = edits;
+    }
 
     public String getChangeType() {
         return changeType;
@@ -27,11 +31,11 @@ public class DiffBean {
         this.filePath = filePath;
     }
 
-    public List<EditList> getEdits() {
+    public EditList getEdits() {
         return edits;
     }
 
-    public void setEdits(List<EditList> edits) {
+    public void setEdits(EditList edits) {
         this.edits = edits;
     }
 

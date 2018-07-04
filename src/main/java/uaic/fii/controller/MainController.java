@@ -25,7 +25,7 @@ public class MainController {
     @RequestMapping(value = "/main", method = GET)
     public String loadMainPage(Model model) {
         Integer id = getAuthenticatedEntity().getUserId();
-        User user = userService.getTestById(id);
+        User user = userService.getUserById(id);
 
         model.addAttribute("username", user.getName());
         return "main";

@@ -45,7 +45,6 @@
                         <input type="text" name='username' id="username" class="form-control mt-3"
                                placeholder="GitHub User name" required autofocus>
 
-                        <%--<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>--%>
                         <button class="btn btn-lg btn-primary btn-block btn-signin mt-3" type="submit">Get repos
                         </button>
                     </form>

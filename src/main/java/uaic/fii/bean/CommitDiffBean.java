@@ -10,6 +10,12 @@ public class CommitDiffBean {
 
     public CommitDiffBean() {}
 
+    public CommitDiffBean(String commitHash, Date commitDate, List<DiffBean> diffs) {
+        this.commitHash = commitHash;
+        this.commitDate = commitDate;
+        this.diffs = diffs;
+    }
+
     public String getCommitHash() {
         return commitHash;
     }

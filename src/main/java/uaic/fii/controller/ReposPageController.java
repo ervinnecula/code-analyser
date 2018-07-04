@@ -13,7 +13,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import uaic.fii.bean.CommitDiffBean;
 import uaic.fii.bean.RepoNameHtmlGitUrlsBean;
+import uaic.fii.service.HeatMapService;
 import uaic.fii.service.RepoService;
 
 import java.io.File;
@@ -33,8 +35,11 @@ public class ReposPageController {
     @Autowired
     private RepoService repoService;
 
+    @Autowired
+    private HeatMapService heatMapService;
+
     @RequestMapping(value = "/repos", method = GET)
-    public String getReposPage(Model model, @ModelAttribute("username") String username) {
+    public String getReposPage(@ModelAttribute("username") String username, Model model) {
         List<RepoNameHtmlGitUrlsBean> repoBeans = new ArrayList<>();
         GitHubClient client = new GitHubClient();
 
@@ -64,14 +69,14 @@ public class ReposPageController {
         resourceFolder = new File(repoService.getPathToCloneDir() + File.separator + repoBean.getRepoName());
 
         try {
-
             repoService.cloneRepo(repoBean, resourceFolder);
             logger.debug(format("MainController - cloneRepo() - Repository language is: %s", repoBean.getRepoLanguage()));
             if (REPO_LANGUAGE.equals(repoBean.getRepoLanguage())) {
                 logger.debug("MainController - cloneRepo() - Calling repoService.analyzeClonedProject() ");
-                model.addAttribute("ruleViolationBeans", repoService.analyzeClonedProject(resourceFolder.getPath()));
+                model.addAttribute("violationsCount", repoService.shortAnalyzeClonedProject(resourceFolder.getPath()));
+            } else {
+                return "error";
             }
-
         } catch (GitAPIException e) {
             logger.error(format("ReposPageController - cloneRepo() - Git exception happened when trying get data from %s. Full exception: %s", repoBean.getRepoName(), e));
             return "error";
@@ -88,19 +93,44 @@ public class ReposPageController {
     }
 
     @RequestMapping(value = "/commits", method = RequestMethod.GET)
-    public String getCommits(String repositoryName) {
+    public String getCommits(@ModelAttribute("repositoryName") String repositoryName, @ModelAttribute("username") String username, Model model) {
         File resourceFolder;
         StringBuilder clonedRepoPath = new StringBuilder(repoService.getPathToCloneDir());
         clonedRepoPath.append("//").append(repositoryName);
         resourceFolder = new File(clonedRepoPath.toString());
 
         try {
-            repoService.getLinesAddedPerCommit(resourceFolder);
+            List<CommitDiffBean> commits = repoService.getCommitsAndDiffs(resourceFolder);
+            //TODO write HeatMapService and use methods to colour map
+            model.addAttribute("mapData", commits);
         } catch (IOException e) {
             logger.error(format("ReposPageController - getCommits() - Git exception happened when opening folder %s. Full exception: %s", resourceFolder, e));
             return "error";
         }
-        return "analysis";
+        //TODO add processed data
+        return "map";
+    }
+
+    @RequestMapping(value = "/static", method = RequestMethod.GET)
+    public String staticAnalyse(@ModelAttribute("repositoryName") String repositoryName, @ModelAttribute("username") String username, Model model) {
+        logger.debug("ReposPageController - staticAnalyse() - /static endpoint called ");
+
+        File resourceFolder = new File(repoService.getPathToCloneDir() + File.separator + repositoryName);
+        logger.debug("ReposPageController- staticAnalyse() - calling repoService.getPathToCloneDir() ");
+
+        try {
+            logger.debug("MainController - cloneRepo() - Calling repoService.analyzeClonedProject() ");
+            model.addAttribute("violations", repoService.analyzeClonedProject(resourceFolder.getPath()));
+        } catch (IOException e) {
+            logger.error(format("ReposPageController - staticAnalyse() - Git exception happened when opening folder %s. Full exception: %s", resourceFolder, e));
+            return "error";
+        } catch (PMDException e) {
+            logger.error(format("ReposPageController - staticAnalyse() - Exception when running PMD over %s. Full exception: %s", resourceFolder, e));
+        }
+
+        model.addAttribute("username", username);
+        model.addAttribute("repositoryName", repositoryName);
+        return "static";
     }
 
 }

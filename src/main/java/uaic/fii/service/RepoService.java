@@ -18,13 +18,11 @@ import org.eclipse.jgit.api.GitCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
-import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.diff.RawTextComparator;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.patch.FileHeader;
-import org.eclipse.jgit.patch.HunkHeader;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
@@ -55,12 +53,15 @@ public class RepoService {
 
     final static Logger logger = LoggerFactory.getLogger(RepoService.class);
 
-
     public String getPathToCloneDir() {
         ClassLoader classLoader = getClass().getClassLoader();
         String filePath = classLoader.getResource("application.properties").getPath();
         int lastIndexOfSlash = classLoader.getResource("application.properties").getPath().lastIndexOf('/');
         return filePath.substring(0, lastIndexOfSlash);
+    }
+
+    public int shortAnalyzeClonedProject(String path) throws PMDException, IOException {
+        return analyzeClonedProject(path).size();
     }
 
     public List<RuleViolationBean> analyzeClonedProject(String path) throws PMDException, IOException {
@@ -70,7 +71,6 @@ public class RepoService {
         File javaFile;
         List<RuleViolationBean> ruleViolationBeans = new ArrayList<>();
         Iterator<File> files = getJavaFilesInDirectory(path);
-
 
         while (files.hasNext()) {
             javaFile = files.next();
@@ -106,55 +106,56 @@ public class RepoService {
         command.call();
     }
 
-    public void getLinesAddedPerCommit(File resourceFolder) throws IOException {
+    public List<CommitDiffBean> getCommitsAndDiffs(File resourceFolder) throws IOException {
         Git git = Git.open(resourceFolder);
+        List<CommitDiffBean> commits = new ArrayList<>();
 
         try (Repository repository = git.getRepository()) {
             Collection<Ref> allRefs = repository.getAllRefs().values();
 
-            try (RevWalk revWalk = new RevWalk( repository )) {
-                for( Ref ref : allRefs ) {
-                    revWalk.markStart( revWalk.parseCommit( ref.getObjectId() ));
+            try (RevWalk revWalk = new RevWalk(repository)) {
+                for (Ref ref : allRefs) {
+                    revWalk.markStart(revWalk.parseCommit(ref.getObjectId()));
                 }
-                for( RevCommit commit : revWalk ) {
+                for (RevCommit commit : revWalk) {
                     AbstractTreeIterator tree, parentTree;
                     ObjectReader reader = repository.newObjectReader();
 
-                    if(commit.getParentCount() != 0) {
+                    if (commit.getParentCount() != 0) {
                         parentTree = new CanonicalTreeParser(null, reader, commit.getParent(0).getTree());
                     } else {
                         parentTree = new EmptyTreeIterator();
                     }
-                    tree = new CanonicalTreeParser( null, reader, commit.getTree() );
+                    tree = new CanonicalTreeParser(null, reader, commit.getTree());
 
-                    CommitDiffBean commitDiffBean = new CommitDiffBean();
-                    commitDiffBean.setCommitHash(commit.toString());
-                    commitDiffBean.setCommitDate(commit.getCommitterIdent().getWhen());
+                    CommitDiffBean commitDiffBean = new CommitDiffBean(commit.getName(),
+                            commit.getCommitterIdent().getWhen(),
+                            getDiffsBetweenCommits(tree, parentTree, repository));
 
-                    DiffFormatter df = new DiffFormatter(DisabledOutputStream.INSTANCE);
-                    df.setRepository(repository);
-                    df.setDiffComparator(RawTextComparator.DEFAULT);
-                    df.setDetectRenames(true);
-
-                    List<DiffEntry> diffs = df.scan(parentTree, tree);
-                    DiffBean diffBean = new DiffBean();
-                    for (DiffEntry diff : diffs) {
-                        diffBean.setChangeType(diff.getChangeType().name().toLowerCase());
-                        diffBean.setFilePath(diff.getNewPath());
-                        FileHeader fh = df.toFileHeader(diff);
-                        List<? extends HunkHeader> hunks = fh.getHunks();
-                        List<EditList> edits = new ArrayList<>();
-                        EditList editList;
-                        for(HunkHeader hunk: hunks) {
-                            editList = hunk.toEditList();
-                            edits.add(editList);
-                        }
-                        diffBean.setEdits(edits);
-                    }
-
+                    commits.add(commitDiffBean);
                 }
             }
         }
+        return commits;
+    }
+
+    private List<DiffBean> getDiffsBetweenCommits(AbstractTreeIterator tree, AbstractTreeIterator parentTree, Repository repository) throws IOException {
+        DiffFormatter df = new DiffFormatter(DisabledOutputStream.INSTANCE);
+        List<DiffBean> diffBeans = new ArrayList<>();
+        DiffBean diffBean;
+
+        df.setRepository(repository);
+        df.setDiffComparator(RawTextComparator.DEFAULT);
+        df.setDetectRenames(true);
+
+        List<DiffEntry> diffs = df.scan(parentTree, tree);
+
+        for (DiffEntry diff : diffs) {
+            FileHeader fh = df.toFileHeader(diff);
+            diffBean = new DiffBean(diff.getChangeType().name().toLowerCase(), diff.getNewPath(), fh.toEditList());
+            diffBeans.add(diffBean);
+        }
+        return diffBeans;
     }
 
     private Iterator<File> getJavaFilesInDirectory(String pathToDir) {

@@ -42,40 +42,36 @@
             </li>
 
             <li class="list-group-item d-flex justify-content-between align-items-center">
-                <form action="/commits" method="GET" id="commits-form">
-                    <input type="hidden" value="${repositoryName}" name="repositoryName">
-                    <a href="javascript:{}"
-                       onclick="document.getElementById('commits-form').submit(); return false;">Get commits</a>
-                </form>
-            </li>
-
-            <li class="list-group-item d-flex justify-content-between align-items-center">
                 Morbi leo risus
             </li>
         </ul>
     </div>
     <div class="col-md-8">
-
-        <c:forEach items="${ruleViolationBeans}" var="ruleViolationBean">
-            <div class="alert alert-dismissible alert-warning">
-                <button type="button" class="close" data-dismiss="alert">&times;</button>
-                <h4 class="alert-heading">${ruleViolationBean.priority}</h4>
-                <p class="mb-0">
-                <div><b>${ruleViolationBean.message} </b></div>
-                <div>${ruleViolationBean.description}</div>
-
-                <a href="${ruleViolationBean.externalInfoUrl}" class="alert-link">Check some extra info</a>.
-                </p>
-
-                <div>File: ${ruleViolationBean.fileName}</div>
-                <div>Method: ${ruleViolationBean.methodName}</div>
-                <div>Class: ${ruleViolationBean.className}</div>
-                <div>Lines between ${ruleViolationBean.beginLine} and ${ruleViolationBean.endLine}</div>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <form action="/commits" method="GET" id="commits-form">
+                        <input type="hidden" value="${repositoryName}" name="repositoryName">
+                        <input type="hidden" value="${username}" name="username">
+                        <a href="javascript:{}"
+                           onclick="document.getElementById('commits-form').submit(); return false;">Analyze commits</a>
+                    </form>
+                </div>
+                <div class="col" class="alert alert-dismissible alert-warning">
+                    You have ${violationsCount} static analysis violations.
+                    <form action="/static" method="GET">
+                        <input type="hidden" value="${repositoryName}" name="repositoryName">
+                        <input type="hidden" value="${username}" name="username">
+                        <button type="submit">
+                            View them in detail.
+                        </button>
+                    </form>
             </div>
-        </c:forEach>
+            </div>
+        </div>
     </div>
 </div>
-<script src="<c:url value='/resources/js/jquery-3.2.1.min.js' />"></script>
-<script src="<c:url value='/resources/js/bootstrap.min.js'  />"></script>
+<script src="<c:url value='/resources/js/jquery-3.2.1.min.js'/>"></script>
+<script src="<c:url value='/resources/js/bootstrap.min.js'/>"></script>
 </body>
 </html>

@@ -24,7 +24,7 @@ public class LoginSuccessController {
 
     @RequestMapping(method = GET)
     public String getUserPage() {
-        for( GrantedAuthority authority : getAuthenticatedUserRoles()) {
+        for(GrantedAuthority authority : getAuthenticatedUserRoles()) {
             return userPages.get(authority.getAuthority());
         }
         return "unauthorized";
