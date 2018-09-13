@@ -32,7 +32,7 @@
     </div>
 </nav>
 <div class="row mt-3 custom-wrapper">
-    <div class="col-md-4 pl-4">
+    <div class="col-md-2 pl-4">
         <ul class="list-group">
             <li class="list-group-item d-flex justify-content-between align-items-center">
                 <form action="/repos" method="GET" id="username-form">
@@ -49,7 +49,7 @@
             </li>
         </ul>
     </div>
-    <div class="col-md-8">
+    <div class="col-md-10">
         <c:forEach items="${violations}" var="violation">
             <div class="alert alert-dismissible alert-warning">
             <button type="button" class="close" data-dismiss="alert">&times;</button>

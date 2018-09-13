@@ -29,7 +29,7 @@
     </div>
 </nav>
 <div class="row mt-3 custom-wrapper">
-    <div class="col-md-4 pl-4">
+    <div class="col-md-2 pl-4">
         <ul class="list-group">
             <li class="list-group-item d-flex justify-content-between align-items-center">
                 <form action="/repos" method="GET" id="username-form">
@@ -46,7 +46,7 @@
             </li>
         </ul>
     </div>
-    <div class="col-md-8">
+    <div class="col-md-10">
         <div class="container">
             <div class="row">
                 <div class="col">

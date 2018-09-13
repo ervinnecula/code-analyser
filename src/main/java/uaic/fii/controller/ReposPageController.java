@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import uaic.fii.bean.CommitDiffBean;
 import uaic.fii.bean.RepoNameHtmlGitUrlsBean;
 import uaic.fii.service.HeatMapService;
@@ -55,7 +56,6 @@ public class ReposPageController {
         }
 
         model.addAttribute("repoNameHtmlGitUrlsBeans", repoBeans);
-        model.addAttribute("username", username);
 
         return "repos";
     }
@@ -87,22 +87,17 @@ public class ReposPageController {
             logger.error(format("ReposPageController - cloneRepo() - Exception when running PMD over %s. Full exception: %s", resourceFolder, e));
         }
 
-        model.addAttribute("username", username);
         model.addAttribute("repositoryName", repoBean.getRepoName());
         return "analysis";
     }
 
     @RequestMapping(value = "/commits", method = RequestMethod.GET)
     public String getCommits(@ModelAttribute("repositoryName") String repositoryName, @ModelAttribute("username") String username, Model model) {
-        File resourceFolder;
-        StringBuilder clonedRepoPath = new StringBuilder(repoService.getPathToCloneDir());
-        clonedRepoPath.append("//").append(repositoryName);
-        resourceFolder = new File(clonedRepoPath.toString());
-
+        File resourceFolder = new File(repoService.getPathToCloneDir() + "//" + repositoryName);
         try {
             List<CommitDiffBean> commits = repoService.getCommitsAndDiffs(resourceFolder);
-            //TODO write HeatMapService and use methods to colour map
-            model.addAttribute("mapData", commits);
+            String csvFile = heatMapService.getPathDiffsCsvFile(commits);
+            model.addAttribute("mapData", csvFile);
         } catch (IOException e) {
             logger.error(format("ReposPageController - getCommits() - Git exception happened when opening folder %s. Full exception: %s", resourceFolder, e));
             return "error";
@@ -128,7 +123,6 @@ public class ReposPageController {
             logger.error(format("ReposPageController - staticAnalyse() - Exception when running PMD over %s. Full exception: %s", resourceFolder, e));
         }
 
-        model.addAttribute("username", username);
         model.addAttribute("repositoryName", repositoryName);
         return "static";
     }

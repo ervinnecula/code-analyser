@@ -1,0 +1,18 @@
+svg {
+    font: 10px sans-serif;
+}
+
+a tspan:first-child {
+    font-size: 15px;
+}
+
+a:hover tspan:first-child {
+    text-decoration: underline;
+}
+
+tspan:last-child {
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+    fill-opacity: 0.7;
+}

@@ -32,7 +32,7 @@
 <div>
 
     <div class="row mt-3 custom-wrapper">
-        <div class="col-md-4 pl-4">
+        <div class="col-md-2 pl-4">
             <ul class="list-group">
                 <a href="/main">
                     <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -47,7 +47,7 @@
                 </li>
             </ul>
         </div>
-        <div class="col-md-8">
+        <div class="col-md-10">
             <h2>Repos available for ${username}</h2>
             <table class="table table-hover">
                 <thead>
