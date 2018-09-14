@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 
 <html>
 <head>
@@ -32,21 +33,7 @@
 <div>
 
     <div class="row mt-3 custom-wrapper">
-        <div class="col-md-2 pl-4">
-            <ul class="list-group">
-                <a href="/main">
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        Search repos for other users
-                    </li>
-                </a>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    Dapibus ac facilisis in
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    Morbi leo risus
-                </li>
-            </ul>
-        </div>
+        <t:navTemplate/>
         <div class="col-md-10">
             <h2>Repos available for ${username}</h2>
             <table class="table table-hover">

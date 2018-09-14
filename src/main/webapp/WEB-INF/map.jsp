@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <html>
@@ -34,24 +35,39 @@
 <div>
 
     <div class="row mt-3 custom-wrapper">
-        <div class="col-md-2 pl-4">
-            <ul class="list-group">
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <form action="/repos" method="GET" id="username-form">
-                        <input type="hidden" value="${username}" name="username"/>
-                        <a href="javascript:{}"
-                           onclick="document.getElementById('username-form').submit(); return false;">${username}'s
-                            repos</a>
-                    </form>
+        <t:navTemplate/>
+        <div class="col-md-10">
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="tab" href="#total">Changes</a>
                 </li>
-
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    Morbi leo risus
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#user">Changes by User</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#loc">Loc over time</a>
                 </li>
             </ul>
-        </div>
-        <div class="col-md-10">
-            <svg width="1550" height="800"></svg>
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="total">
+                    <svg width="1550" height="800"></svg>
+                </div>
+                <div class="tab-pane fade" id="user">
+                    <p>Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid.
+                        Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan
+                        four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft
+                        beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda
+                        labore aesthetic magna delectus mollit.</p>
+                </div>
+                <div class="tab-pane fade" id="loc">
+                    <p>Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid.
+                        Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan
+                        four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft
+                        beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda
+                        labore aesthetic magna delectus mollit.</p>
+                </div>
+
+            </div>
         </div>
     </div>
 </div>
