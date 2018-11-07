@@ -1,7 +1,6 @@
-
-var svg = d3.select("svg"),
-    width = +svg.attr("width"),
-    height = +svg.attr("height");
+var sourceTreeSvg = d3.select("#sourceTreeMap"),
+    width = +sourceTreeSvg.attr("width"),
+    height = +sourceTreeSvg.attr("height");
 
 var color = d3.scaleOrdinal().range(['#B1DAE8', '#77CDE8', '#50C3E9', '#0278A0','#014C66']);
 
@@ -37,7 +36,7 @@ function loadSourceTreeMap(data) {
 
     treemap(root);
 
-    var cell = svg.selectAll("a")
+    var cell = sourceTreeSvg.selectAll("a")
         .data(root.leaves())
         .enter().append("a")
         .attr("target", "_blank")

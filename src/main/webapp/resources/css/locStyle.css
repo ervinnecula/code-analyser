@@ -1,0 +1,19 @@
+.axis { font: 14px sans-serif; }
+
+.lineLinesAdded {
+    fill: none;
+    stroke: steelblue;
+    stroke-width: 2px;
+}
+.areaLinesAdded {
+      fill: #b0c4de9c;
+}
+
+.lineLinesRemoved {
+    fill: none;
+    stroke: #b43036;
+    stroke-width: 2px;
+}
+.areaLinesRemoved {
+    fill: #de7f8259;
+}

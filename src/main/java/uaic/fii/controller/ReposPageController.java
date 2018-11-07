@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import uaic.fii.bean.CommitDiffBean;
 import uaic.fii.bean.RepoNameHtmlGitUrlsBean;
 import uaic.fii.service.HeatMapService;
+import uaic.fii.service.LocChartService;
 import uaic.fii.service.RepoService;
 
 import java.io.File;
@@ -38,6 +39,9 @@ public class ReposPageController {
 
     @Autowired
     private HeatMapService heatMapService;
+
+    @Autowired
+    private LocChartService locChartService;
 
     @RequestMapping(value = "/repos", method = GET)
     public String getReposPage(@ModelAttribute("username") String username, Model model) {
@@ -96,8 +100,10 @@ public class ReposPageController {
         File resourceFolder = new File(repoService.getPathToCloneDir() + "//" + repositoryName);
         try {
             List<CommitDiffBean> commits = repoService.getCommitsAndDiffs(resourceFolder);
-            String csvFile = heatMapService.getPathDiffsCsvFile(commits);
-            model.addAttribute("mapData", csvFile);
+            String heatMapCsvFile = heatMapService.getPathDiffsCsvFile(commits);
+            String locCsvFIle = locChartService.getLocProgressOverTime(commits);
+            model.addAttribute("mapData", heatMapCsvFile);
+            model.addAttribute("locData", locCsvFIle);
         } catch (IOException e) {
             logger.error(format("ReposPageController - getCommits() - Git exception happened when opening folder %s. Full exception: %s", resourceFolder, e));
             return "error";
@@ -111,7 +117,7 @@ public class ReposPageController {
         logger.debug("ReposPageController - staticAnalyse() - /static endpoint called ");
 
         File resourceFolder = new File(repoService.getPathToCloneDir() + File.separator + repositoryName);
-        logger.debug("ReposPageController- staticAnalyse() - calling repoService.getPathToCloneDir() ");
+        logger.debug("ReposPageController - staticAnalyse() - calling repoService.getPathToCloneDir() ");
 
         try {
             logger.debug("MainController - cloneRepo() - Calling repoService.analyzeClonedProject() ");

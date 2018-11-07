@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="<c:url value='/resources/css/bootstrap.min.css' />">
     <link rel="stylesheet" href="<c:url value='/resources/css/style.css' />">
     <link rel="stylesheet" href="<c:url value='/resources/css/mapStyle.css' />">
-
+    <link rel="stylesheet" href="<c:url value='/resources/css/locStyle.css' />">
 
     <link rel="stylesheet" href="<c:url value='/resources/fonts/font-awesome-4.7.0/css/font-awesome.min.css' />">
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,300italic,400italic,700italic"
@@ -45,26 +45,22 @@
                     <a class="nav-link" data-toggle="tab" href="#user">Changes by User</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#loc">Loc over time</a>
+                    <a class="nav-link" data-toggle="tab" href="#loc">LOC over time</a>
                 </li>
             </ul>
             <div class="tab-content">
-                <div class="tab-pane fade show active" id="total">
-                    <svg width="1550" height="800"></svg>
+                <div class="tab-pane show active" id="total">
+                    <svg id="sourceTreeMap" width="1550" height="800"></svg>
                 </div>
-                <div class="tab-pane fade" id="user">
+                <div class="tab-pane" id="user">
                     <p>Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid.
                         Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan
                         four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft
                         beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda
                         labore aesthetic magna delectus mollit.</p>
                 </div>
-                <div class="tab-pane fade" id="loc">
-                    <p>Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid.
-                        Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan
-                        four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft
-                        beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda
-                        labore aesthetic magna delectus mollit.</p>
+                <div class="tab-pane" id="loc">
+                    <svg id="locLineChart" width="1550" height="800"></svg>
                 </div>
 
             </div>
@@ -75,8 +71,10 @@
 
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script src="<c:url value='/resources/js/sourceTreeMap.js' />"></script>
+<script src="<c:url value='/resources/js/locLineChart.js' />"></script>
 <script>
-    loadSourceTreeMap(`${mapData}`)
+    loadSourceTreeMap(`${mapData}`);
+    loadLocLineChart(`${locData}`);
 </script>
 
 <script src="<c:url value='/resources/js/jquery-3.2.1.min.js' />"></script>
