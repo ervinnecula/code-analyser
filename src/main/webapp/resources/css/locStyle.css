@@ -17,3 +17,13 @@
 .areaLinesRemoved {
     fill: #de7f8259;
 }
+
+.focus circle {
+    fill: steelblue;
+    stroke: steelblue;
+}
+
+.overlay {
+    fill: none;
+    pointer-events: all;
+}

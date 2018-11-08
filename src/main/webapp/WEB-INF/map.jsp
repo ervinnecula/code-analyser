@@ -50,17 +50,14 @@
             </ul>
             <div class="tab-content">
                 <div class="tab-pane show active" id="total">
-                    <svg id="sourceTreeMap" width="1550" height="800"></svg>
+                    <svg id="sourceTreeCommitsMap" width="1550" height="800"></svg>
                 </div>
                 <div class="tab-pane" id="user">
-                    <p>Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid.
-                        Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan
-                        four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft
-                        beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda
-                        labore aesthetic magna delectus mollit.</p>
+                    <svg id="sourceTreeContributorsMap" width="1550" height="800"></svg>
                 </div>
                 <div class="tab-pane" id="loc">
                     <svg id="locLineChart" width="1550" height="800"></svg>
+                    <div id='tooltip' style='position:absolute;background-color:lightgray;padding:5px'></div>
                 </div>
 
             </div>
@@ -70,11 +67,13 @@
 
 
 <script src="https://d3js.org/d3.v4.min.js"></script>
-<script src="<c:url value='/resources/js/sourceTreeMap.js' />"></script>
+<script src="<c:url value='/resources/js/sourceTreeCommitsMap.js' />"></script>
 <script src="<c:url value='/resources/js/locLineChart.js' />"></script>
+<script src="<c:url value='/resources/js/sourceTreeContributorsMap.js' />"></script>
 <script>
-    loadSourceTreeMap(`${mapData}`);
+    loadSourceTreeCommitsMap(`${username}`, `${repositoryName}`, `${heatMapCommitsData}`);
     loadLocLineChart(`${locData}`);
+    loadSourceTreeContributorsMap(`${username}`, `${repositoryName}`, `${heatMapContributorsData}`);
 </script>
 
 <script src="<c:url value='/resources/js/jquery-3.2.1.min.js' />"></script>

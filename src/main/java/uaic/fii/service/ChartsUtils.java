@@ -5,6 +5,7 @@ import uaic.fii.bean.PathEditBean;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 class ChartsUtils {
     static List<String> buildParentsOfPath(String path) {
@@ -21,7 +22,7 @@ class ChartsUtils {
         return parentsOfPath;
     }
 
-    static String writeHeatMapDataToCSVFormat(Map<String, Integer> diffsPerFilePath) {
+    static String writeHeatMapCommitsToCSVFormat(Map<String, Integer> diffsPerFilePath) {
         String eol = System.getProperty("line.separator");
         StringBuilder stringBuilder;
 
@@ -47,6 +48,21 @@ class ChartsUtils {
                     .append(pathEditBean.getLinesAdded())
                     .append(',')
                     .append(pathEditBean.getLinesRemoved())
+                    .append(eol);
+        }
+        stringBuilder.replace(stringBuilder.length() - 2, stringBuilder.length(), "");
+        return stringBuilder.toString();
+    }
+
+    static String writeHeatMapContributorsToCSVFormat(Map<String, Set<String>> contributorsPerFilePath) {
+        String eol = System.getProperty("line.separator");
+        StringBuilder stringBuilder;
+
+        stringBuilder = new StringBuilder();
+        for (Map.Entry<String, Set<String>> entry : contributorsPerFilePath.entrySet()) {
+            stringBuilder.append(entry.getKey())
+                    .append(',')
+                    .append(entry.getValue().size())
                     .append(eol);
         }
         stringBuilder.replace(stringBuilder.length() - 2, stringBuilder.length(), "");

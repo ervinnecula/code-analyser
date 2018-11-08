@@ -130,7 +130,8 @@ public class RepoService {
 
                     CommitDiffBean commitDiffBean = new CommitDiffBean(commit.getName(),
                             commit.getCommitterIdent().getWhen(),
-                            getDiffsBetweenCommits(tree, parentTree, repository));
+                            getDiffsBetweenCommits(tree, parentTree, repository),
+                            commit.getAuthorIdent().getName());
 
                     commits.add(commitDiffBean);
                 }

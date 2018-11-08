@@ -28,7 +28,7 @@ var areaLinesRemoved = d3.area()
 // moves the 'group' element to the top left margin
 var locLineSvg = d3.select("#locLineChart")
     .append("g")
-    .attr("transform", "translate(" + 100 + "," + 20 + ")");
+    .attr("transform", "translate(" + 100 + "," + 10 + ")");
 
 // Get the data
 function loadLocLineChart(csv) {
@@ -79,7 +79,7 @@ function loadLocLineChart(csv) {
     // Add the X Axis
     locLineSvg.append("g")
         .attr("class", "axis")
-        .attr("transform", "translate(0," + height + ")")
+        .attr("transform", "translate(0," + 710 + ")")
         .call(d3.axisBottom(x).tickFormat(d3.timeFormat("%Y-%m-%d")))
         .selectAll("text")
         .style("text-anchor", "end")

@@ -11,7 +11,7 @@ import java.util.TreeMap;
 import static uaic.fii.service.ChartsUtils.buildParentsOfPath;
 
 @Service
-public class HeatMapService {
+public class HeatMapCommitService {
 
     public String getPathDiffsCsvFile(List<CommitDiffBean> commitList) {
         Map<String, Integer> diffsPerFilePath = new TreeMap<>();
@@ -29,7 +29,7 @@ public class HeatMapService {
                 }
             }
         }
-        return ChartsUtils.writeHeatMapDataToCSVFormat(diffsPerFilePath);
+        return ChartsUtils.writeHeatMapCommitsToCSVFormat(diffsPerFilePath);
     }
 
 }

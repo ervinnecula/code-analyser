@@ -1,17 +1,17 @@
-var sourceTreeSvg = d3.select("#sourceTreeMap"),
-    width = +sourceTreeSvg.attr("width"),
-    height = +sourceTreeSvg.attr("height");
+var sourceTreeCommitsSvg = d3.select("#sourceTreeCommitsMap"),
+    width = +sourceTreeCommitsSvg.attr("width"),
+    height = +sourceTreeCommitsSvg.attr("height");
 
-var color = d3.scaleOrdinal().range(['#B1DAE8', '#77CDE8', '#50C3E9', '#0278A0','#014C66']);
+var colorCommits = d3.scaleOrdinal().range(['#B1DAE8', '#77CDE8', '#50C3E9', '#0278A0','#014C66']);
 
 var format = d3.format(",d");
 
-var treemap = d3.treemap()
+var treemapCommits = d3.treemap()
     .size([width, height])
     .round(true)
     .padding(1);
 
-function loadSourceTreeMap(data) {
+function loadSourceTreeCommitsMap(username, repositoryName, data) {
     var array = [];
     var maximumValue = -1;
     var minimumValue = 9999999;
@@ -34,13 +34,13 @@ function loadSourceTreeMap(data) {
                             return d.size; })
         .sort(function(a, b) { return b.height - a.height || b.value - a.value; });
 
-    treemap(root);
+    treemapCommits(root);
 
-    var cell = sourceTreeSvg.selectAll("a")
+    var cell = sourceTreeCommitsSvg.selectAll("a")
         .data(root.leaves())
         .enter().append("a")
         .attr("target", "_blank")
-        .attr("xlink:href", function(d) { return d.data.path })
+        .attr("xlink:href", function(d) { return "https://github.com/" + username + "/" + repositoryName + "/blob/master/" + d.data.path })
         .attr("transform", function(d) { return "translate(" + d.x0 + "," + d.y0 + ")"; });
 
     cell.append("rect")
@@ -49,23 +49,23 @@ function loadSourceTreeMap(data) {
         .attr("height", function(d) { return d.y1 - d.y0; })
         .attr("fill", function(d) {
             // Converting values to range 0 - 100
-            var newValue = (((d.data.size - minimumValue) * (100 - 0)) / (maximumValue - minimumValue)) + 0;
+            var newValue = (((d.data.size - minimumValue) * (100)) / (maximumValue - minimumValue));
             var fillColor;
             switch(true) {
                 case newValue >= 0 && newValue < 20:
-                    fillColor = color(0);
+                    fillColor = colorCommits(0);
                     break;
                 case newValue >= 20 && newValue < 40:
-                    fillColor = color(1);
+                    fillColor = colorCommits(1);
                     break;
                 case newValue >= 40 && newValue < 60:
-                    fillColor = color(2);
+                    fillColor = colorCommits(2);
                     break;
                 case newValue >= 60 && newValue < 80:
-                    fillColor = color(3);
+                    fillColor = colorCommits(3);
                     break;
                 case newValue >= 80:
-                    fillColor = color(4);
+                    fillColor = colorCommits(4);
                     break;
             }
             return fillColor;
@@ -77,7 +77,7 @@ function loadSourceTreeMap(data) {
         .attr("xlink:href", function(d) { return "#" + d.id; });
 
     var label = cell.append("text")
-        .attr("clip-path", function(d) { return "url(https://github.com/" + d.id + ")"; });
+        .attr("clip-path", function(d) { return d.id; });
 
     label.append("tspan")
         .attr("x", 4)

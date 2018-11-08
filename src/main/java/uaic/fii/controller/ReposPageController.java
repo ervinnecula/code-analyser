@@ -13,10 +13,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.SessionAttributes;
 import uaic.fii.bean.CommitDiffBean;
 import uaic.fii.bean.RepoNameHtmlGitUrlsBean;
-import uaic.fii.service.HeatMapService;
+import uaic.fii.service.HeatMapCommitService;
+import uaic.fii.service.HeatMapContributorService;
 import uaic.fii.service.LocChartService;
 import uaic.fii.service.RepoService;
 
@@ -38,10 +38,13 @@ public class ReposPageController {
     private RepoService repoService;
 
     @Autowired
-    private HeatMapService heatMapService;
+    private HeatMapCommitService heatMapCommitService;
 
     @Autowired
     private LocChartService locChartService;
+
+    @Autowired
+    private HeatMapContributorService heatMapContributorService;
 
     @RequestMapping(value = "/repos", method = GET)
     public String getReposPage(@ModelAttribute("username") String username, Model model) {
@@ -100,10 +103,15 @@ public class ReposPageController {
         File resourceFolder = new File(repoService.getPathToCloneDir() + "//" + repositoryName);
         try {
             List<CommitDiffBean> commits = repoService.getCommitsAndDiffs(resourceFolder);
-            String heatMapCsvFile = heatMapService.getPathDiffsCsvFile(commits);
+            String heatMapCommitsCsvFile = heatMapCommitService.getPathDiffsCsvFile(commits);
             String locCsvFIle = locChartService.getLocProgressOverTime(commits);
-            model.addAttribute("mapData", heatMapCsvFile);
+            String heatMapContributorsCsvFile = heatMapContributorService.getPathContributorsCsvFile(commits);
+
+            model.addAttribute("heatMapCommitsData", heatMapCommitsCsvFile);
             model.addAttribute("locData", locCsvFIle);
+            model.addAttribute("heatMapContributorsData", heatMapContributorsCsvFile);
+            model.addAttribute("repositoryName", repositoryName);
+            model.addAttribute("username", username);
         } catch (IOException e) {
             logger.error(format("ReposPageController - getCommits() - Git exception happened when opening folder %s. Full exception: %s", resourceFolder, e));
             return "error";
