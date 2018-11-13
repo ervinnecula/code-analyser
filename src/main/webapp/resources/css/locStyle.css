@@ -18,12 +18,16 @@
     fill: #de7f8259;
 }
 
-.focus circle {
-    fill: steelblue;
-    stroke: steelblue;
-}
-
-.overlay {
-    fill: none;
-    pointer-events: all;
+#tooltip {
+    position: absolute;
+    text-align: center;
+    width: 95px;
+    height: 44px;
+    padding: 5px;
+    font: 14px sans-serif;
+    font-weight: 600;
+    color: #000000cf;
+    border: 0px;
+    border-radius: 8px;
+    pointer-events: none;
 }

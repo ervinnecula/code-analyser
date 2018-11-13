@@ -4,7 +4,7 @@
 
 <html>
 <head>
-    <title>EDUE</title>
+    <title>Charts</title>
     <link rel="shortcut icon" href="/resources/img/favicon.jpg"/>
     <link rel="stylesheet" href="<c:url value='/resources/css/bootstrap.min.css' />">
     <link rel="stylesheet" href="<c:url value='/resources/css/style.css' />">
@@ -38,26 +38,26 @@
         <t:navTemplate/>
         <div class="col-md-10">
             <ul class="nav nav-tabs">
-                <li class="nav-item">
-                    <a class="nav-link active" data-toggle="tab" href="#total">Changes</a>
+                <li class="active">
+                    <a class="nav-link" data-toggle="tab" href="#total" aria-expanded="false">Changes</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#user">Changes by User</a>
+                <li>
+                    <a class="nav-link" data-toggle="tab" href="#user" aria-expanded="false">Changes by User</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#loc">LOC over time</a>
+                <li>
+                    <a class="nav-link" data-toggle="tab" href="#loc" aria-expanded="false">LOC over time</a>
                 </li>
             </ul>
             <div class="tab-content">
-                <div class="tab-pane show active" id="total">
-                    <svg id="sourceTreeCommitsMap" width="1550" height="800"></svg>
+                <div class="tab-pane in active" id="total">
+                    <svg id="sourceTreeCommitsMap" width="1500" height="800"></svg>
                 </div>
                 <div class="tab-pane" id="user">
-                    <svg id="sourceTreeContributorsMap" width="1550" height="800"></svg>
+                    <svg id="sourceTreeContributorsMap" width="1500" height="800"></svg>
                 </div>
                 <div class="tab-pane" id="loc">
-                    <svg id="locLineChart" width="1550" height="800"></svg>
-                    <div id='tooltip' style='position:absolute;background-color:lightgray;padding:5px'></div>
+                    <svg id="locLineChart" width="1550" height="770"></svg>
+                    <div id="tooltip" class="tooltip" style="opacity:0"></div>
                 </div>
 
             </div>

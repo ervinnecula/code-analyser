@@ -78,12 +78,12 @@ public class ReposPageController {
         try {
             repoService.cloneRepo(repoBean, resourceFolder);
             logger.debug(format("MainController - cloneRepo() - Repository language is: %s", repoBean.getRepoLanguage()));
-            if (REPO_LANGUAGE.equals(repoBean.getRepoLanguage())) {
+//            if (REPO_LANGUAGE.equals(repoBean.getRepoLanguage())) {
                 logger.debug("MainController - cloneRepo() - Calling repoService.analyzeClonedProject() ");
                 model.addAttribute("violationsCount", repoService.shortAnalyzeClonedProject(resourceFolder.getPath()));
-            } else {
-                return "error";
-            }
+//            } else {
+//                return "error";
+//            }
         } catch (GitAPIException e) {
             logger.error(format("ReposPageController - cloneRepo() - Git exception happened when trying get data from %s. Full exception: %s", repoBean.getRepoName(), e));
             return "error";

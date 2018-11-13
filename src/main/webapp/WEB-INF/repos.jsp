@@ -4,7 +4,7 @@
 
 <html>
 <head>
-    <title>EDUE</title>
+    <title>Repos</title>
     <link rel="shortcut icon" href="/resources/img/favicon.jpg"/>
     <link rel="stylesheet" href="<c:url value='/resources/css/bootstrap.min.css' />">
     <link rel="stylesheet" href="<c:url value='/resources/css/style.css' />">

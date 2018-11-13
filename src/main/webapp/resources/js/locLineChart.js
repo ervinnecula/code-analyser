@@ -1,8 +1,8 @@
 var parseTime = d3.timeParse("%Y-%m-%d");
 // set the ranges
-var margin = {top: 20, right: 20, bottom: 70, left: 50},
-    width = 1550 - margin.left - margin.right,
-    height = 800 - margin.top - margin.bottom;
+var margin = {top: 50, right: 20, bottom: 70, left: 50},
+    width = 1450 - margin.left - margin.right,
+    height = 770 - margin.top - margin.bottom;
 
 var x = d3.scaleTime().range([0, width]);
 var y = d3.scaleLinear().range([height, 0]);
@@ -28,7 +28,7 @@ var areaLinesRemoved = d3.area()
 // moves the 'group' element to the top left margin
 var locLineSvg = d3.select("#locLineChart")
     .append("g")
-    .attr("transform", "translate(" + 100 + "," + 10 + ")");
+    .attr("transform", "translate(" + 80 + "," + 40 + ")");
 
 // Get the data
 function loadLocLineChart(csv) {
@@ -79,7 +79,7 @@ function loadLocLineChart(csv) {
     // Add the X Axis
     locLineSvg.append("g")
         .attr("class", "axis")
-        .attr("transform", "translate(0," + 710 + ")")
+        .attr("transform", "translate(0," + 650 + ")")
         .call(d3.axisBottom(x).tickFormat(d3.timeFormat("%Y-%m-%d")))
         .selectAll("text")
         .style("text-anchor", "end")
@@ -91,5 +91,66 @@ function loadLocLineChart(csv) {
     locLineSvg.append("g")
         .attr("class", "axis")
         .call(d3.axisLeft(y));
+
+    var tooltip = d3.select("#tooltip");
+
+    function getFormattedDate(date) {
+        var dd = date.getDate();
+        var mm = date.getMonth() + 1;
+        var yyyy = date.getFullYear();
+        if (dd < 10) {
+            dd = '0' + dd
+        }
+        if (mm < 10) {
+            mm = '0' + mm
+        }
+
+        return yyyy + '-' + mm + '-' + dd;
+    }
+
+    // add the dots with tooltips
+    locLineSvg.append("g")
+        .selectAll("dot1")
+        .data(data)
+        .enter().append("circle")
+        .attr("r", 5)
+        .attr("cx", function(d) { return x(d.date); })
+        .attr("cy", function(d) { return y(d.linesAdded); })
+        .on("mouseover", function(d) {
+            tooltip.transition()
+                .duration(200)
+                .style("opacity", .9)
+                .style("background", "#b0c4debd");
+            tooltip.html(getFormattedDate(d.date) + "<br/>" + d.linesAdded)
+                .style("left", (d3.event.pageX - 300))
+                .style("top", (d3.event.pageY - 100));
+        })
+        .on("mouseout", function(d) {
+            tooltip.transition()
+                .duration(500)
+                .style("opacity", 0);
+        });
+
+    locLineSvg.append("g")
+        .selectAll("dot2")
+        .data(data)
+        .enter().append("circle")
+        .attr("r", 5)
+        .attr("cx", function(d) { return x(d.date); })
+        .attr("cy", function(d) { return y(d.linesRemoved); })
+        .on("mouseover", function(d) {
+            tooltip.transition()
+                .duration(200)
+                .style("opacity", .9)
+                .style("background", "rgba(255, 67, 76, 0.62)");
+            tooltip.html(getFormattedDate(d.date) + "<br/>" + d.linesRemoved)
+                .style("left", (d3.event.pageX - 300))
+                .style("top", (d3.event.pageY - 100));
+        })
+        .on("mouseout", function(d) {
+            tooltip.transition()
+                .duration(500)
+                .style("opacity", 0);
+        });
 
 }
