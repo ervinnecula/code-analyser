@@ -50,10 +50,10 @@
             </ul>
             <div class="tab-content">
                 <div class="tab-pane in active" id="total">
-                    <svg id="sourceTreeCommitsMap" width="1500" height="800"></svg>
+                    <svg id="sourceTreeCommitsMap" width="1580" height="800"></svg>
                 </div>
                 <div class="tab-pane" id="user">
-                    <svg id="sourceTreeContributorsMap" width="1500" height="800"></svg>
+                    <svg id="sourceTreeContributorsMap" width="1580" height="800"></svg>
                 </div>
                 <div class="tab-pane" id="loc">
                     <svg id="locLineChart" width="1550" height="770"></svg>

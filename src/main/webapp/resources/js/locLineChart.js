@@ -142,7 +142,7 @@ function loadLocLineChart(csv) {
             tooltip.transition()
                 .duration(200)
                 .style("opacity", .9)
-                .style("background", "rgba(255, 67, 76, 0.62)");
+                .style("background", "#ff8086");
             tooltip.html(getFormattedDate(d.date) + "<br/>" + d.linesRemoved)
                 .style("left", (d3.event.pageX - 300))
                 .style("top", (d3.event.pageY - 100));

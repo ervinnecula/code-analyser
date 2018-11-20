@@ -2,12 +2,23 @@ svg {
     font: 10px sans-serif;
 }
 
+a rect:hover {
+    stroke-width: 2px;
+    stroke: rgb(0,0,0);
+}
+
 a tspan:first-child {
     font-size: 15px;
+    fill-opacity: 0.7;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 a:hover tspan:first-child {
     text-decoration: underline;
+    font-weight: bold;
+    fill-opacity: 1.0;
 }
 
 tspan:last-child {
@@ -15,4 +26,8 @@ tspan:last-child {
     font-weight: bold;
     color: white;
     fill-opacity: 0.7;
+}
+
+a:hover tspan:last-child {
+    fill-opacity: 1.0;
 }

@@ -25,8 +25,8 @@ public class LocChartService {
                     for (Edit edits : diff.getEdits()) {
                         PathEditBean pathEditBean = locChangePerFilePath.get(dateFormat.format(commit.getCommitDate()));
                         if (pathEditBean != null) {
-                            pathEditBean.setLinesAdded(pathEditBean.getLinesAdded() + edits.getLengthA());
-                            pathEditBean.setLinesRemoved(pathEditBean.getLinesRemoved() + edits.getLengthB());
+                            pathEditBean.setLinesAdded(pathEditBean.getLinesAdded() + edits.getLengthB());
+                            pathEditBean.setLinesRemoved(pathEditBean.getLinesRemoved() + edits.getLengthA());
 
                         } else {
                             pathEditBean = new PathEditBean(edits.getLengthA(), edits.getLengthB());
