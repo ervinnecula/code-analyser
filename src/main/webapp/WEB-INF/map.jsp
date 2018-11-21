@@ -39,7 +39,10 @@
         <div class="col-md-10">
             <ul class="nav nav-tabs">
                 <li class="active">
-                    <a class="nav-link" data-toggle="tab" href="#total" aria-expanded="false">Changes</a>
+                    <a class="nav-link" data-toggle="tab" href="#overview" aria-expanded="false">Overview</a>
+                </li>
+                <li>
+                    <a class="nav-link" data-toggle="tab" href="#total" aria-expanded="false">Total Changes</a>
                 </li>
                 <li>
                     <a class="nav-link" data-toggle="tab" href="#user" aria-expanded="false">Changes by User</a>
@@ -47,9 +50,17 @@
                 <li>
                     <a class="nav-link" data-toggle="tab" href="#loc" aria-expanded="false">LOC over time</a>
                 </li>
+                <li>
+                    <a class="nav-link" data-toggle="tab" href="#antipatterns" aria-expanded="false">Antipatterns</a>
+                </li>
             </ul>
             <div class="tab-content">
-                <div class="tab-pane in active" id="total">
+                <div class="tab-pane in active" id="overview">
+                    <div>time period selector</div>
+                    <div>linesofcode</div>
+                    <div>number of files</div>
+                </div>
+                <div class="tab-pane" id="total">
                     <svg id="sourceTreeCommitsMap" width="1580" height="800"></svg>
                 </div>
                 <div class="tab-pane" id="user">
@@ -59,7 +70,9 @@
                     <svg id="locLineChart" width="1550" height="770"></svg>
                     <div id="tooltip" class="tooltip" style="opacity:0"></div>
                 </div>
-
+                <div class="tab-pane" id="antipatterns">
+                    <div id="antipatternsPage" width="1550" height="770"></div>
+                </div>
             </div>
         </div>
     </div>

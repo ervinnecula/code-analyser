@@ -12,7 +12,9 @@
         </li>
 
         <li class="list-group-item d-flex justify-content-between align-items-center">
-            Morbi leo risus
+            <form action="/main" method="GET" id="return-to-main-form">
+                <a href="#" onclick="document.getElementById('return-to-main-form').submit();">Choose another user</a>
+            </form>
         </li>
     </ul>
 </div>

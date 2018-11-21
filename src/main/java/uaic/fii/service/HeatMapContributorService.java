@@ -15,13 +15,15 @@ import static uaic.fii.service.ChartsUtils.buildParentsOfPath;
 @Service
 public class HeatMapContributorService {
 
+    private final String SRC_PATH = "src/";
+
     public String getPathContributorsCsvFile(List<CommitDiffBean> commitList) {
         Map<String, Set<String>> diffsPerFilePath = new TreeMap<>();
 
         for (CommitDiffBean commit : commitList) {
             List<DiffBean> diffs = commit.getDiffs();
             for (DiffBean diff : diffs) {
-                if (diff.getFilePath().substring(0, 4).equals("src/")) {
+                if (diff.getFilePath().toLowerCase().contains(SRC_PATH)) {
                     Set<String> listOfContributors = diffsPerFilePath.getOrDefault(diff.getFilePath(), new HashSet<>());
                     List<String> parents = buildParentsOfPath(diff.getFilePath());
                     for (String parent : parents) {

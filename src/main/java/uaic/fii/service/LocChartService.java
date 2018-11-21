@@ -13,6 +13,7 @@ import java.util.TreeMap;
 
 @Service
 public class LocChartService {
+    private final String SRC_PATH = "src/";
 
     public String getLocProgressOverTime(List<CommitDiffBean> commitList) {
         Map<String, PathEditBean> locChangePerFilePath = new TreeMap<>();
@@ -21,7 +22,7 @@ public class LocChartService {
         for (CommitDiffBean commit : commitList) {
             List<DiffBean> diffs = commit.getDiffs();
             for (DiffBean diff : diffs) {
-                if (diff.getFilePath().substring(0, 4).equals("src/")) {
+                if (diff.getFilePath().toLowerCase().contains(SRC_PATH)) {
                     for (Edit edits : diff.getEdits()) {
                         PathEditBean pathEditBean = locChangePerFilePath.get(dateFormat.format(commit.getCommitDate()));
                         if (pathEditBean != null) {

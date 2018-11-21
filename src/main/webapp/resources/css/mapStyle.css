@@ -1,8 +1,8 @@
 svg {
-    font: 10px sans-serif;
+    font-size: 10px;
 }
 
-a rect:hover {
+a:hover rect {
     stroke-width: 2px;
     stroke: rgb(0,0,0);
 }

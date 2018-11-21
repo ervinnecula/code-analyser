@@ -82,7 +82,7 @@ public class RepoService {
             for (RuleViolation ruleViolation : context.getReport()) {
                 rule = ruleViolation.getRule();
                 ruleViolationBeans.add(new RuleViolationBean(rule.getMessage(), rule.getDescription(), rule.getExternalInfoUrl(),
-                        rule.getPriority().toString(), files.next().getName(), ruleViolation.getMethodName(),
+                        rule.getPriority().toString(), javaFile.getName(), ruleViolation.getMethodName(),
                         ruleViolation.getClassName(), ruleViolation.getBeginLine(), ruleViolation.getEndLine()));
             }
         }
