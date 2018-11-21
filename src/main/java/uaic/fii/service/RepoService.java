@@ -60,10 +60,6 @@ public class RepoService {
         return filePath.substring(0, lastIndexOfSlash);
     }
 
-    public int shortAnalyzeClonedProject(String path) throws PMDException, IOException {
-        return analyzeClonedProject(path).size();
-    }
-
     public List<RuleViolationBean> analyzeClonedProject(String path) throws PMDException, IOException {
         String fileContent;
         RuleContext context;

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import uaic.fii.bean.CommitDiffBean;
 import uaic.fii.bean.RepoNameHtmlGitUrlsBean;
+import uaic.fii.bean.RuleViolationBean;
 import uaic.fii.service.HeatMapCommitService;
 import uaic.fii.service.HeatMapContributorService;
 import uaic.fii.service.LocChartService;
@@ -67,78 +68,46 @@ public class ReposPageController {
         return "repos";
     }
 
-    @RequestMapping(value = "/clone", method = RequestMethod.POST)
-    public String cloneRepo(@ModelAttribute RepoNameHtmlGitUrlsBean repoBean, @ModelAttribute("username") String username, Model model) {
-        File resourceFolder;
-        logger.debug("ReposPageController - cloneRepo() - /clone endpoint called ");
-
-        logger.debug("ReposPageController- cloneRepo() - calling repoService.getPathToCloneDir() ");
-        resourceFolder = new File(repoService.getPathToCloneDir() + File.separator + repoBean.getRepoName());
-
+    @RequestMapping(value = "/analysis", method = RequestMethod.POST)
+    public String getCommits(@ModelAttribute RepoNameHtmlGitUrlsBean repoBean, @ModelAttribute("username") String username, Model model) {
+        File resourceFolder = new File(repoService.getPathToCloneDir() + "//" + repoBean.getRepoName());
         try {
             repoService.cloneRepo(repoBean, resourceFolder);
-            logger.debug(format("MainController - cloneRepo() - Repository language is: %s", repoBean.getRepoLanguage()));
-//            if (REPO_LANGUAGE.equals(repoBean.getRepoLanguage())) {
-                logger.debug("MainController - cloneRepo() - Calling repoService.analyzeClonedProject() ");
-                model.addAttribute("violationsCount", repoService.shortAnalyzeClonedProject(resourceFolder.getPath()));
-//            } else {
-//                return "error";
-//            }
-        } catch (GitAPIException e) {
-            logger.error(format("ReposPageController - cloneRepo() - Git exception happened when trying get data from %s. Full exception: %s", repoBean.getRepoName(), e));
-            return "error";
-        } catch (IOException e) {
-            logger.error(format("ReposPageController - cloneRepo() - Git exception happened when opening folder %s. Full exception: %s", resourceFolder, e));
-            return "error";
-        } catch (PMDException e) {
-            logger.error(format("ReposPageController - cloneRepo() - Exception when running PMD over %s. Full exception: %s", resourceFolder, e));
-        }
-
-        model.addAttribute("repositoryName", repoBean.getRepoName());
-        return "analysis";
-    }
-
-    @RequestMapping(value = "/commits", method = RequestMethod.GET)
-    public String getCommits(@ModelAttribute("repositoryName") String repositoryName, @ModelAttribute("username") String username, Model model) {
-        File resourceFolder = new File(repoService.getPathToCloneDir() + "//" + repositoryName);
-        try {
+            List<RuleViolationBean> ruleViolations = staticAnalyse(resourceFolder);
             List<CommitDiffBean> commits = repoService.getCommitsAndDiffs(resourceFolder);
             String heatMapCommitsCsvFile = heatMapCommitService.getPathDiffsCsvFile(commits);
-            String locCsvFIle = locChartService.getLocProgressOverTime(commits);
+            String addRemoveLinesCsvFile = locChartService.getAddRemoveLinesOverTime(commits);
             String heatMapContributorsCsvFile = heatMapContributorService.getPathContributorsCsvFile(commits);
 
             model.addAttribute("heatMapCommitsData", heatMapCommitsCsvFile);
-            model.addAttribute("locData", locCsvFIle);
             model.addAttribute("heatMapContributorsData", heatMapContributorsCsvFile);
-            model.addAttribute("repositoryName", repositoryName);
+            model.addAttribute("addRemoveLinesData", addRemoveLinesCsvFile);
+            model.addAttribute("violations", ruleViolations);
+            model.addAttribute("repositoryName", repoBean.getRepoName());
             model.addAttribute("username", username);
         } catch (IOException e) {
             logger.error(format("ReposPageController - getCommits() - Git exception happened when opening folder %s. Full exception: %s", resourceFolder, e));
+            return "error";
+        } catch (GitAPIException e) {
+            logger.error(format("ReposPageController - cloneRepo() - Git exception happened when trying get data from %s. Full exception: %s", repoBean.getRepoName(), e));
             return "error";
         }
         //TODO add processed data
         return "map";
     }
 
-    @RequestMapping(value = "/static", method = RequestMethod.GET)
-    public String staticAnalyse(@ModelAttribute("repositoryName") String repositoryName, @ModelAttribute("username") String username, Model model) {
-        logger.debug("ReposPageController - staticAnalyse() - /static endpoint called ");
-
-        File resourceFolder = new File(repoService.getPathToCloneDir() + File.separator + repositoryName);
+    private List<RuleViolationBean> staticAnalyse(File projectPath) {
         logger.debug("ReposPageController - staticAnalyse() - calling repoService.getPathToCloneDir() ");
-
+        List<RuleViolationBean> ruleViolationBeans = new ArrayList<>();
         try {
+            ruleViolationBeans = repoService.analyzeClonedProject(projectPath.getPath());
             logger.debug("MainController - cloneRepo() - Calling repoService.analyzeClonedProject() ");
-            model.addAttribute("violations", repoService.analyzeClonedProject(resourceFolder.getPath()));
         } catch (IOException e) {
-            logger.error(format("ReposPageController - staticAnalyse() - Git exception happened when opening folder %s. Full exception: %s", resourceFolder, e));
-            return "error";
+            logger.error(format("ReposPageController - staticAnalyse() - Git exception happened when opening folder %s. Full exception: %s", projectPath, e));
         } catch (PMDException e) {
-            logger.error(format("ReposPageController - staticAnalyse() - Exception when running PMD over %s. Full exception: %s", resourceFolder, e));
+            logger.error(format("ReposPageController - staticAnalyse() - Exception when running PMD over %s. Full exception: %s", projectPath, e));
         }
-
-        model.addAttribute("repositoryName", repositoryName);
-        return "static";
+        return ruleViolationBeans;
     }
 
 }

@@ -26,12 +26,12 @@ var areaLinesRemoved = d3.area()
     .y1(function(d) { return y(d.linesRemoved); });
 
 // moves the 'group' element to the top left margin
-var locLineSvg = d3.select("#locLineChart")
+var addRemoveLineSvg = d3.select("#addRemoveLineChart")
     .append("g")
     .attr("transform", "translate(" + 80 + "," + 40 + ")");
 
 // Get the data
-function loadLocLineChart(csv) {
+function loadAddRemoveLineChart(csv) {
     var data = [];
 
     var rows = csv.split(/\n/);
@@ -54,30 +54,30 @@ function loadLocLineChart(csv) {
     y.domain([0, d3.max(data, function(d) {return Math.max(d.linesAdded, d.linesRemoved); })]);
 
     // add the lines added blue line
-    locLineSvg.append("path")
+    addRemoveLineSvg.append("path")
         .data([data])
         .attr("class", "lineLinesAdded")
         .attr("d", valuesLinesAdded);
 
     // add the area for lines added
-    locLineSvg.append("path")
+    addRemoveLineSvg.append("path")
         .data([data])
         .attr("class", "areaLinesAdded")
         .attr("d", areaLinesAdded);
 
-    locLineSvg.append("path")
+    addRemoveLineSvg.append("path")
         .data([data])
         .attr("class", "lineLinesRemoved")
         .attr("d", valuesLinesRemoved);
 
     // add the area for lines added
-    locLineSvg.append("path")
+    addRemoveLineSvg.append("path")
         .data([data])
         .attr("class", "areaLinesRemoved")
         .attr("d", areaLinesRemoved);
 
     // Add the X Axis
-    locLineSvg.append("g")
+    addRemoveLineSvg.append("g")
         .attr("class", "axis")
         .attr("transform", "translate(0," + 650 + ")")
         .call(d3.axisBottom(x).tickFormat(d3.timeFormat("%Y-%m-%d")))
@@ -88,7 +88,7 @@ function loadLocLineChart(csv) {
         .attr("transform", "rotate(-65)");
 
     // Add the Y Axis
-    locLineSvg.append("g")
+    addRemoveLineSvg.append("g")
         .attr("class", "axis")
         .call(d3.axisLeft(y));
 
@@ -109,7 +109,7 @@ function loadLocLineChart(csv) {
     }
 
     // add the dots with tooltips
-    locLineSvg.append("g")
+    addRemoveLineSvg.append("g")
         .selectAll("dot1")
         .data(data)
         .enter().append("circle")
@@ -131,7 +131,7 @@ function loadLocLineChart(csv) {
                 .style("opacity", 0);
         });
 
-    locLineSvg.append("g")
+    addRemoveLineSvg.append("g")
         .selectAll("dot2")
         .data(data)
         .enter().append("circle")

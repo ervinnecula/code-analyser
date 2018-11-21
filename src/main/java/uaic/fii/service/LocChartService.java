@@ -15,7 +15,7 @@ import java.util.TreeMap;
 public class LocChartService {
     private final String SRC_PATH = "src/";
 
-    public String getLocProgressOverTime(List<CommitDiffBean> commitList) {
+    public String getAddRemoveLinesOverTime(List<CommitDiffBean> commitList) {
         Map<String, PathEditBean> locChangePerFilePath = new TreeMap<>();
         SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd");
 
