@@ -49,7 +49,11 @@
                     <a class="nav-link" data-toggle="tab" href="#user" aria-expanded="false">Changes by User</a>
                 </li>
                 <li>
-                    <a class="nav-link" data-toggle="tab" href="#add-delete" aria-expanded="false">Additions/Deletions</a>
+                    <a class="nav-link" data-toggle="tab" href="#add-delete"
+                       aria-expanded="false">Additions/Deletions</a>
+                </li>
+                <li>
+                    <a class="nav-link" data-toggle="tab" href="#loc" aria-expanded="false">LOC</a>
                 </li>
                 <li>
                     <a class="nav-link" data-toggle="tab" href="#antipatterns" aria-expanded="false">Antipatterns</a>
@@ -73,11 +77,11 @@
                 </div>
                 <div class="tab-pane" id="add-delete">
                     <svg id="addRemoveLineChart" width="1550" height="800"></svg>
-                    <div id="tooltip" class="tooltip" style="opacity:0"></div>
+                    <div id="tooltip-add-remove" class="tooltip" style="opacity:0"></div>
                 </div>
                 <div class="tab-pane" id="loc">
                     <svg id="locLineChart" width="1550" height="800"></svg>
-                    <div id="tooltip" class="tooltip" style="opacity:0"></div>
+                    <div id="tooltip-loc" class="tooltip" style="opacity:0"></div>
                 </div>
                 <div class="tab-pane" id="antipatterns">
                     <div id="antipatternsPage" width="1550" height="800"></div>
@@ -85,11 +89,11 @@
                 <div class="tab-pane" id="violations">
                     <div id="staticViolationsPage" width="1550" height="800">
                         <c:choose>
-                            <c:when test="${fn:length(violations) == 0}">
+                            <c:when test="${fn:length(violationsData) == 0}">
                                 You have no static analysis violations.
                             </c:when>
                             <c:otherwise>
-                                <c:forEach items="${violations}" var="violation">
+                                <c:forEach items="${violationsData}" var="violation">
                                     <div class="alert alert-dismissible alert-warning">
                                         <button type="button" class="close" data-dismiss="alert">&times;</button>
                                         <h4 class="alert-heading">${violation.priority}</h4>
@@ -97,7 +101,8 @@
                                         <div><b>${violation.message} </b></div>
                                         <div>${violation.description}</div>
 
-                                        <a href="${violation.externalInfoUrl}" class="alert-link">Check some extra info</a>.
+                                        <a href="${violation.externalInfoUrl}" class="alert-link">Check some extra
+                                            info</a>.
                                         </p>
                                         <div>File: ${violation.fileName}</div>
                                         <div>Method: ${violation.methodName}</div>
@@ -109,7 +114,6 @@
                         </c:choose>
                     </div>
                 </div>
-                </div>
             </div>
         </div>
     </div>
@@ -119,10 +123,12 @@
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script src="<c:url value='/resources/js/sourceTreeCommitsMap.js' />"></script>
 <script src="<c:url value='/resources/js/addRemoveLOC.js' />"></script>
+<script src="<c:url value='/resources/js/totalLOC.js' />"></script>
 <script src="<c:url value='/resources/js/sourceTreeContributorsMap.js' />"></script>
 <script>
     loadSourceTreeCommitsMap(`${username}`, `${repositoryName}`, `${heatMapCommitsData}`);
     loadAddRemoveLineChart(`${addRemoveLinesData}`);
+    loadLocChart(`${locData}`);
     loadSourceTreeContributorsMap(`${username}`, `${repositoryName}`, `${heatMapContributorsData}`);
 </script>
 

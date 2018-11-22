@@ -6,7 +6,7 @@
     stroke-width: 2px;
 }
 .areaLinesAdded {
-      fill: #b0c4de9c;
+    fill: #b0c4de9c;
 }
 
 .lineLinesRemoved {
@@ -18,11 +18,33 @@
     fill: #de7f8259;
 }
 
-#tooltip {
+.loc {
+    fill: #5fad63;
+}
+
+.areaLoc {
+    fill: #5fad63;
+}
+
+#tooltip-add-remove {
     position: absolute;
     text-align: center;
     width: 95px;
     height: 44px;
+    padding: 5px;
+    font: 14px sans-serif;
+    font-weight: 600;
+    color: #000000cf;
+    border: 0px;
+    border-radius: 8px;
+    pointer-events: none;
+}
+
+#tooltip-loc {
+    position: absolute;
+    text-align: center;
+    width: 65px;
+    height: 35px;
     padding: 5px;
     font: 14px sans-serif;
     font-weight: 600;

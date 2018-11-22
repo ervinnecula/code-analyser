@@ -31,7 +31,7 @@ public class HeatMapCommitService {
                 }
             }
         }
-        return ChartsUtils.writeHeatMapCommitsToCSVFormat(diffsPerFilePath);
+        return ChartsUtils.writeStringIntegerMapToCSVFormat(diffsPerFilePath);
     }
 
 }

@@ -60,7 +60,7 @@ public class ReposPageController {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Could not get repositories for username {}", username, e);
         }
 
         model.addAttribute("repoNameHtmlGitUrlsBeans", repoBeans);
@@ -77,12 +77,14 @@ public class ReposPageController {
             List<CommitDiffBean> commits = repoService.getCommitsAndDiffs(resourceFolder);
             String heatMapCommitsCsvFile = heatMapCommitService.getPathDiffsCsvFile(commits);
             String addRemoveLinesCsvFile = locChartService.getAddRemoveLinesOverTime(commits);
+            String locCsvFile = locChartService.getLOCOverTime(commits);
             String heatMapContributorsCsvFile = heatMapContributorService.getPathContributorsCsvFile(commits);
 
             model.addAttribute("heatMapCommitsData", heatMapCommitsCsvFile);
             model.addAttribute("heatMapContributorsData", heatMapContributorsCsvFile);
             model.addAttribute("addRemoveLinesData", addRemoveLinesCsvFile);
-            model.addAttribute("violations", ruleViolations);
+            model.addAttribute("locData", locCsvFile);
+            model.addAttribute("violationsData", ruleViolations);
             model.addAttribute("repositoryName", repoBean.getRepoName());
             model.addAttribute("username", username);
         } catch (IOException e) {
@@ -92,7 +94,6 @@ public class ReposPageController {
             logger.error(format("ReposPageController - cloneRepo() - Git exception happened when trying get data from %s. Full exception: %s", repoBean.getRepoName(), e));
             return "error";
         }
-        //TODO add processed data
         return "map";
     }
 

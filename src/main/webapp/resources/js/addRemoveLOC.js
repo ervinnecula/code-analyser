@@ -92,7 +92,7 @@ function loadAddRemoveLineChart(csv) {
         .attr("class", "axis")
         .call(d3.axisLeft(y));
 
-    var tooltip = d3.select("#tooltip");
+    var tooltip = d3.select("#tooltip-add-remove");
 
     function getFormattedDate(date) {
         var dd = date.getDate();

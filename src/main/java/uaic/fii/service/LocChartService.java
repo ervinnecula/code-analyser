@@ -7,6 +7,7 @@ import uaic.fii.bean.DiffBean;
 import uaic.fii.bean.PathEditBean;
 
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -37,6 +38,28 @@ public class LocChartService {
                 }
             }
         }
-        return ChartsUtils.writeLocDataToCSVFormat(locChangePerFilePath);
+        return ChartsUtils.writeLinesAddedRemovedToCSVFormat(locChangePerFilePath);
+    }
+
+    public String getLOCOverTime(List<CommitDiffBean> commitList) {
+        Map<String, Integer> locChangePerFilePath = new TreeMap<>();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd");
+        Collections.reverse(commitList);
+        int loc = 0;
+        for (CommitDiffBean commit : commitList) {
+            List<DiffBean> diffs = commit.getDiffs();
+            for (DiffBean diff : diffs) {
+                int linesAddedInFile = 0;
+                if (diff.getFilePath().toLowerCase().contains(SRC_PATH)) {
+                    for (Edit edit : diff.getEdits()) {
+                        linesAddedInFile += edit.getLengthB();
+                        linesAddedInFile -= edit.getLengthA();
+                    }
+                }
+                loc += linesAddedInFile;
+            }
+            locChangePerFilePath.put(dateFormat.format(commit.getCommitDate()), loc);
+        }
+        return ChartsUtils.writeStringIntegerMapToCSVFormat(locChangePerFilePath);
     }
 }

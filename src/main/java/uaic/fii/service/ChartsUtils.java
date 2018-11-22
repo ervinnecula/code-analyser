@@ -22,7 +22,7 @@ class ChartsUtils {
         return parentsOfPath;
     }
 
-    static String writeHeatMapCommitsToCSVFormat(Map<String, Integer> diffsPerFilePath) {
+    static String writeStringIntegerMapToCSVFormat(Map<String, Integer> diffsPerFilePath) {
         String eol = System.getProperty("line.separator");
         StringBuilder stringBuilder;
 
@@ -36,7 +36,7 @@ class ChartsUtils {
         return stringBuilder.toString();
     }
 
-    static String writeLocDataToCSVFormat(Map<String, PathEditBean> locChangePerFilePath) {
+    static String writeLinesAddedRemovedToCSVFormat(Map<String, PathEditBean> locChangePerFilePath) {
         String eol = System.getProperty("line.separator");
         StringBuilder stringBuilder;
 
