@@ -36,6 +36,7 @@
 <div>
 
     <div class="row mt-3 custom-wrapper">
+        <div id="dateSelectorSlider"></div>
         <t:navTemplate/>
         <div class="col-md-10">
             <ul class="nav nav-tabs">
@@ -125,15 +126,34 @@
 <script src="<c:url value='/resources/js/addRemoveLOC.js' />"></script>
 <script src="<c:url value='/resources/js/totalLOC.js' />"></script>
 <script src="<c:url value='/resources/js/sourceTreeContributorsMap.js' />"></script>
+<script src="<c:url value='/resources/js/jquery-3.2.1.min.js' />"></script>
+<script src="<c:url value='/resources/js/jquery-ui.min.js' />"></script>
+<script src="<c:url value='/resources/js/jQDateRangeSlider-min.js' />"></script>
+<script src="<c:url value='/resources/js/bootstrap.min.js'  />"></script>
 <script>
+    setStartEndDates(`${startDate}`, `${endDate}`);
     loadSourceTreeCommitsMap(`${username}`, `${repositoryName}`, `${heatMapCommitsData}`);
     loadAddRemoveLineChart(`${addRemoveLinesData}`);
-    loadLocChart(`${locData}`);
+    loadLocChart(`${locData}`, `${startDate}`, `${endDate}`);
     loadSourceTreeContributorsMap(`${username}`, `${repositoryName}`, `${heatMapContributorsData}`);
+
+    $("#dateSelectorSlider").bind("valuesChanged", function(e, data) {
+        loadLocChart(`${locData}`, data.values.min, data.values.max);
+    });
+    function setStartEndDates(startDate, endDate) {
+        var startDateSplit = startDate.split('-');
+        var endDateSplit = endDate.split('-');
+        $("#dateSelectorSlider").dateRangeSlider (
+            "option",
+            {
+                bounds: {
+                    min: new Date(startDateSplit[0], startDateSplit[1] - 1, startDateSplit[2]),
+                    max: new Date(endDateSplit[0], endDateSplit[1] - 1, endDateSplit[2])
+                },
+                enabled: false
+            }
+        );
+    }
 </script>
-
-<script src="<c:url value='/resources/js/jquery-3.2.1.min.js' />"></script>
-<script src="<c:url value='/resources/js/bootstrap.min.js'  />"></script>
-
 </body>
 </html>

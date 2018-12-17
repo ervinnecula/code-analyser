@@ -1,5 +1,6 @@
 package uaic.fii.service;
 
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jgit.diff.Edit;
 import org.springframework.stereotype.Service;
 import uaic.fii.bean.CommitDiffBean;
@@ -8,6 +9,7 @@ import uaic.fii.bean.PathEditBean;
 
 import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -41,25 +43,34 @@ public class LocChartService {
         return ChartsUtils.writeLinesAddedRemovedToCSVFormat(locChangePerFilePath);
     }
 
-    public String getLOCOverTime(List<CommitDiffBean> commitList) {
+    public String getLOCOverTime(List<CommitDiffBean> commitList, Date startDate, Date endDate) {
         Map<String, Integer> locChangePerFilePath = new TreeMap<>();
         SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd");
         Collections.reverse(commitList);
         int loc = 0;
         for (CommitDiffBean commit : commitList) {
-            List<DiffBean> diffs = commit.getDiffs();
-            for (DiffBean diff : diffs) {
-                int linesAddedInFile = 0;
-                if (diff.getFilePath().toLowerCase().contains(SRC_PATH)) {
-                    for (Edit edit : diff.getEdits()) {
-                        linesAddedInFile += edit.getLengthB();
-                        linesAddedInFile -= edit.getLengthA();
+            Date commitDate = commit.getCommitDate();
+            if ((commitDate.after(startDate) || commitDate.equals(startDate))
+                    && (commitDate.before(endDate) || commitDate.equals(endDate))) {
+                List<DiffBean> diffs = commit.getDiffs();
+                for (DiffBean diff : diffs) {
+                    int linesAddedInFile = 0;
+                    String filePath = diff.getFilePath();
+                    if (filePath.toLowerCase().contains(SRC_PATH)) {
+                        for (Edit edit : diff.getEdits()) {
+                            linesAddedInFile += edit.getLengthB();
+                            linesAddedInFile -= edit.getLengthA();
+                        }
                     }
+                    loc += linesAddedInFile;
                 }
-                loc += linesAddedInFile;
+                locChangePerFilePath.put(dateFormat.format(commit.getCommitDate()), loc);
             }
-            locChangePerFilePath.put(dateFormat.format(commit.getCommitDate()), loc);
         }
         return ChartsUtils.writeStringIntegerMapToCSVFormat(locChangePerFilePath);
+    }
+
+    private boolean fileHasCorrectExtension(String extension, String filePath) {
+        return extension.equals(FilenameUtils.getExtension(filePath));
     }
 }

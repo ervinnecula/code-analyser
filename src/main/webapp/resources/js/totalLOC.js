@@ -22,16 +22,21 @@ var locLineSvg = d3.select("#locLineChart")
     .attr("transform", "translate(" + 80 + "," + 40 + ")");
 
 // Get the data
-function loadLocChart(csv) {
+function loadLocChart(csv, startDate, endDate) {
     var data = [];
 
     var rows = csv.split(/\n/);
     for (var i = 0; i < rows.length; i++) {
         var elements = rows[i].split(",");
-        data.push({
-            date: elements[0],
-            loc: elements[1]
-        });
+        var splitDate = elements[0].split("-");
+        var currentDate = new Date(splitDate[0], splitDate[1] - 1, splitDate[2]);
+
+        if (startDate <= currentDate && currentDate <= endDate) {
+            data.push({
+                date: elements[0],
+                loc: elements[1]
+            });
+        }
     }
 
     data.forEach(function(d) {

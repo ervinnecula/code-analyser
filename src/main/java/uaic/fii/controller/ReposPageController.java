@@ -24,6 +24,7 @@ import uaic.fii.service.RepoService;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static java.lang.String.format;
@@ -74,12 +75,18 @@ public class ReposPageController {
         try {
             repoService.cloneRepo(repoBean, resourceFolder);
             List<RuleViolationBean> ruleViolations = staticAnalyse(resourceFolder);
+
             List<CommitDiffBean> commits = repoService.getCommitsAndDiffs(resourceFolder);
+            Date startDate = commits.get(commits.size() - 1).getCommitDate();
+            Date endDate = commits.get(0).getCommitDate();
+
             String heatMapCommitsCsvFile = heatMapCommitService.getPathDiffsCsvFile(commits);
             String addRemoveLinesCsvFile = locChartService.getAddRemoveLinesOverTime(commits);
-            String locCsvFile = locChartService.getLOCOverTime(commits);
+            String locCsvFile = locChartService.getLOCOverTime(commits, startDate, endDate);
             String heatMapContributorsCsvFile = heatMapContributorService.getPathContributorsCsvFile(commits);
 
+            model.addAttribute("startDate", startDate);
+            model.addAttribute("endDate", endDate);
             model.addAttribute("heatMapCommitsData", heatMapCommitsCsvFile);
             model.addAttribute("heatMapContributorsData", heatMapContributorsCsvFile);
             model.addAttribute("addRemoveLinesData", addRemoveLinesCsvFile);
@@ -88,10 +95,10 @@ public class ReposPageController {
             model.addAttribute("repositoryName", repoBean.getRepoName());
             model.addAttribute("username", username);
         } catch (IOException e) {
-            logger.error(format("ReposPageController - getCommits() - Git exception happened when opening folder %s. Full exception: %s", resourceFolder, e));
+            logger.error(format("ReposPageController - analysis() - Git exception happened when opening folder %s. Full exception: %s", resourceFolder, e));
             return "error";
         } catch (GitAPIException e) {
-            logger.error(format("ReposPageController - cloneRepo() - Git exception happened when trying get data from %s. Full exception: %s", repoBean.getRepoName(), e));
+            logger.error(format("ReposPageController - analysis() - Git exception happened when trying get data from %s. Full exception: %s", repoBean.getRepoName(), e));
             return "error";
         }
         return "map";
