@@ -23,6 +23,8 @@ import uaic.fii.service.RepoService;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -72,6 +74,7 @@ public class ReposPageController {
     @RequestMapping(value = "/analysis", method = RequestMethod.POST)
     public String getCommits(@ModelAttribute RepoNameHtmlGitUrlsBean repoBean, @ModelAttribute("username") String username, Model model) {
         File resourceFolder = new File(repoService.getPathToCloneDir() + "//" + repoBean.getRepoName());
+        DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
         try {
             repoService.cloneRepo(repoBean, resourceFolder);
             List<RuleViolationBean> ruleViolations = staticAnalyse(resourceFolder);
@@ -85,8 +88,8 @@ public class ReposPageController {
             String locCsvFile = locChartService.getLOCOverTime(commits, startDate, endDate);
             String heatMapContributorsCsvFile = heatMapContributorService.getPathContributorsCsvFile(commits);
 
-            model.addAttribute("startDate", startDate);
-            model.addAttribute("endDate", endDate);
+            model.addAttribute("startDate", formatter.format(startDate));
+            model.addAttribute("endDate", formatter.format(endDate));
             model.addAttribute("heatMapCommitsData", heatMapCommitsCsvFile);
             model.addAttribute("heatMapContributorsData", heatMapContributorsCsvFile);
             model.addAttribute("addRemoveLinesData", addRemoveLinesCsvFile);

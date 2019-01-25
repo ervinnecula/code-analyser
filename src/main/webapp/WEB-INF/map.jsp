@@ -8,10 +8,12 @@
     <title>Charts</title>
     <link rel="shortcut icon" href="/resources/img/favicon.jpg"/>
     <link rel="stylesheet" href="<c:url value='/resources/css/bootstrap.min.css' />">
+    <link rel="stylesheet" href="<c:url value='/resources/css/jquery-ui.css' /> ">
     <link rel="stylesheet" href="<c:url value='/resources/css/style.css' />">
     <link rel="stylesheet" href="<c:url value='/resources/css/mapStyle.css' />">
     <link rel="stylesheet" href="<c:url value='/resources/css/locStyle.css' />">
 
+    <link rel="stylesheet" href="<c:url value='/resources/css/iThing.min.css' />">
     <link rel="stylesheet" href="<c:url value='/resources/fonts/font-awesome-4.7.0/css/font-awesome.min.css' />">
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,300italic,400italic,700italic"
           rel="stylesheet" type="text/css">
@@ -36,9 +38,10 @@
 <div>
 
     <div class="row mt-3 custom-wrapper">
-        <div id="dateSelectorSlider"></div>
         <t:navTemplate/>
         <div class="col-md-10">
+            <div id="dateSelectorSlider"></div>
+
             <ul class="nav nav-tabs">
                 <li class="active">
                     <a class="nav-link" data-toggle="tab" href="#overview" aria-expanded="false">Overview</a>
@@ -126,10 +129,21 @@
 <script src="<c:url value='/resources/js/addRemoveLOC.js' />"></script>
 <script src="<c:url value='/resources/js/totalLOC.js' />"></script>
 <script src="<c:url value='/resources/js/sourceTreeContributorsMap.js' />"></script>
-<script src="<c:url value='/resources/js/jquery-3.2.1.min.js' />"></script>
+<script src="<c:url value='/resources/js/jquery.js' />"></script>
 <script src="<c:url value='/resources/js/jquery-ui.min.js' />"></script>
-<script src="<c:url value='/resources/js/jQDateRangeSlider-min.js' />"></script>
 <script src="<c:url value='/resources/js/bootstrap.min.js'  />"></script>
+
+<!-- JQ STUFF -->
+<script src="<c:url value='/resources/js/jQRangeSliderMouseTouch.min.js' />"></script>
+<script src="<c:url value='/resources/js/jQRangeSliderDraggable.min.js' />"></script>
+<script src="<c:url value='/resources/js/jQRangeSliderBar.min.js' />"></script>
+<script src="<c:url value='/resources/js/jQRangeSliderHandle.min.js' />"></script>
+<script src="<c:url value='/resources/js/jQRangeSliderLabel.min.js' />"></script>
+<script src="<c:url value='/resources/js/jQRangeSlider.min.js' />"></script>
+<script src="<c:url value='/resources/js/jQDateRangeSliderHandle.min.js' />"></script>
+<script src="<c:url value='/resources/js/jQDateRangeSlider.min.js' />"></script>
+<script src="<c:url value='/resources/js/jQRuler.min.js' />"></script>
+
 <script>
     setStartEndDates(`${startDate}`, `${endDate}`);
     loadSourceTreeCommitsMap(`${username}`, `${repositoryName}`, `${heatMapCommitsData}`);
@@ -141,18 +155,20 @@
         loadLocChart(`${locData}`, data.values.min, data.values.max);
     });
     function setStartEndDates(startDate, endDate) {
+
         var startDateSplit = startDate.split('-');
         var endDateSplit = endDate.split('-');
-        $("#dateSelectorSlider").dateRangeSlider (
-            "option",
-            {
+
+        $("#dateSelectorSlider").dateRangeSlider ({
                 bounds: {
-                    min: new Date(startDateSplit[0], startDateSplit[1] - 1, startDateSplit[2]),
-                    max: new Date(endDateSplit[0], endDateSplit[1] - 1, endDateSplit[2])
+                    min: new Date(startDateSplit[2], startDateSplit[1] - 1, startDateSplit[0]),
+                    max: new Date(endDateSplit[2], endDateSplit[1] - 1, endDateSplit[0])
                 },
-                enabled: false
-            }
-        );
+                defaultValues: {
+                    min: new Date(startDateSplit[2], startDateSplit[1] - 1, startDateSplit[0]),
+                    max: new Date(endDateSplit[2], endDateSplit[1] - 1, endDateSplit[0])
+                }
+        });
     }
 </script>
 </body>
