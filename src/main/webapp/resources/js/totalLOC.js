@@ -59,12 +59,6 @@ function loadLocChart(csv, startDate, endDate) {
     x.domain(d3.extent(data, function(d) { return d.date; }));
     y.domain([0, d3.max(data, function(d) {return d.loc; })]);
 
-    // add the lines added blue line
-    locLineSvg.append("path")
-        .data([data])
-        .attr("class", "loc")
-        .attr("d", valuesLocLine);
-
     // add the area for lines added
     locLineSvg.append("path")
         .data([data])
