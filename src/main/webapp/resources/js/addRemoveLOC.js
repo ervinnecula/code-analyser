@@ -31,17 +31,33 @@ var addRemoveLineSvg = d3.select("#addRemoveLineChart")
     .attr("transform", "translate(" + 80 + "," + 40 + ")");
 
 // Get the data
-function loadAddRemoveLineChart(csv) {
+function loadAddRemoveLineChart(csv, startDate, endDate) {
     var data = [];
+
+    var startDateObj = startDate;
+    var endDateObj = endDate;
+
+    if (startDate instanceof Date === false && endDate instanceof Date === false) {
+        var startDateSplit = startDate.split("-");
+        var endDateSplit = endDate.split("-");
+        startDateObj = new Date(startDateSplit[2], Number(startDateSplit[1]) - 1, startDateSplit[0], 0);
+        endDateObj = new Date(endDateSplit[2], Number(endDateSplit[1]) - 1, endDateSplit[0], 0);
+    }
+    addRemoveLineSvg.selectAll("*").remove();
 
     var rows = csv.split(/\n/);
     for (var i = 0; i < rows.length; i++) {
         var elements = rows[i].split(",");
-        data.push({
-            date: elements[0],
-            linesAdded: elements[1],
-            linesRemoved: elements[2]
-        });
+        var splitDate = elements[0].split("-");
+
+        var currentDateObj = new Date(Number(splitDate[0]), splitDate[1] - 1, Number(splitDate[2]));
+        if (startDateObj <= currentDateObj && currentDateObj <= endDateObj) {
+            data.push({
+                date: elements[0],
+                linesAdded: elements[1],
+                linesRemoved: elements[2]
+            });
+        }
     }
 
     data.forEach(function(d) {

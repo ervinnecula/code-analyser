@@ -7,10 +7,6 @@ var margin = {top: 50, right: 20, bottom: 70, left: 50},
 var x = d3.scaleTime().range([0, width]);
 var y = d3.scaleLinear().range([height, 0]);
 
-var valuesLocLine = d3.line()
-    .x(function(d) { return x(d.date); })
-    .y(function(d) { return y(d.loc); });
-
 var areaLoc = d3.area()
     .x(function(d) { return x(d.date); })
     .y0(height)
