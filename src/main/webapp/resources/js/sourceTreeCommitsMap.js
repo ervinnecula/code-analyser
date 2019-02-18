@@ -11,19 +11,41 @@ var treemapCommits = d3.treemap()
     .round(true)
     .padding(1);
 
-function loadSourceTreeCommitsMap(username, repositoryName, data) {
+function loadSourceTreeCommitsMap(username, repositoryName, data, startDate, endDate) {
     var array = [];
+
     var maximumValue = -1;
     var minimumValue = 9999999;
+
+    var startDateObj = startDate;
+    var endDateObj = endDate;
+
+    if (startDate instanceof Date === false && endDate instanceof Date === false) {
+        var startDateSplit = startDate.split("-");
+        var endDateSplit = endDate.split("-");
+        startDateObj = new Date(startDateSplit[2], Number(startDateSplit[1]) - 1, startDateSplit[0], 0);
+        endDateObj = new Date(endDateSplit[2], Number(endDateSplit[1]) - 1, endDateSplit[0], 0);
+    }
+    locLineSvg.selectAll("*").remove();
 
     var rows = data.split(/\n/);
     for (var i = 0; i < rows.length; i++) {
         var elements = rows[i].split(",");
-        array.push({
-            path: elements[0],
-            size: elements[1]
-        })
+        var splitDate = elements[0].split("-");
+
+        console.log("CurrentDate Ojb: " + splitDate[0] + " " + splitDate[1]  + " " + splitDate[2]);
+
+        var currentDateObj = new Date(Number(splitDate[0]), splitDate[1] - 1, Number(splitDate[2]));
+
+        if (startDateObj <= currentDateObj && currentDateObj <= endDateObj) {
+            array.push({
+                path: elements[0],
+                size: elements[1]
+            });
+        }
     }
+
+    console.log(array);
 
     var root = d3.stratify()
         .id(function(d) { return d.path; })
