@@ -11,18 +11,36 @@ var treemapContributors = d3.treemap()
     .round(true)
     .padding(1);
 
-function loadSourceTreeContributorsMap(username, repositoryName, data) {
+function loadSourceTreeContributorsMap(username, repositoryName, data, startDate, endDate) {
     var array = [];
+
     var maximumValue = -1;
     var minimumValue = 9999999;
+
+    var startDateObj = startDate;
+    var endDateObj = endDate;
+
+    if (startDate instanceof Date === false && endDate instanceof Date === false) {
+        var startDateSplit = startDate.split("-");
+        var endDateSplit = endDate.split("-");
+        startDateObj = new Date(startDateSplit[2], Number(startDateSplit[1]) - 1, startDateSplit[0], 0);
+        endDateObj = new Date(endDateSplit[2], Number(endDateSplit[1]) - 1, endDateSplit[0], 0);
+    }
+    sourceTreeContributorsSvg.selectAll("*").remove();
+
 
     var rows = data.split(/\n/);
     for (var i = 0; i < rows.length; i++) {
         var elements = rows[i].split(",");
-        array.push({
-            path: elements[0],
-            size: elements[1]
-        })
+        var splitDate = elements[1].split("-");
+        var currentDateObj = new Date(Number(splitDate[0]), splitDate[1] - 1, Number(splitDate[2]));
+
+        if (startDateObj <= currentDateObj && currentDateObj <= endDateObj || elements[2] == 0) {
+            array.push({
+                path: elements[0],
+                size: elements[2]
+            });
+        }
     }
 
     var root = d3.stratify()

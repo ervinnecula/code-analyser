@@ -36,8 +36,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 public class ReposPageController {
     final static Logger logger = LoggerFactory.getLogger(MainController.class);
 
-    private final String REPO_LANGUAGE = "Java";
-
     @Autowired
     private RepoService repoService;
 
@@ -64,6 +62,7 @@ public class ReposPageController {
 
         } catch (IOException e) {
             logger.error("Could not get repositories for username {}", username, e);
+            return "error";
         }
 
         model.addAttribute("repoNameHtmlGitUrlsBeans", repoBeans);
@@ -84,9 +83,9 @@ public class ReposPageController {
             Date endDate = commits.get(0).getCommitDate();
 
             String heatMapCommitsCsvFile = heatMapCommitService.getPathDiffsCsvFile(commits);
+            String heatMapContributorsCsvFile = heatMapContributorService.getPathContributorsCsvFile(commits);
             String addRemoveLinesCsvFile = locChartService.getAddRemoveLinesOverTime(commits);
             String locCsvFile = locChartService.getLOCOverTime(commits, startDate, endDate);
-            String heatMapContributorsCsvFile = heatMapContributorService.getPathContributorsCsvFile(commits);
 
             model.addAttribute("startDate", formatter.format(startDate));
             model.addAttribute("endDate", formatter.format(endDate));

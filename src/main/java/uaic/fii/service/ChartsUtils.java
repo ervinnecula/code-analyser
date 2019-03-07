@@ -1,11 +1,12 @@
 package uaic.fii.service;
 
+import uaic.fii.bean.DateCountBean;
+import uaic.fii.bean.DateHashSetBean;
 import uaic.fii.bean.PathEditBean;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 class ChartsUtils {
     static List<String> buildParentsOfPath(String path) {
@@ -20,6 +21,22 @@ class ChartsUtils {
             }
         }
         return parentsOfPath;
+    }
+
+    static String writeStringStringIntegerMapToCSVFormat(Map<String, DateCountBean> diffsPerFilePath) {
+        String eol = System.getProperty("line.separator");
+        StringBuilder stringBuilder;
+
+        stringBuilder = new StringBuilder();
+        for (Map.Entry<String, DateCountBean> entry : diffsPerFilePath.entrySet()) {
+            stringBuilder.append(entry.getKey())
+                    .append(',')
+                    .append(entry.getValue().getDate())
+                    .append(',')
+                    .append(Integer.toString(entry.getValue().getCount())).append(eol);
+        }
+        stringBuilder.replace(stringBuilder.length() - 2, stringBuilder.length(), "");
+        return stringBuilder.toString();
     }
 
     static String writeStringIntegerMapToCSVFormat(Map<String, Integer> diffsPerFilePath) {
@@ -54,15 +71,17 @@ class ChartsUtils {
         return stringBuilder.toString();
     }
 
-    static String writeHeatMapContributorsToCSVFormat(Map<String, Set<String>> contributorsPerFilePath) {
+    static String writeHeatMapContributorsToCSVFormat(Map<String, DateHashSetBean> contributorsPerFilePath) {
         String eol = System.getProperty("line.separator");
         StringBuilder stringBuilder;
 
         stringBuilder = new StringBuilder();
-        for (Map.Entry<String, Set<String>> entry : contributorsPerFilePath.entrySet()) {
+        for (Map.Entry<String, DateHashSetBean> entry : contributorsPerFilePath.entrySet()) {
             stringBuilder.append(entry.getKey())
                     .append(',')
-                    .append(entry.getValue().size())
+                    .append(entry.getValue().getDate())
+                    .append(',')
+                    .append(entry.getValue().getListOfContributors().size())
                     .append(eol);
         }
         stringBuilder.replace(stringBuilder.length() - 2, stringBuilder.length(), "");

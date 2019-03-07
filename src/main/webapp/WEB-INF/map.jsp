@@ -147,15 +147,17 @@
 <script>
     setStartEndDates(`${startDate}`, `${endDate}`);
     loadSourceTreeCommitsMap(`${username}`, `${repositoryName}`, `${heatMapCommitsData}`, `${startDate}`, `${endDate}`);
-    loadSourceTreeContributorsMap(`${username}`, `${repositoryName}`, `${heatMapContributorsData}`);
+    loadSourceTreeContributorsMap(`${username}`, `${repositoryName}`, `${heatMapContributorsData}`, `${startDate}`, `${endDate}`);
     loadAddRemoveLineChart(`${addRemoveLinesData}`, `${startDate}`, `${endDate}`);
     loadLocChart(`${locData}`, `${startDate}`, `${endDate}`);
 
     $("#dateSelectorSlider").bind("valuesChanged", function(e, data) {
-        loadSourceTreeCommitsMap(`${username}`, `${repositoryName}`, `${heatMapCommitsData}`, `${startDate}`, `${endDate}`);
-        loadLocChart(`${locData}`, data.values.min, data.values.max);
+        loadSourceTreeCommitsMap(`${username}`, `${repositoryName}`, `${heatMapCommitsData}`, data.values.min, data.values.max);
+        loadSourceTreeContributorsMap(`${username}`, `${repositoryName}`, `${heatMapContributorsData}`, data.values.min, data.values.max);
         loadAddRemoveLineChart(`${addRemoveLinesData}`, data.values.min, data.values.max);
+        loadLocChart(`${locData}`, data.values.min, data.values.max);
     });
+
     function setStartEndDates(startDate, endDate) {
 
         var startDateSplit = startDate.split('-');

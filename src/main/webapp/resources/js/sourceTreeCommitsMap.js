@@ -26,26 +26,21 @@ function loadSourceTreeCommitsMap(username, repositoryName, data, startDate, end
         startDateObj = new Date(startDateSplit[2], Number(startDateSplit[1]) - 1, startDateSplit[0], 0);
         endDateObj = new Date(endDateSplit[2], Number(endDateSplit[1]) - 1, endDateSplit[0], 0);
     }
-    locLineSvg.selectAll("*").remove();
+    sourceTreeCommitsSvg.selectAll("*").remove();
 
     var rows = data.split(/\n/);
     for (var i = 0; i < rows.length; i++) {
         var elements = rows[i].split(",");
-        var splitDate = elements[0].split("-");
-
-        console.log("CurrentDate Ojb: " + splitDate[0] + " " + splitDate[1]  + " " + splitDate[2]);
-
+        var splitDate = elements[1].split("-");
         var currentDateObj = new Date(Number(splitDate[0]), splitDate[1] - 1, Number(splitDate[2]));
 
-        if (startDateObj <= currentDateObj && currentDateObj <= endDateObj) {
+        if (startDateObj <= currentDateObj && currentDateObj <= endDateObj || elements[2] == 0) {
             array.push({
                 path: elements[0],
-                size: elements[1]
+                size: elements[2]
             });
         }
     }
-
-    console.log(array);
 
     var root = d3.stratify()
         .id(function(d) { return d.path; })
