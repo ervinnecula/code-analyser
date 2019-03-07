@@ -15,7 +15,8 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 @RequestMapping("/enter")
 public class LoginSuccessController {
 
-    static Map<String, String> userPages;
+    private static Map<String, String> userPages;
+
     static {
         userPages = new HashMap<>();
         userPages.put("ROLE_USER", "redirect:/main");
@@ -24,10 +25,11 @@ public class LoginSuccessController {
 
     @RequestMapping(method = GET)
     public String getUserPage() {
+        String userPage = "unauthorized";
         for(GrantedAuthority authority : getAuthenticatedUserRoles()) {
-            return userPages.get(authority.getAuthority());
+            userPage = userPages.get(authority.getAuthority());
         }
-        return "unauthorized";
+        return userPage;
     }
 
     private Collection<? extends GrantedAuthority> getAuthenticatedUserRoles() {
