@@ -19,6 +19,7 @@ import uaic.fii.bean.RuleViolationBean;
 import uaic.fii.service.HeatMapCommitService;
 import uaic.fii.service.HeatMapContributorService;
 import uaic.fii.service.LocChartService;
+import uaic.fii.service.OverviewService;
 import uaic.fii.service.RepoService;
 
 import java.io.File;
@@ -48,6 +49,9 @@ public class ReposPageController {
     @Autowired
     private HeatMapContributorService heatMapContributorService;
 
+    @Autowired
+    private OverviewService overviewService;
+
     @RequestMapping(value = "/repos", method = GET)
     public String getReposPage(@ModelAttribute("username") String username, Model model) {
         List<RepoNameHtmlGitUrlsBean> repoBeans = new ArrayList<>();
@@ -75,13 +79,14 @@ public class ReposPageController {
         File resourceFolder = new File(repoService.getPathToCloneDir() + "//" + repoBean.getRepoName());
         DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
         try {
-            repoService.cloneRepo(repoBean, resourceFolder);
+            repoService.cloneOrPullRepo(repoBean, resourceFolder);
             List<RuleViolationBean> ruleViolations = staticAnalyse(resourceFolder);
 
             List<CommitDiffBean> commits = repoService.getCommitsAndDiffs(resourceFolder);
             Date startDate = commits.get(commits.size() - 1).getCommitDate();
             Date endDate = commits.get(0).getCommitDate();
 
+            String locByLanguage = overviewService.getLocByLanguage(resourceFolder);
             String heatMapCommitsCsvFile = heatMapCommitService.getPathDiffsCsvFile(commits);
             String heatMapContributorsCsvFile = heatMapContributorService.getPathContributorsCsvFile(commits);
             String addRemoveLinesCsvFile = locChartService.getAddRemoveLinesOverTime(commits);
@@ -89,6 +94,7 @@ public class ReposPageController {
 
             model.addAttribute("startDate", formatter.format(startDate));
             model.addAttribute("endDate", formatter.format(endDate));
+            model.addAttribute("locByLanguage", locByLanguage);
             model.addAttribute("heatMapCommitsData", heatMapCommitsCsvFile);
             model.addAttribute("heatMapContributorsData", heatMapContributorsCsvFile);
             model.addAttribute("addRemoveLinesData", addRemoveLinesCsvFile);
@@ -107,11 +113,11 @@ public class ReposPageController {
     }
 
     private List<RuleViolationBean> staticAnalyse(File projectPath) {
-        logger.debug("ReposPageController - staticAnalyse() - calling repoService.getPathToCloneDir() ");
+        logger.info("ReposPageController - staticAnalyse() - calling repoService.getPathToCloneDir() ");
         List<RuleViolationBean> ruleViolationBeans = new ArrayList<>();
         try {
             ruleViolationBeans = repoService.analyzeClonedProject(projectPath.getPath());
-            logger.debug("MainController - cloneRepo() - Calling repoService.analyzeClonedProject() ");
+            logger.info("MainController - cloneOrPullRepo() - Calling repoService.analyzeClonedProject() ");
         } catch (IOException e) {
             logger.error(format("ReposPageController - staticAnalyse() - Git exception happened when opening folder %s. Full exception: %s", projectPath, e));
         } catch (PMDException e) {

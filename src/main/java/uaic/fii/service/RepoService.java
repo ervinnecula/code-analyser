@@ -86,17 +86,16 @@ public class RepoService {
         return ruleViolationBeans;
     }
 
-    public void cloneRepo(RepoNameHtmlGitUrlsBean repoBean, File resourceFolder) throws IOException, GitAPIException {
+    public void cloneOrPullRepo(RepoNameHtmlGitUrlsBean repoBean, File resourceFolder) throws IOException, GitAPIException {
         Git git;
         GitCommand<?> command;
         if (resourceFolder.exists()) {
             git = Git.open(resourceFolder);
             command = git.pull();
-            logger.debug(format("MainController - cloneRepo() - Local directory already exists. Pulling latest changes to %s", resourceFolder));
+            logger.info(format("MainController - cloneOrPullRepo() - Local directory already exists. Pulling latest changes to %s", resourceFolder));
         } else {
             command = Git.cloneRepository().setURI(repoBean.getRepoGitUrl()).setDirectory(resourceFolder);
-
-            logger.debug(format("MainController - cloneRepo() - Cloning repo: %s", repoBean.getRepoName()));
+            logger.info(format("MainController - cloneOrPullRepo() - Cloning repo: %s", repoBean.getRepoName()));
 
         }
         command.call();
@@ -157,9 +156,8 @@ public class RepoService {
 
     private Iterator<File> getJavaFilesInDirectory(String pathToDir) {
         final File directory = new File(pathToDir);
-        final Iterator<File> files = FileUtils.iterateFiles(directory, new String[]{"java"}, true);
 
-        return files;
+        return FileUtils.iterateFiles(directory, new String[]{"java"}, true);
     }
 
     private RuleContext getPMDcontext(String fileName) {

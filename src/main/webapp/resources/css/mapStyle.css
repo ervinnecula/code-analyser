@@ -31,3 +31,24 @@ tspan:last-child {
 a:hover tspan:last-child {
     fill-opacity: 1.0;
 }
+
+#dateSelectorSlider {
+    width: 99%;
+    margin-bottom: 10px
+}
+
+/*ul li:active li a {*/
+    /*background-color: black;*/
+/*}*/
+
+#overview {
+    margin-top: 2%;
+}
+
+.card {
+    min-height: 235px;
+}
+
+.margin-left-8px {
+    margin-left: 8px;
+}

@@ -69,9 +69,58 @@
             </ul>
             <div class="tab-content">
                 <div class="tab-pane in active" id="overview">
-                    <div>time period selector</div>
-                    <div>linesofcode</div>
-                    <div>number of files</div>
+                    <div class="row">
+                        <div class="col-sm-4 min-height-220">
+                            <div id="locByLanguage"></div>
+                        </div>
+                        <div class="col-sm-4 min-height-235">
+                            <div class="card text-white bg-secondary mb-3">
+                                <div class="card-header">Header</div>
+                                <div class="card-body">
+                                    <h4 class="card-title">Secondary card title</h4>
+                                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4 min-height-235">
+                            <div class="card text-white bg-success mb-3">
+                                <div class="card-header">Header</div>
+                                <div class="card-body">
+                                    <h4 class="card-title">Success card title</h4>
+                                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4 min-height-235">
+                            <div class="card text-white bg-danger mb-3">
+                                <div class="card-header">Header</div>
+                                <div class="card-body">
+                                    <h4 class="card-title">Danger card title</h4>
+                                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4 min-height-235">
+                            <div class="card text-white bg-warning mb-3">
+                                <div class="card-header">Header</div>
+                                <div class="card-body">
+                                    <h4 class="card-title">Warning card title</h4>
+                                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4 min-height-235">
+                            <div class="card text-white bg-info mb-3">
+                                <div class="card-header">Header</div>
+                                <div class="card-body">
+                                    <h4 class="card-title">Info card title</h4>
+                                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="tab-pane" id="total">
                     <svg id="sourceTreeCommitsMap" width="1580" height="800"></svg>
@@ -129,6 +178,7 @@
 <script src="<c:url value='/resources/js/addRemoveLOC.js' />"></script>
 <script src="<c:url value='/resources/js/totalLOC.js' />"></script>
 <script src="<c:url value='/resources/js/sourceTreeContributorsMap.js' />"></script>
+<script src="<c:url value='/resources/js/locByLanguageOverview.js' />"></script>
 <script src="<c:url value='/resources/js/jquery.js' />"></script>
 <script src="<c:url value='/resources/js/jquery-ui.min.js' />"></script>
 <script src="<c:url value='/resources/js/bootstrap.min.js'  />"></script>
@@ -150,6 +200,7 @@
     loadSourceTreeContributorsMap(`${username}`, `${repositoryName}`, `${heatMapContributorsData}`, `${startDate}`, `${endDate}`);
     loadAddRemoveLineChart(`${addRemoveLinesData}`, `${startDate}`, `${endDate}`);
     loadLocChart(`${locData}`, `${startDate}`, `${endDate}`);
+    loadLocByLanguageOverview(`${locByLanguage}`);
 
     $("#dateSelectorSlider").bind("valuesChanged", function(e, data) {
         loadSourceTreeCommitsMap(`${username}`, `${repositoryName}`, `${heatMapCommitsData}`, data.values.min, data.values.max);
