@@ -18,7 +18,6 @@ import java.util.Map;
 
 @Service
 public class OverviewService {
-    private final String SRC_PATH = "src";
 
     final static Logger logger = LoggerFactory.getLogger(RepoService.class);
 
@@ -66,7 +65,7 @@ public class OverviewService {
             File[] childFiles = projectPath.listFiles();
             if (childFiles != null) {
                 for (File childFile : childFiles) {
-                    if (childFile.getAbsolutePath().contains(SRC_PATH)) {
+                    if (childFile.isDirectory()) {
                         files = FileUtils.iterateFiles(childFile, new String[]{language.getExtension()}, true);
                         List<File> filesForExtension = languageFilesMap.getOrDefault(language, new ArrayList<>());
                         Iterator<File> it = files;

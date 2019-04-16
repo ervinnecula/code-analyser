@@ -87,6 +87,7 @@ public class ReposPageController {
             Date endDate = commits.get(0).getCommitDate();
 
             String locByLanguage = overviewService.getLocByLanguage(resourceFolder);
+            String filesByLanguage = overviewService.getNumberOfFilesByLanguage(resourceFolder);
             String heatMapCommitsCsvFile = heatMapCommitService.getPathDiffsCsvFile(commits);
             String heatMapContributorsCsvFile = heatMapContributorService.getPathContributorsCsvFile(commits);
             String addRemoveLinesCsvFile = locChartService.getAddRemoveLinesOverTime(commits);
@@ -95,6 +96,7 @@ public class ReposPageController {
             model.addAttribute("startDate", formatter.format(startDate));
             model.addAttribute("endDate", formatter.format(endDate));
             model.addAttribute("locByLanguage", locByLanguage);
+            model.addAttribute("filesByLanguage", filesByLanguage);
             model.addAttribute("heatMapCommitsData", heatMapCommitsCsvFile);
             model.addAttribute("heatMapContributorsData", heatMapContributorsCsvFile);
             model.addAttribute("addRemoveLinesData", addRemoveLinesCsvFile);

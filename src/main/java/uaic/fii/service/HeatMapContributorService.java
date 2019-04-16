@@ -18,24 +18,26 @@ import static uaic.fii.service.ChartsUtils.buildParentsOfPath;
 public class HeatMapContributorService {
 
     public String getPathContributorsCsvFile(List<CommitDiffBean> commitList) {
-        String SRC_PATH = "src/";
         Map<String, DateHashSetBean> diffsPerFilePath = new TreeMap<>();
         SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd");
 
         for (CommitDiffBean commit : commitList) {
             List<DiffBean> diffs = commit.getDiffs();
             for (DiffBean diff : diffs) {
-                Set<String> listOfContributors = new HashSet<>();
-                if (diff.getFilePath().toLowerCase().contains(SRC_PATH)) {
-                    if (diffsPerFilePath.containsKey(diff.getFilePath())) {
-                        listOfContributors = diffsPerFilePath.get(diff.getFilePath()).getListOfContributors();
+                String filePathComplete = "project_/".concat(diff.getFilePath());
+                if (!filePathComplete.equals("project_//dev/null")) {
+                    Set<String> listOfContributors = new HashSet<>();
+
+                    if (diffsPerFilePath.containsKey(filePathComplete)) {
+                        listOfContributors = diffsPerFilePath.get(filePathComplete).getListOfContributors();
                     }
-                    List<String> parents = buildParentsOfPath(diff.getFilePath());
+                    listOfContributors.add(commit.getCommiterName());
+
+                    List<String> parents = buildParentsOfPath(filePathComplete);
                     for (String parent : parents) {
                         diffsPerFilePath.put(parent, new DateHashSetBean(dateFormat.format(commit.getCommitDate()), new HashSet<>()));
                     }
-                    listOfContributors.add(commit.getCommiterName());
-                    diffsPerFilePath.put(diff.getFilePath(), new DateHashSetBean(dateFormat.format(commit.getCommitDate()), listOfContributors));
+                    diffsPerFilePath.put(filePathComplete, new DateHashSetBean(dateFormat.format(commit.getCommitDate()), listOfContributors));
                 }
             }
         }

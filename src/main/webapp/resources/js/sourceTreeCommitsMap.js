@@ -34,7 +34,7 @@ function loadSourceTreeCommitsMap(username, repositoryName, data, startDate, end
         var splitDate = elements[1].split("-");
         var currentDateObj = new Date(Number(splitDate[0]), splitDate[1] - 1, Number(splitDate[2]));
 
-        if (startDateObj <= currentDateObj && currentDateObj <= endDateObj || elements[2] == 0) {
+        if (startDateObj <= currentDateObj && currentDateObj <= endDateObj || Number(elements[2]) === 0) {
             array.push({
                 path: elements[0],
                 size: elements[2]
@@ -57,7 +57,7 @@ function loadSourceTreeCommitsMap(username, repositoryName, data, startDate, end
         .data(root.leaves())
         .enter().append("a")
         .attr("target", "_blank")
-        .attr("xlink:href", function(d) { return "https://github.com/" + username + "/" + repositoryName + "/blob/master/" + d.data.path })
+        .attr("xlink:href", function(d) { return "https://github.com/" + username + "/" + repositoryName + "/blob/master/" + d.data.path.replace("project_/", ""); })
         .attr("transform", function(d) { return "translate(" + d.x0 + "," + d.y0 + ")"; });
 
     cell.append("rect")
@@ -89,12 +89,12 @@ function loadSourceTreeCommitsMap(username, repositoryName, data, startDate, end
         });
 
     cell.append("clipPath")
-        .attr("id", function(d) { return "clip-" + d.id; })
+        .attr("id", function(d) { return "clip-" + d.id.replace("project_/", "") })
         .append("use")
-        .attr("xlink:href", function(d) { return "#" + d.id; });
+        .attr("xlink:href", function(d) { return "#" + d.id.replace("project_/", ""); });
 
     var label = cell.append("text")
-        .attr("clip-path", function(d) { return d.id; });
+        .attr("clip-path", function(d) { return d.id.replace("project_/", ""); });
 
     label.append("tspan")
         .attr("x", 4)
@@ -109,5 +109,5 @@ function loadSourceTreeCommitsMap(username, repositoryName, data, startDate, end
         .text(function(d) { return format(d.value); });
 
     cell.append("title")
-        .text(function(d) { return d.id + "\n" + format(d.value); });
+        .text(function(d) { return d.id.replace("project_/", "") + "\n" + format(d.value); });
 }

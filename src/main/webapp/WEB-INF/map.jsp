@@ -6,7 +6,7 @@
 <html>
 <head>
     <title>Charts</title>
-    <link rel="shortcut icon" href="/resources/img/favicon.jpg"/>
+    <link rel="shortcut icon" href="<c:url value='/resources/img/favicon.jpg' />">
     <link rel="stylesheet" href="<c:url value='/resources/css/bootstrap.min.css' />">
     <link rel="stylesheet" href="<c:url value='/resources/css/jquery-ui.css' /> ">
     <link rel="stylesheet" href="<c:url value='/resources/css/style.css' />">
@@ -15,8 +15,7 @@
 
     <link rel="stylesheet" href="<c:url value='/resources/css/iThing.min.css' />">
     <link rel="stylesheet" href="<c:url value='/resources/fonts/font-awesome-4.7.0/css/font-awesome.min.css' />">
-    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,300italic,400italic,700italic"
-          rel="stylesheet" type="text/css">
+    <link href="<c:url value='/resources/css/fonts.css' />" rel="stylesheet" type="text/css">
 
 </head>
 <body class="fixed-nav sticky-footer">
@@ -78,7 +77,8 @@
                                 <div class="card-header">Header</div>
                                 <div class="card-body">
                                     <h4 class="card-title">Secondary card title</h4>
-                                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                    <p class="card-text">Some quick example text to build on the card title and make up
+                                        the bulk of the card's content.</p>
                                 </div>
                             </div>
                         </div>
@@ -87,7 +87,8 @@
                                 <div class="card-header">Header</div>
                                 <div class="card-body">
                                     <h4 class="card-title">Success card title</h4>
-                                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                    <p class="card-text">Some quick example text to build on the card title and make up
+                                        the bulk of the card's content.</p>
                                 </div>
                             </div>
                         </div>
@@ -173,12 +174,12 @@
 </div>
 
 
-<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="<c:url value='/resources/js/d3.v4.min.js' />"></script>
 <script src="<c:url value='/resources/js/sourceTreeCommitsMap.js' />"></script>
 <script src="<c:url value='/resources/js/addRemoveLOC.js' />"></script>
 <script src="<c:url value='/resources/js/totalLOC.js' />"></script>
 <script src="<c:url value='/resources/js/sourceTreeContributorsMap.js' />"></script>
-<script src="<c:url value='/resources/js/locByLanguageOverview.js' />"></script>
+<script src="<c:url value='/resources/js/overview.js' />"></script>
 <script src="<c:url value='/resources/js/jquery.js' />"></script>
 <script src="<c:url value='/resources/js/jquery-ui.min.js' />"></script>
 <script src="<c:url value='/resources/js/bootstrap.min.js'  />"></script>
@@ -202,7 +203,7 @@
     loadLocChart(`${locData}`, `${startDate}`, `${endDate}`);
     loadLocByLanguageOverview(`${locByLanguage}`);
 
-    $("#dateSelectorSlider").bind("valuesChanged", function(e, data) {
+    $("#dateSelectorSlider").bind("valuesChanged", function (e, data) {
         loadSourceTreeCommitsMap(`${username}`, `${repositoryName}`, `${heatMapCommitsData}`, data.values.min, data.values.max);
         loadSourceTreeContributorsMap(`${username}`, `${repositoryName}`, `${heatMapContributorsData}`, data.values.min, data.values.max);
         loadAddRemoveLineChart(`${addRemoveLinesData}`, data.values.min, data.values.max);
@@ -214,15 +215,15 @@
         var startDateSplit = startDate.split('-');
         var endDateSplit = endDate.split('-');
 
-        $("#dateSelectorSlider").dateRangeSlider ({
-                bounds: {
-                    min: new Date(startDateSplit[2], startDateSplit[1] - 1, startDateSplit[0]),
-                    max: new Date(endDateSplit[2], endDateSplit[1] - 1, endDateSplit[0])
-                },
-                defaultValues: {
-                    min: new Date(startDateSplit[2], startDateSplit[1] - 1, startDateSplit[0]),
-                    max: new Date(endDateSplit[2], endDateSplit[1] - 1, endDateSplit[0])
-                }
+        $("#dateSelectorSlider").dateRangeSlider({
+            bounds: {
+                min: new Date(startDateSplit[2], startDateSplit[1] - 1, startDateSplit[0]),
+                max: new Date(endDateSplit[2], endDateSplit[1] - 1, endDateSplit[0])
+            },
+            defaultValues: {
+                min: new Date(startDateSplit[2], startDateSplit[1] - 1, startDateSplit[0]),
+                max: new Date(endDateSplit[2], endDateSplit[1] - 1, endDateSplit[0])
+            }
         });
     }
 </script>

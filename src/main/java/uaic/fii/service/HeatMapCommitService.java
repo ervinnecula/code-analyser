@@ -16,7 +16,6 @@ import static uaic.fii.service.ChartsUtils.buildParentsOfPath;
 public class HeatMapCommitService {
 
     public String getPathDiffsCsvFile(List<CommitDiffBean> commitList) {
-        String SRC_PATH = "src/";
         Map<String, DateCountBean> diffsPerFilePath = new TreeMap<>();
         SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd");
 
@@ -24,15 +23,16 @@ public class HeatMapCommitService {
             List<DiffBean> diffs = commit.getDiffs();
             for (DiffBean diff : diffs) {
                 int currentCount = 0;
-                if (diff.getFilePath().toLowerCase().contains(SRC_PATH)) {
-                    if (diffsPerFilePath.containsKey(diff.getFilePath())) {
-                        currentCount = diffsPerFilePath.get(diff.getFilePath()).getCount();
+                String filePathComplete = "project_/".concat(diff.getFilePath());
+                if (!filePathComplete.equals("project_//dev/null")) {
+                    if (diffsPerFilePath.containsKey(filePathComplete)) {
+                        currentCount = diffsPerFilePath.get(filePathComplete).getCount();
                     }
-                    List<String> parents = buildParentsOfPath(diff.getFilePath());
+                    List<String> parents = buildParentsOfPath(filePathComplete);
                     for (String parent : parents) {
                         diffsPerFilePath.put(parent, new DateCountBean(dateFormat.format(commit.getCommitDate()), 0));
                     }
-                    diffsPerFilePath.put(diff.getFilePath(), new DateCountBean(dateFormat.format(commit.getCommitDate()), currentCount + 1));
+                    diffsPerFilePath.put(filePathComplete, new DateCountBean(dateFormat.format(commit.getCommitDate()), currentCount + 1));
                 }
             }
         }

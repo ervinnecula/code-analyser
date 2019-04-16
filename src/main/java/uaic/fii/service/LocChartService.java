@@ -1,6 +1,5 @@
 package uaic.fii.service;
 
-import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jgit.diff.Edit;
 import org.springframework.stereotype.Service;
 import uaic.fii.bean.CommitDiffBean;
@@ -16,7 +15,6 @@ import java.util.TreeMap;
 
 @Service
 public class LocChartService {
-    private final String SRC_PATH = "src/";
 
     public String getAddRemoveLinesOverTime(List<CommitDiffBean> commitList) {
         Map<String, PathEditBean> locChangePerFilePath = new TreeMap<>();
@@ -25,18 +23,16 @@ public class LocChartService {
         for (CommitDiffBean commit : commitList) {
             List<DiffBean> diffs = commit.getDiffs();
             for (DiffBean diff : diffs) {
-                if (diff.getFilePath().toLowerCase().contains(SRC_PATH)) {
-                    for (Edit edits : diff.getEdits()) {
-                        PathEditBean pathEditBean = locChangePerFilePath.get(dateFormat.format(commit.getCommitDate()));
-                        if (pathEditBean != null) {
-                            pathEditBean.setLinesAdded(pathEditBean.getLinesAdded() + edits.getLengthB());
-                            pathEditBean.setLinesRemoved(pathEditBean.getLinesRemoved() + edits.getLengthA());
+                for (Edit edits : diff.getEdits()) {
+                    PathEditBean pathEditBean = locChangePerFilePath.get(dateFormat.format(commit.getCommitDate()));
+                    if (pathEditBean != null) {
+                        pathEditBean.setLinesAdded(pathEditBean.getLinesAdded() + edits.getLengthB());
+                        pathEditBean.setLinesRemoved(pathEditBean.getLinesRemoved() + edits.getLengthA());
 
-                        } else {
-                            pathEditBean = new PathEditBean(edits.getLengthA(), edits.getLengthB());
-                        }
-                        locChangePerFilePath.put(dateFormat.format(commit.getCommitDate()), pathEditBean);
+                    } else {
+                        pathEditBean = new PathEditBean(edits.getLengthA(), edits.getLengthB());
                     }
+                    locChangePerFilePath.put(dateFormat.format(commit.getCommitDate()), pathEditBean);
                 }
             }
         }
@@ -55,12 +51,9 @@ public class LocChartService {
                 List<DiffBean> diffs = commit.getDiffs();
                 for (DiffBean diff : diffs) {
                     int linesAddedInFile = 0;
-                    String filePath = diff.getFilePath();
-                    if (filePath.toLowerCase().contains(SRC_PATH)) {
-                        for (Edit edit : diff.getEdits()) {
-                            linesAddedInFile += edit.getLengthB();
-                            linesAddedInFile -= edit.getLengthA();
-                        }
+                    for (Edit edit : diff.getEdits()) {
+                        linesAddedInFile += edit.getLengthB();
+                        linesAddedInFile -= edit.getLengthA();
                     }
                     loc += linesAddedInFile;
                 }
@@ -68,9 +61,5 @@ public class LocChartService {
             }
         }
         return ChartsUtils.writeStringIntegerMapToCSVFormat(locChangePerFilePath);
-    }
-
-    private boolean fileHasCorrectExtension(String extension, String filePath) {
-        return extension.equals(FilenameUtils.getExtension(filePath));
     }
 }
