@@ -20,18 +20,18 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
 
     @Autowired
-    public CustomUserDetailsService(UserRepository testRepository) {
-        this.userRepository = testRepository;
+    public CustomUserDetailsService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User test = userRepository.findByName(username);
+        User user = userRepository.findByName(username);
 
         return new CustomUserDetails(
-                test.getName(),
-                test.getPassword(),
-                test.getId(),
+                user.getName(),
+                user.getPassword(),
+                user.getId(),
                 true,
                 true,
                 true,

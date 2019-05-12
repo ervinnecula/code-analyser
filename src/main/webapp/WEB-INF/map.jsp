@@ -72,17 +72,10 @@
                         <div class="col-sm-4 min-height-220">
                             <div id="locByLanguage"></div>
                         </div>
-                        <div class="col-sm-4 min-height-235">
-                            <div class="card text-white bg-secondary mb-3">
-                                <div class="card-header">Header</div>
-                                <div class="card-body">
-                                    <h4 class="card-title">Secondary card title</h4>
-                                    <p class="card-text">Some quick example text to build on the card title and make up
-                                        the bulk of the card's content.</p>
-                                </div>
-                            </div>
+                        <div class="col-sm-4 min-height-220">
+                            <div id="filesByLanguage"></div>
                         </div>
-                        <div class="col-sm-4 min-height-235">
+                        <div class="col-sm-4 min-height-220">
                             <div class="card text-white bg-success mb-3">
                                 <div class="card-header">Header</div>
                                 <div class="card-body">
@@ -94,7 +87,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-sm-4 min-height-235">
+                        <div class="col-sm-4 min-height-220">
                             <div class="card text-white bg-danger mb-3">
                                 <div class="card-header">Header</div>
                                 <div class="card-body">
@@ -103,7 +96,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-sm-4 min-height-235">
+                        <div class="col-sm-4 min-height-220">
                             <div class="card text-white bg-warning mb-3">
                                 <div class="card-header">Header</div>
                                 <div class="card-body">
@@ -112,7 +105,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-sm-4 min-height-235">
+                        <div class="col-sm-4 min-height-220">
                             <div class="card text-white bg-info mb-3">
                                 <div class="card-header">Header</div>
                                 <div class="card-body">
@@ -202,6 +195,7 @@
     loadAddRemoveLineChart(`${addRemoveLinesData}`, `${startDate}`, `${endDate}`);
     loadLocChart(`${locData}`, `${startDate}`, `${endDate}`);
     loadLocByLanguageOverview(`${locByLanguage}`);
+    loadNumberOfFilesByLanguageOverview((`${filesByLanguage}`));
 
     $("#dateSelectorSlider").bind("valuesChanged", function (e, data) {
         loadSourceTreeCommitsMap(`${username}`, `${repositoryName}`, `${heatMapCommitsData}`, data.values.min, data.values.max);

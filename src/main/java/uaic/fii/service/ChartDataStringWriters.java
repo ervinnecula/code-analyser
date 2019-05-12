@@ -1,5 +1,6 @@
 package uaic.fii.service;
 
+import uaic.fii.bean.CommitChangeSize;
 import uaic.fii.bean.DateCountBean;
 import uaic.fii.bean.DateHashSetBean;
 import uaic.fii.bean.PathEditBean;
@@ -9,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-class ChartsUtils {
+public class ChartDataStringWriters {
     private static final String eol = System.getProperty("line.separator");
 
     static List<String> buildParentsOfPath(String path) {
@@ -26,7 +27,7 @@ class ChartsUtils {
         return parentsOfPath;
     }
 
-    static String writeStringStringIntegerMapToCSVFormat(Map<String, DateCountBean> diffsPerFilePath) {
+    public static String writeStringStringIntegerMapToCSVFormat(Map<String, DateCountBean> diffsPerFilePath) {
         StringBuilder stringBuilder = new StringBuilder();
         for (Map.Entry<String, DateCountBean> entry : diffsPerFilePath.entrySet()) {
             stringBuilder.append(entry.getKey())
@@ -40,7 +41,7 @@ class ChartsUtils {
         return stringBuilder.toString();
     }
 
-    static String writeStringIntegerMapToCSVFormat(Map<String, Integer> diffsPerFilePath) {
+    public static String writeStringIntegerMapToCSVFormat(Map<String, Integer> diffsPerFilePath) {
         StringBuilder stringBuilder = new StringBuilder();
         for (Map.Entry<String, Integer> entry : diffsPerFilePath.entrySet()) {
             stringBuilder.append(entry.getKey())
@@ -52,7 +53,7 @@ class ChartsUtils {
         return stringBuilder.toString();
     }
 
-    static String writeLinesAddedRemovedToCSVFormat(Map<String, PathEditBean> locChangePerFilePath) {
+    public static String writeLinesAddedRemovedToCSVFormat(Map<String, PathEditBean> locChangePerFilePath) {
         StringBuilder stringBuilder = new StringBuilder();
         for (Map.Entry<String, PathEditBean> entry : locChangePerFilePath.entrySet()) {
             PathEditBean pathEditBean = entry.getValue();
@@ -68,7 +69,7 @@ class ChartsUtils {
         return stringBuilder.toString();
     }
 
-    static String writeHeatMapContributorsToCSVFormat(Map<String, DateHashSetBean> contributorsPerFilePath) {
+    public static String writeHeatMapContributorsToCSVFormat(Map<String, DateHashSetBean> contributorsPerFilePath) {
         StringBuilder stringBuilder = new StringBuilder();
         for (Map.Entry<String, DateHashSetBean> entry : contributorsPerFilePath.entrySet()) {
             stringBuilder.append(entry.getKey())
@@ -105,6 +106,28 @@ class ChartsUtils {
                 stringBuilder.append(entry.getKey())
                         .append(',')
                         .append(entry.getValue())
+                        .append(eol);
+            }
+        }
+        if (stringBuilder.length() != 0)
+            stringBuilder.replace(stringBuilder.length() - 2, stringBuilder.length(), "");
+        return stringBuilder.toString();
+    }
+
+    static String writeMediumAndMajorChangesMap(Map<String, List<CommitChangeSize>> mediumAndMajorChangesMap) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Map.Entry<String, List<CommitChangeSize>> entry : mediumAndMajorChangesMap.entrySet()) {
+            stringBuilder.append(entry.getKey()).append(',');
+            for (CommitChangeSize commitChangeSize : entry.getValue()) {
+                stringBuilder.append(commitChangeSize.getCommitHash())
+                        .append(',')
+                        .append(commitChangeSize.getCommitDate())
+                        .append(',')
+                        .append(commitChangeSize.getCommiterName())
+                        .append(',')
+                        .append(commitChangeSize.getLinesChanged())
+                        .append(',')
+                        .append(commitChangeSize.getChangeSize())
                         .append(eol);
             }
         }

@@ -13,8 +13,8 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User getUserById(int userId) {
-        return userRepository.findOne(userId);
+    public User getUserById(int id) {
+        return userRepository.findOne(id);
     }
 
 }

@@ -2,13 +2,14 @@ package uaic.fii.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.SessionAttributes;
 import uaic.fii.model.User;
 import uaic.fii.security.CustomUserDetails;
+import uaic.fii.service.AntiPatternsService;
 import uaic.fii.service.UserService;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -16,6 +17,9 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 @Controller
 public class MainController {
     final static Logger logger = LoggerFactory.getLogger(MainController.class);
+
+    @Autowired
+    public AntiPatternsService antiPatternsService;
 
     private final UserService userService;
 
@@ -28,6 +32,7 @@ public class MainController {
         Integer id = getAuthenticatedEntity().getUserId();
         User user = userService.getUserById(id);
 
+        antiPatternsService.loadProperties(user.getName());
         model.addAttribute("username", user.getName());
         return "main";
     }

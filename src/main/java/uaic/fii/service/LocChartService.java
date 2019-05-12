@@ -16,30 +16,29 @@ import java.util.TreeMap;
 @Service
 public class LocChartService {
 
-    public String getAddRemoveLinesOverTime(List<CommitDiffBean> commitList) {
+    public Map<String, PathEditBean> getAddRemoveLinesOverTime(List<CommitDiffBean> commitList) {
         Map<String, PathEditBean> locChangePerFilePath = new TreeMap<>();
         SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd");
 
         for (CommitDiffBean commit : commitList) {
             List<DiffBean> diffs = commit.getDiffs();
             for (DiffBean diff : diffs) {
-                for (Edit edits : diff.getEdits()) {
+                for (Edit edit : diff.getEdits()) {
                     PathEditBean pathEditBean = locChangePerFilePath.get(dateFormat.format(commit.getCommitDate()));
                     if (pathEditBean != null) {
-                        pathEditBean.setLinesAdded(pathEditBean.getLinesAdded() + edits.getLengthB());
-                        pathEditBean.setLinesRemoved(pathEditBean.getLinesRemoved() + edits.getLengthA());
-
+                        pathEditBean.setLinesAdded(pathEditBean.getLinesAdded() + edit.getLengthB());
+                        pathEditBean.setLinesRemoved(pathEditBean.getLinesRemoved() + edit.getLengthA());
                     } else {
-                        pathEditBean = new PathEditBean(edits.getLengthA(), edits.getLengthB());
+                        pathEditBean = new PathEditBean(edit.getLengthA(), edit.getLengthB());
                     }
                     locChangePerFilePath.put(dateFormat.format(commit.getCommitDate()), pathEditBean);
                 }
             }
         }
-        return ChartsUtils.writeLinesAddedRemovedToCSVFormat(locChangePerFilePath);
+        return locChangePerFilePath;
     }
 
-    public String getLOCOverTime(List<CommitDiffBean> commitList, Date startDate, Date endDate) {
+    public Map<String, Integer> getLOCOverTime(List<CommitDiffBean> commitList, Date startDate, Date endDate) {
         Map<String, Integer> locChangePerFilePath = new TreeMap<>();
         SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd");
         Collections.reverse(commitList);
@@ -60,6 +59,6 @@ public class LocChartService {
                 locChangePerFilePath.put(dateFormat.format(commit.getCommitDate()), loc);
             }
         }
-        return ChartsUtils.writeStringIntegerMapToCSVFormat(locChangePerFilePath);
+        return locChangePerFilePath;
     }
 }

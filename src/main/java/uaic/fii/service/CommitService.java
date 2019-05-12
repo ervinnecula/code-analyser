@@ -10,12 +10,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static uaic.fii.service.ChartsUtils.buildParentsOfPath;
+import static uaic.fii.service.ChartDataStringWriters.buildParentsOfPath;
 
 @Service
-public class HeatMapCommitService {
+public class CommitService {
 
-    public String getPathDiffsCsvFile(List<CommitDiffBean> commitList) {
+    public Map<String, DateCountBean> getPathDiffsCsvFile(List<CommitDiffBean> commitList) {
         Map<String, DateCountBean> diffsPerFilePath = new TreeMap<>();
         SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd");
 
@@ -36,7 +36,7 @@ public class HeatMapCommitService {
                 }
             }
         }
-        return ChartsUtils.writeStringStringIntegerMapToCSVFormat(diffsPerFilePath);
+        return diffsPerFilePath;
     }
 
 }

@@ -16,7 +16,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import uaic.fii.bean.CommitDiffBean;
 import uaic.fii.bean.RepoNameHtmlGitUrlsBean;
 import uaic.fii.bean.RuleViolationBean;
-import uaic.fii.service.HeatMapCommitService;
+import uaic.fii.service.AntiPatternsService;
+import uaic.fii.service.CommitService;
 import uaic.fii.service.HeatMapContributorService;
 import uaic.fii.service.LocChartService;
 import uaic.fii.service.OverviewService;
@@ -28,10 +29,14 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static java.lang.String.format;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static uaic.fii.service.ChartDataStringWriters.*;
+import static uaic.fii.service.ChartDataStringWriters.writeHeatMapContributorsToCSVFormat;
 
 @Controller
 public class ReposPageController {
@@ -41,7 +46,7 @@ public class ReposPageController {
     private RepoService repoService;
 
     @Autowired
-    private HeatMapCommitService heatMapCommitService;
+    private CommitService commitService;
 
     @Autowired
     private LocChartService locChartService;
@@ -51,6 +56,9 @@ public class ReposPageController {
 
     @Autowired
     private OverviewService overviewService;
+
+    @Autowired
+    private AntiPatternsService antipatternsService;
 
     @RequestMapping(value = "/repos", method = GET)
     public String getReposPage(@ModelAttribute("username") String username, Model model) {
@@ -80,30 +88,24 @@ public class ReposPageController {
         DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
         try {
             repoService.cloneOrPullRepo(repoBean, resourceFolder);
-            List<RuleViolationBean> ruleViolations = staticAnalyse(resourceFolder);
 
             List<CommitDiffBean> commits = repoService.getCommitsAndDiffs(resourceFolder);
             Date startDate = commits.get(commits.size() - 1).getCommitDate();
             Date endDate = commits.get(0).getCommitDate();
 
-            String locByLanguage = overviewService.getLocByLanguage(resourceFolder);
-            String filesByLanguage = overviewService.getNumberOfFilesByLanguage(resourceFolder);
-            String heatMapCommitsCsvFile = heatMapCommitService.getPathDiffsCsvFile(commits);
-            String heatMapContributorsCsvFile = heatMapContributorService.getPathContributorsCsvFile(commits);
-            String addRemoveLinesCsvFile = locChartService.getAddRemoveLinesOverTime(commits);
-            String locCsvFile = locChartService.getLOCOverTime(commits, startDate, endDate);
-
             model.addAttribute("startDate", formatter.format(startDate));
             model.addAttribute("endDate", formatter.format(endDate));
-            model.addAttribute("locByLanguage", locByLanguage);
-            model.addAttribute("filesByLanguage", filesByLanguage);
-            model.addAttribute("heatMapCommitsData", heatMapCommitsCsvFile);
-            model.addAttribute("heatMapContributorsData", heatMapContributorsCsvFile);
-            model.addAttribute("addRemoveLinesData", addRemoveLinesCsvFile);
-            model.addAttribute("locData", locCsvFile);
-            model.addAttribute("violationsData", ruleViolations);
+            model.addAttribute("locByLanguage", overviewService.getLocByLanguage(resourceFolder));
+            model.addAttribute("filesByLanguage", overviewService.getNumberOfFilesByLanguage(resourceFolder));
+            model.addAttribute("heatMapCommitsData", writeHeatMapContributorsToCSVFormat(heatMapContributorService.getPathContributorsCsvFile(commits)));
+            model.addAttribute("heatMapContributorsData", writeStringStringIntegerMapToCSVFormat(commitService.getPathDiffsCsvFile(commits)));
+            model.addAttribute("addRemoveLinesData", writeLinesAddedRemovedToCSVFormat(locChartService.getAddRemoveLinesOverTime(commits)));
+            model.addAttribute("locData", writeStringIntegerMapToCSVFormat(locChartService.getLOCOverTime(commits, startDate, endDate)));
+            model.addAttribute("violationsData", staticAnalyse(resourceFolder));
             model.addAttribute("repositoryName", repoBean.getRepoName());
             model.addAttribute("username", username);
+
+            model.addAllAttributes(prepareAntiPatternsMap(commits));
         } catch (IOException e) {
             logger.error(format("ReposPageController - analysis() - Git exception happened when opening folder %s. Full exception: %s", resourceFolder, e));
             return "error";
@@ -112,6 +114,15 @@ public class ReposPageController {
             return "error";
         }
         return "map";
+    }
+
+    private Map<String, String> prepareAntiPatternsMap(List<CommitDiffBean> commits) {
+        Map<String, String> antiPatternsMap = new HashMap<>();
+        antiPatternsMap.put("singlePointOfFailure", antipatternsService.singlePointOfFailurePattern(commits));
+        antiPatternsMap.put("conglomerate", antipatternsService.conglomeratePattern(commits));
+        antiPatternsMap.put("mediumAndHugeChanges", antipatternsService.detectMediumAndMajorChangesPattern(commits));
+
+        return antiPatternsMap;
     }
 
     private List<RuleViolationBean> staticAnalyse(File projectPath) {

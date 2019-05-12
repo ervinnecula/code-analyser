@@ -37,7 +37,7 @@ public class OverviewService {
         } catch (IOException e) {
             logger.error("OverviewService - Could not open file ", e);
         }
-        return ChartsUtils.writeLanguageLocCount(locByLanguageMap);
+        return ChartDataStringWriters.writeLanguageLocCount(locByLanguageMap);
     }
 
     public String getNumberOfFilesByLanguage(File projectPath) {
@@ -47,7 +47,7 @@ public class OverviewService {
         for (Map.Entry<Language, List<File>> languageFiles : languageFilesMap.entrySet()) {
             numberOfFilesByLanguageMap.put(languageFiles.getKey(), languageFiles.getValue().size());
         }
-        return ChartsUtils.writeNumberOfFilesPerLanguage(numberOfFilesByLanguageMap);
+        return ChartDataStringWriters.writeNumberOfFilesPerLanguage(numberOfFilesByLanguageMap);
     }
 
     private int countLocOfFile(File file) throws IOException {
