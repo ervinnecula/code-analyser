@@ -113,26 +113,4 @@ public class ChartDataStringWriters {
             stringBuilder.replace(stringBuilder.length() - 2, stringBuilder.length(), "");
         return stringBuilder.toString();
     }
-
-    static String writeMediumAndMajorChangesMap(Map<String, List<CommitChangeSize>> mediumAndMajorChangesMap) {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (Map.Entry<String, List<CommitChangeSize>> entry : mediumAndMajorChangesMap.entrySet()) {
-            stringBuilder.append(entry.getKey()).append(',');
-            for (CommitChangeSize commitChangeSize : entry.getValue()) {
-                stringBuilder.append(commitChangeSize.getCommitHash())
-                        .append(',')
-                        .append(commitChangeSize.getCommitDate())
-                        .append(',')
-                        .append(commitChangeSize.getCommiterName())
-                        .append(',')
-                        .append(commitChangeSize.getLinesChanged())
-                        .append(',')
-                        .append(commitChangeSize.getChangeSize())
-                        .append(eol);
-            }
-        }
-        if (stringBuilder.length() != 0)
-            stringBuilder.replace(stringBuilder.length() - 2, stringBuilder.length(), "");
-        return stringBuilder.toString();
-    }
 }

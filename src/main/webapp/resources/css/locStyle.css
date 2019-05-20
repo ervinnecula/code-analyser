@@ -1,4 +1,7 @@
-.axis { font: 14px sans-serif; }
+.axis {
+    font: 14px sans-serif;
+    font-weight: 500;
+}
 
 .lineLinesAdded {
     fill: none;
@@ -23,7 +26,7 @@
 }
 
 .areaLoc {
-    fill: #55c65b;
+    fill: #325d8880;
 }
 
 #tooltip-add-remove {

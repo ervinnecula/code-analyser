@@ -1,7 +1,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix = "c" uri = "http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 <html>
 <head>
@@ -131,7 +133,71 @@
                     <div id="tooltip-loc" class="tooltip" style="opacity:0"></div>
                 </div>
                 <div class="tab-pane" id="antipatterns">
-                    <div id="antipatternsPage" width="1550" height="800"></div>
+                    <div id="antipatternsPage" style="padding-top:1%">
+                        <div class="row">
+                            <div class="col-2">
+                                <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                                    <a class="nav-link" data-toggle="pill" href="#v-pills-spof" role="tab">Single Point of Failure</a>
+                                    <a class="nav-link" data-toggle="pill" href="#v-pills-conglomerate" role="tab">Conglomerate</a>
+                                    <a class="nav-link" data-toggle="pill" href="#v-pills-mandhchanges" role="tab">Medium and Huge Changes</a>
+                                </div>
+                            </div>
+                            <div class="col-10">
+                                <div class="tab-content" id="v-pills-tabContent">
+                                    <div class="tab-pane in active" id="v-pills-spof" role="tabpanel">
+                                        <div id="spof-description">Lorem ipsum dolor sit amet,
+                                            consectetur adipiscing elit. Nunc tincidunt ante at
+                                            libero dignissim suscipit. Praesent dignissim velit
+                                            ac varius scelerisque. Phasellus turpis augue, semper
+                                            eu imperdiet a, efficitur sed ex. Nam sed mollis ipsum.
+                                            Donec eu finibus augue. Phasellus convallis auctor nibh
+                                            et vestibulum. Mauris gravida enim at ante pellentesque
+                                            sagittis eu eu magna. Vivamus aliquet quis orci a laoreet.
+                                        </div>
+                                        <svg id="single-point-of-failure" width="1290" height="800"></svg>
+                                    </div>
+                                    <div class="tab-pane" id="v-pills-conglomerate" role="tabpanel">
+                                        <c:choose>
+                                            <c:when test="${conglomerate == ''}">
+                                                <p>No problem found with the <b>Conglomerate antipattern</b></p>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <svg id="conglomerate" width="1180" height="800"></svg>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </div>
+                                    <div class="tab-pane" id="v-pills-mandhchanges" role="tabpanel">
+                                        <c:forEach items="${mediumAndHugeChanges}" var="entry">
+                                            <div class="card">
+                                                <h3 class="card-header">File <a target="_blank" href="https://github.com/${username}/${repositoryName}/blob/master/${entry.key}">${entry.key}</a></h3>
+                                                <c:forEach items="${entry.value}" var="item">
+
+                                                    <div class="card-body">
+                                                        <h4 class="card-title"></h4>
+                                                        <h6 class="card-subtitle mb-2">
+                                                            <c:choose>
+                                                                <c:when test="${item.changeSize == 'MAJOR'}">
+                                                                    <span style="color: red">${item.changeSize}</span>
+                                                                </c:when>
+                                                                <c:when test="${item.changeSize == 'MEDIUM'}">
+                                                                    <span style="color: orange">${item.changeSize}</span>
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    <span style="color: greenyellow">${item.changeSize}</span>
+                                                                </c:otherwise>
+                                                            </c:choose>
+                                                             change by ${item.commiterName}</h6>
+                                                        <p class="card-text">Commit on <fmt:formatDate value="${item.commitDate}" type="date" pattern="dd-MMM-yyyy"/></p>
+                                                        <p class="card-link">${item.linesChanged} lines changed in that commit</p>
+                                                    </div>
+                                                </c:forEach>
+                                            </div>
+                                        </c:forEach>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="tab-pane" id="violations">
                     <div id="staticViolationsPage" width="1550" height="800">
@@ -173,6 +239,8 @@
 <script src="<c:url value='/resources/js/totalLOC.js' />"></script>
 <script src="<c:url value='/resources/js/sourceTreeContributorsMap.js' />"></script>
 <script src="<c:url value='/resources/js/overview.js' />"></script>
+<script src="<c:url value='/resources/js/antipatterns-spof.js' />"></script>
+<script src="<c:url value='/resources/js/antipatterns-conglomerate.js' />"></script>
 <script src="<c:url value='/resources/js/jquery.js' />"></script>
 <script src="<c:url value='/resources/js/jquery-ui.min.js' />"></script>
 <script src="<c:url value='/resources/js/bootstrap.min.js'  />"></script>
@@ -195,13 +263,17 @@
     loadAddRemoveLineChart(`${addRemoveLinesData}`, `${startDate}`, `${endDate}`);
     loadLocChart(`${locData}`, `${startDate}`, `${endDate}`);
     loadLocByLanguageOverview(`${locByLanguage}`);
-    loadNumberOfFilesByLanguageOverview((`${filesByLanguage}`));
+    loadNumberOfFilesByLanguageOverview(`${filesByLanguage}`);
+    loadSinglePointOfFailure(`${username}`, `${repositoryName}`, `${singlePointOfFailure}`, `${startDate}`, `${endDate}`);
+    loadConglomerate(`${username}`, `${repositoryName}`, `${conglomerate}`, `${startDate}`, `${endDate}`);
 
     $("#dateSelectorSlider").bind("valuesChanged", function (e, data) {
         loadSourceTreeCommitsMap(`${username}`, `${repositoryName}`, `${heatMapCommitsData}`, data.values.min, data.values.max);
         loadSourceTreeContributorsMap(`${username}`, `${repositoryName}`, `${heatMapContributorsData}`, data.values.min, data.values.max);
         loadAddRemoveLineChart(`${addRemoveLinesData}`, data.values.min, data.values.max);
         loadLocChart(`${locData}`, data.values.min, data.values.max);
+        loadSinglePointOfFailure(`${username}`, `${repositoryName}`, `${singlePointOfFailure}`, data.values.min, data.values.max);
+        loadConglomerate(`${username}`, `${repositoryName}`, `${conglomerate}`, data.values.min, data.values.max);
     });
 
     function setStartEndDates(startDate, endDate) {

@@ -13,13 +13,12 @@ import uaic.fii.model.Properties;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import static uaic.fii.service.ChartDataStringWriters.writeHeatMapContributorsToCSVFormat;
-import static uaic.fii.service.ChartDataStringWriters.writeMediumAndMajorChangesMap;
 
 @Service
 public class AntiPatternsService {
@@ -38,36 +37,29 @@ public class AntiPatternsService {
 
     public String singlePointOfFailurePattern(List<CommitDiffBean> commitList) {
         Map<String, DateHashSetBean> allContributors = heatMapContributorService.getPathContributorsCsvFile(commitList);
-        Map<String, DateHashSetBean> potentialSinglePointOfFailures = new HashMap<>();
-        Iterator<Map.Entry<String, DateHashSetBean>> iterator = allContributors.entrySet().iterator();
+        Map<String, DateHashSetBean> potentialSinglePointOfFailures = new TreeMap<>();
 
-        while (iterator.hasNext()) {
-            Map.Entry<String, DateHashSetBean> entry = iterator.next();
-            if (entry.getValue().getListOfContributors().size() <= properties.getFewCommitersSize() || entry.getValue().getListOfContributors().size() == 0) {
+        for (Map.Entry<String, DateHashSetBean> entry : allContributors.entrySet()) {
+            if (entry.getValue().getListOfContributors().size() <= properties.getFewCommitersSize()) {
                 potentialSinglePointOfFailures.put(entry.getKey(), entry.getValue());
             }
         }
-
         return writeHeatMapContributorsToCSVFormat(potentialSinglePointOfFailures);
     }
 
     public String conglomeratePattern(List<CommitDiffBean> commitList) {
         Map<String, DateHashSetBean> allContributors = heatMapContributorService.getPathContributorsCsvFile(commitList);
-        Map<String, DateHashSetBean> potentialConglomerations = new HashMap<>();
+        Map<String, DateHashSetBean> potentialConglomerations = new TreeMap<>();
 
-        Iterator<Map.Entry<String, DateHashSetBean>> iterator = allContributors.entrySet().iterator();
-
-        while (iterator.hasNext()) {
-            Map.Entry<String, DateHashSetBean> entry = iterator.next();
-            if (entry.getValue().getListOfContributors().size() >= properties.getManyCommitersSize() || entry.getValue().getListOfContributors().size() == 0) {
+        for (Map.Entry<String, DateHashSetBean> entry : allContributors.entrySet()) {
+            if (entry.getValue().getListOfContributors().size() >= properties.getManyCommitersSize()) {
                 potentialConglomerations.put(entry.getKey(), entry.getValue());
             }
         }
         return writeHeatMapContributorsToCSVFormat(potentialConglomerations);
     }
 
-    public String detectMediumAndMajorChangesPattern(List<CommitDiffBean> commitList) {
-
+    public Map<String, List<CommitChangeSize>> detectMediumAndMajorChangesPattern(List<CommitDiffBean> commitList) {
         Map<String, List<CommitChangeSize>> mediumAndMajorChangesPattern = new HashMap<>();
         Set<String> filesChangedInCommit;
 
@@ -90,7 +82,7 @@ public class AntiPatternsService {
                 mediumAndMajorChangesPattern.put(fileChanged, changesOnFile);
             }
         }
-        return writeMediumAndMajorChangesMap(mediumAndMajorChangesPattern);
+        return mediumAndMajorChangesPattern;
     }
 
     private ChangeSize getChangeSizeFromLocChanged(int locChanged) {

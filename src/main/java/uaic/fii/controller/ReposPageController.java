@@ -106,6 +106,8 @@ public class ReposPageController {
             model.addAttribute("username", username);
 
             model.addAllAttributes(prepareAntiPatternsMap(commits));
+            model.addAttribute("mediumAndHugeChanges", antipatternsService.detectMediumAndMajorChangesPattern(commits));
+
         } catch (IOException e) {
             logger.error(format("ReposPageController - analysis() - Git exception happened when opening folder %s. Full exception: %s", resourceFolder, e));
             return "error";
@@ -120,7 +122,6 @@ public class ReposPageController {
         Map<String, String> antiPatternsMap = new HashMap<>();
         antiPatternsMap.put("singlePointOfFailure", antipatternsService.singlePointOfFailurePattern(commits));
         antiPatternsMap.put("conglomerate", antipatternsService.conglomeratePattern(commits));
-        antiPatternsMap.put("mediumAndHugeChanges", antipatternsService.detectMediumAndMajorChangesPattern(commits));
 
         return antiPatternsMap;
     }
