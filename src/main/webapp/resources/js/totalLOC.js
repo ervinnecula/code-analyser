@@ -15,7 +15,7 @@ var areaLoc = d3.area()
 // moves the 'group' element to the top left margin
 var locLineSvg = d3.select("#locLineChart")
     .append("g")
-    .attr("transform", "translate(" + 80 + "," + 40 + ")");
+    .attr("transform", "translate(" + 50 + "," + 20 + ")");
 
 // Get the data
 function loadLocChart(csv, startDate, endDate) {

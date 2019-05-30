@@ -28,7 +28,7 @@ var areaLinesRemoved = d3.area()
 // moves the 'group' element to the top left margin
 var addRemoveLineSvg = d3.select("#addRemoveLineChart")
     .append("g")
-    .attr("transform", "translate(" + 80 + "," + 40 + ")");
+    .attr("transform", "translate(" + 50 + "," + 20 + ")");
 
 // Get the data
 function loadAddRemoveLineChart(csv, startDate, endDate) {

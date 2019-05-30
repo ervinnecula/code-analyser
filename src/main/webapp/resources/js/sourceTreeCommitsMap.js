@@ -1,13 +1,13 @@
 var sourceTreeCommitsSvg = d3.select("#sourceTreeCommitsMap"),
-    width = +sourceTreeCommitsSvg.attr("width"),
-    height = +sourceTreeCommitsSvg.attr("height");
+    sourceTreeCommitsWidth = +sourceTreeCommitsSvg.attr("width"),
+    sourceTreeCommitsWeight = +sourceTreeCommitsSvg.attr("height");
 
 var colorCommits = d3.scaleOrdinal().range(['#B1DAE8', '#77CDE8', '#50C3E9', '#0278A0','#014C66']);
 
 var format = d3.format(",d");
 
 var treemapCommits = d3.treemap()
-    .size([width, height])
+    .size([sourceTreeCommitsWidth, sourceTreeCommitsWeight])
     .round(true)
     .padding(1);
 

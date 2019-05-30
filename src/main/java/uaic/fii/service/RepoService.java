@@ -36,17 +36,25 @@ import uaic.fii.bean.CommitDiffBean;
 import uaic.fii.bean.DiffBean;
 import uaic.fii.bean.RepoNameHtmlGitUrlsBean;
 import uaic.fii.bean.RuleViolationBean;
+import uaic.fii.model.StaticDetectionKind;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import static java.lang.String.format;
 import static java.nio.file.Files.readAllBytes;
+import static uaic.fii.model.StaticDetectionKind.BASIC;
+import static uaic.fii.model.StaticDetectionKind.CODESIZE;
+import static uaic.fii.model.StaticDetectionKind.COUPLING;
+import static uaic.fii.model.StaticDetectionKind.DESIGN;
+import static uaic.fii.model.StaticDetectionKind.OPTIMIZATION;
 
 @Service
 public class RepoService {
@@ -60,12 +68,18 @@ public class RepoService {
         return filePath.substring(0, lastIndexOfSlash);
     }
 
-    public List<RuleViolationBean> analyzeClonedProject(String path) throws PMDException, IOException {
+    public Map<StaticDetectionKind, List<RuleViolationBean>> analyzeClonedProject(String path) throws PMDException, IOException {
         String fileContent;
         RuleContext context;
         Rule rule;
         File javaFile;
-        List<RuleViolationBean> ruleViolationBeans = new ArrayList<>();
+        Map<StaticDetectionKind, List<RuleViolationBean>> ruleViolationBeans = new HashMap<>();
+        List<RuleViolationBean> basicRuleViolations;
+        List<RuleViolationBean> couplingRuleViolations;
+        List<RuleViolationBean> optimizationRuleViolations;
+        List<RuleViolationBean> codesizeRuleViolations;
+        List<RuleViolationBean> designRuleViolations;
+        List<RuleViolationBean> allRuleViolationBeans = new ArrayList<>();
         Iterator<File> files = getJavaFilesInDirectory(path);
 
         while (files.hasNext()) {
@@ -77,13 +91,37 @@ public class RepoService {
 
             for (RuleViolation ruleViolation : context.getReport()) {
                 rule = ruleViolation.getRule();
-                ruleViolationBeans.add(new RuleViolationBean(rule.getMessage(), rule.getDescription(), rule.getExternalInfoUrl(),
+                allRuleViolationBeans.add(new RuleViolationBean(rule.getMessage(), rule.getDescription(), rule.getExternalInfoUrl(),
                         rule.getPriority().toString(), javaFile.getName(), ruleViolation.getMethodName(),
                         ruleViolation.getClassName(), ruleViolation.getBeginLine(), ruleViolation.getEndLine()));
+                if (rule.getRuleSetName().equalsIgnoreCase(BASIC.getDetectedKind())) {
+                    basicRuleViolations = fitToSpecificRuleViolationsKind(rule, javaFile, ruleViolationBeans, ruleViolation, BASIC);
+                    ruleViolationBeans.put(BASIC, basicRuleViolations);
+                } if (rule.getRuleSetName().equalsIgnoreCase(COUPLING.getDetectedKind())) {
+                    couplingRuleViolations = fitToSpecificRuleViolationsKind(rule, javaFile, ruleViolationBeans, ruleViolation, COUPLING);
+                    ruleViolationBeans.put(COUPLING, couplingRuleViolations);
+                } if (rule.getRuleSetName().equalsIgnoreCase(OPTIMIZATION.getDetectedKind())) {
+                    optimizationRuleViolations = fitToSpecificRuleViolationsKind(rule, javaFile, ruleViolationBeans, ruleViolation, OPTIMIZATION);
+                    ruleViolationBeans.put(OPTIMIZATION, optimizationRuleViolations);
+                } if (rule.getRuleSetName().equalsIgnoreCase(CODESIZE.getDetectedKind())) {
+                    codesizeRuleViolations = fitToSpecificRuleViolationsKind(rule, javaFile, ruleViolationBeans, ruleViolation, CODESIZE);
+                    ruleViolationBeans.put(CODESIZE, codesizeRuleViolations);
+                } if (rule.getRuleSetName().equalsIgnoreCase(DESIGN.getDetectedKind())) {
+                    designRuleViolations = fitToSpecificRuleViolationsKind(rule, javaFile, ruleViolationBeans, ruleViolation, DESIGN);
+                    ruleViolationBeans.put(DESIGN, designRuleViolations);
+                }
             }
         }
-
         return ruleViolationBeans;
+    }
+
+    private List<RuleViolationBean> fitToSpecificRuleViolationsKind(Rule rule, File javaFile, Map<StaticDetectionKind, List<RuleViolationBean>> ruleViolationBeans, RuleViolation ruleViolation, StaticDetectionKind coupling) {
+        List<RuleViolationBean> couplingRuleViolations;
+        couplingRuleViolations = ruleViolationBeans.getOrDefault(coupling, new ArrayList<>());
+        couplingRuleViolations.add(new RuleViolationBean(rule.getMessage(), rule.getDescription(), rule.getExternalInfoUrl(),
+                rule.getPriority().toString(), javaFile.getName(), ruleViolation.getMethodName(),
+                ruleViolation.getClassName(), ruleViolation.getBeginLine(), ruleViolation.getEndLine()));
+        return couplingRuleViolations;
     }
 
     public void cloneOrPullRepo(RepoNameHtmlGitUrlsBean repoBean, File resourceFolder) throws IOException, GitAPIException {
@@ -177,12 +215,27 @@ public class RepoService {
 
     private RuleSets getPMDRuleSets() {
         RuleSet basicRuleSet = null;
+        RuleSet couplingRuleSet = null;
+        RuleSet optimizationsRuleSet = null;
+        RuleSet codesizeRuleSet = null;
+        RuleSet designRuleSet = null;
+
         try {
             basicRuleSet = new RuleSetFactory().createRuleSet("rulesets/java/basic.xml");
+            couplingRuleSet = new RuleSetFactory().createRuleSet("rulesets/java/coupling.xml");
+            optimizationsRuleSet = new RuleSetFactory().createRuleSet("rulesets/java/optimizations.xml");
+            codesizeRuleSet = new RuleSetFactory().createRuleSet("rulesets/java/codesize.xml");
+            designRuleSet = new RuleSetFactory().createRuleSet("rulesets/java/codesize.xml");
         } catch (RuleSetNotFoundException e) {
             logger.error(String.format("RepoService - getPMDRuleSets(). Could not find ruleset file : %s", e));
         }
+        RuleSets ruleSets = new RuleSets();
+        ruleSets.addRuleSet(basicRuleSet);
+        ruleSets.addRuleSet(couplingRuleSet);
+        ruleSets.addRuleSet(optimizationsRuleSet);
+        ruleSets.addRuleSet(codesizeRuleSet);
+        ruleSets.addRuleSet(designRuleSet);
 
-        return new RuleSets(basicRuleSet);
+        return ruleSets;
     }
 }

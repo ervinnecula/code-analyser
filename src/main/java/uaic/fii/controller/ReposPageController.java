@@ -1,6 +1,5 @@
 package uaic.fii.controller;
 
-import net.sourceforge.pmd.PMDException;
 import org.eclipse.egit.github.core.Repository;
 import org.eclipse.egit.github.core.client.GitHubClient;
 import org.eclipse.egit.github.core.service.RepositoryService;
@@ -40,7 +39,7 @@ import static uaic.fii.service.ChartDataStringWriters.writeHeatMapContributorsTo
 
 @Controller
 public class ReposPageController {
-    final static Logger logger = LoggerFactory.getLogger(MainController.class);
+    final static Logger logger = LoggerFactory.getLogger(ReposPageController.class);
 
     @Autowired
     private RepoService repoService;
@@ -88,6 +87,7 @@ public class ReposPageController {
         DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
         try {
             repoService.cloneOrPullRepo(repoBean, resourceFolder);
+            antipatternsService.loadStaticAnalysisResults(resourceFolder);
 
             List<CommitDiffBean> commits = repoService.getCommitsAndDiffs(resourceFolder);
             Date startDate = commits.get(commits.size() - 1).getCommitDate();
@@ -97,16 +97,15 @@ public class ReposPageController {
             model.addAttribute("endDate", formatter.format(endDate));
             model.addAttribute("locByLanguage", overviewService.getLocByLanguage(resourceFolder));
             model.addAttribute("filesByLanguage", overviewService.getNumberOfFilesByLanguage(resourceFolder));
-            model.addAttribute("heatMapCommitsData", writeHeatMapContributorsToCSVFormat(heatMapContributorService.getPathContributorsCsvFile(commits)));
-            model.addAttribute("heatMapContributorsData", writeStringStringIntegerMapToCSVFormat(commitService.getPathDiffsCsvFile(commits)));
+            model.addAttribute("heatMapCommitsData", writeStringStringIntegerMapToCSVFormat(commitService.getPathDiffsCsvFile(commits)));
+            model.addAttribute("heatMapContributorsData", writeHeatMapContributorsToCSVFormat(heatMapContributorService.getPathContributorsCsvFile(commits)));
             model.addAttribute("addRemoveLinesData", writeLinesAddedRemovedToCSVFormat(locChartService.getAddRemoveLinesOverTime(commits)));
             model.addAttribute("locData", writeStringIntegerMapToCSVFormat(locChartService.getLOCOverTime(commits, startDate, endDate)));
-            model.addAttribute("violationsData", staticAnalyse(resourceFolder));
+            model.addAttribute("mediumAndHugeChanges", antipatternsService.detectMediumAndMajorChangesPattern(commits));
+            model.addAllAttributes(prepareCustomAntiPatternsMap(commits));
+            model.addAllAttributes(preparePMDAntiPatternsMap());
             model.addAttribute("repositoryName", repoBean.getRepoName());
             model.addAttribute("username", username);
-
-            model.addAllAttributes(prepareAntiPatternsMap(commits));
-            model.addAttribute("mediumAndHugeChanges", antipatternsService.detectMediumAndMajorChangesPattern(commits));
 
         } catch (IOException e) {
             logger.error(format("ReposPageController - analysis() - Git exception happened when opening folder %s. Full exception: %s", resourceFolder, e));
@@ -118,26 +117,23 @@ public class ReposPageController {
         return "map";
     }
 
-    private Map<String, String> prepareAntiPatternsMap(List<CommitDiffBean> commits) {
-        Map<String, String> antiPatternsMap = new HashMap<>();
-        antiPatternsMap.put("singlePointOfFailure", antipatternsService.singlePointOfFailurePattern(commits));
-        antiPatternsMap.put("conglomerate", antipatternsService.conglomeratePattern(commits));
+    private Map<String, String> prepareCustomAntiPatternsMap(List<CommitDiffBean> commits) {
+        Map<String, String> customAntiPatternsMap = new HashMap<>();
+        customAntiPatternsMap.put("singlePointOfFailure", antipatternsService.singlePointOfFailurePattern(commits));
+        customAntiPatternsMap.put("conglomerate", antipatternsService.conglomeratePattern(commits));
 
-        return antiPatternsMap;
+        return customAntiPatternsMap;
     }
 
-    private List<RuleViolationBean> staticAnalyse(File projectPath) {
-        logger.info("ReposPageController - staticAnalyse() - calling repoService.getPathToCloneDir() ");
-        List<RuleViolationBean> ruleViolationBeans = new ArrayList<>();
-        try {
-            ruleViolationBeans = repoService.analyzeClonedProject(projectPath.getPath());
-            logger.info("MainController - cloneOrPullRepo() - Calling repoService.analyzeClonedProject() ");
-        } catch (IOException e) {
-            logger.error(format("ReposPageController - staticAnalyse() - Git exception happened when opening folder %s. Full exception: %s", projectPath, e));
-        } catch (PMDException e) {
-            logger.error(format("ReposPageController - staticAnalyse() - Exception when running PMD over %s. Full exception: %s", projectPath, e));
-        }
-        return ruleViolationBeans;
+    private Map<String, List<RuleViolationBean>> preparePMDAntiPatternsMap() {
+        Map<String, List<RuleViolationBean>> PMDAntiPatternsMap = new HashMap<>();
+        PMDAntiPatternsMap.put("basicViolations", antipatternsService.getBasicAnalysis());
+        PMDAntiPatternsMap.put("optimizationViolations", antipatternsService.getOptimizationViolations());
+        PMDAntiPatternsMap.put("couplingViolations", antipatternsService.getCouplingViolations());
+        PMDAntiPatternsMap.put("codesizeViolations", antipatternsService.getCodesizeViolations());
+        PMDAntiPatternsMap.put("designViolations", antipatternsService.getDesignViolations());
+
+        return PMDAntiPatternsMap;
     }
 
 }

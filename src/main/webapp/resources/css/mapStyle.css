@@ -8,7 +8,7 @@ a:hover rect {
 }
 
 a tspan:first-child {
-    font-size: 15px;
+    font-size: 11px;
     fill-opacity: 0.7;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -22,7 +22,7 @@ a:hover tspan:first-child {
 }
 
 tspan:last-child {
-    font-size: 18px;
+    font-size: 14px;
     font-weight: bold;
     color: white;
     fill-opacity: 0.7;
@@ -45,10 +45,22 @@ a:hover tspan:last-child {
     margin-top: 2%;
 }
 
-.card {
-    min-height: 235px;
-}
 
 .margin-left-8px {
     margin-left: 8px;
+}
+
+.svg-container {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%; /* aspect ratio */
+    vertical-align: top;
+    overflow: hidden;
+}
+.svg-content-responsive {
+    display: inline-block;
+    position: absolute;
+    top: 10px;
+    left: 0;
 }

@@ -1,13 +1,13 @@
 var sourceTreeContributorsSvg = d3.select("#sourceTreeContributorsMap"),
-    width = +sourceTreeContributorsSvg.attr("width"),
-    height = +sourceTreeContributorsSvg.attr("height");
+    sourceTreeContributorsWidth = +sourceTreeContributorsSvg.attr("width"),
+    sourceTreeContributorsHeight = +sourceTreeContributorsSvg.attr("height");
 
 var colorContributors = d3.scaleOrdinal().range(['#ffc7ba', '#e17471', '#ff5755', '#ff3726','#910a07']);
 
 var format = d3.format(",d");
 
 var treemapContributors = d3.treemap()
-    .size([width, height])
+    .size([sourceTreeContributorsWidth, sourceTreeContributorsHeight])
     .round(true)
     .padding(1);
 
@@ -27,7 +27,6 @@ function loadSourceTreeContributorsMap(username, repositoryName, data, startDate
         endDateObj = new Date(endDateSplit[2], Number(endDateSplit[1]) - 1, endDateSplit[0], 0);
     }
     sourceTreeContributorsSvg.selectAll("*").remove();
-
 
     var rows = data.split(/\n/);
     for (var i = 0; i < rows.length; i++) {

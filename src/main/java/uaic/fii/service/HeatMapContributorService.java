@@ -20,13 +20,14 @@ public class HeatMapContributorService {
     public Map<String, DateHashSetBean> getPathContributorsCsvFile(List<CommitDiffBean> commitList) {
         Map<String, DateHashSetBean> diffsPerFilePath = new TreeMap<>();
         SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd");
+        Set<String> listOfContributors;
 
         for (CommitDiffBean commit : commitList) {
             List<DiffBean> diffs = commit.getDiffs();
             for (DiffBean diff : diffs) {
                 String filePathComplete = "project_/".concat(diff.getFilePath());
                 if (!filePathComplete.equals("project_//dev/null")) {
-                    Set<String> listOfContributors = new HashSet<>();
+                    listOfContributors = new HashSet<>();
 
                     if (diffsPerFilePath.containsKey(filePathComplete)) {
                         listOfContributors = diffsPerFilePath.get(filePathComplete).getListOfContributors();
