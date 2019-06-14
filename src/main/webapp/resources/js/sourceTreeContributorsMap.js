@@ -57,7 +57,7 @@ function loadSourceTreeContributorsMap(username, repositoryName, data, startDate
         .data(root.leaves())
         .enter().append("a")
         .attr("target", "_blank")
-        .attr("xlink:href", function(d) { return "https://github.com/" + username + "/" + repositoryName + "/blob/master/" + d.data.path })
+        .attr("xlink:href", function(d) { return "https://github.com/" + username + "/" + repositoryName + "/blob/master/" + d.data.path.replace("__project__/", "") })
         .attr("transform", function(d) { return "translate(" + d.x0 + "," + d.y0 + ")"; });
 
     cell.append("rect")
@@ -89,18 +89,22 @@ function loadSourceTreeContributorsMap(username, repositoryName, data, startDate
         });
 
     cell.append("clipPath")
-        .attr("id", function(d) { return "clip-" + d.id; })
+        .attr("id", function(d) { return "clip-" + d.id.replace("__project__/", ""); })
         .append("use")
-        .attr("xlink:href", function(d) { return "#" + d.id; });
+        .attr("xlink:href", function(d) { return "#" + d.id.replace("__project__/", ""); });
 
     var label = cell.append("text")
-        .attr("clip-path", function(d) { return "url(https://github.com/" + d.id + ")"; });
+        .attr("clip-path", function(d) { return d.id.replace("__project__/", "") });
 
     label.append("tspan")
         .attr("x", 4)
         .attr("y", 25)
         .attr("fill", "white")
-        .text(function(d) { return d.data.path.substring(d.data.path.lastIndexOf("/") + 1, d.data.path.lastIndexOf(".")); });
+        .text(function(d) {
+            var file = d.data.path.substring(d.data.path.lastIndexOf("/") + 1, d.data.path.lastIndexOf("."));
+            file = file.replace("__project__/", "");
+            return file;
+        });
 
     label.append("tspan")
         .attr("x", 4)
@@ -109,5 +113,5 @@ function loadSourceTreeContributorsMap(username, repositoryName, data, startDate
         .text(function(d) { return format(d.value); });
 
     cell.append("title")
-        .text(function(d) { return d.id + "\n" + format(d.value); });
+        .text(function(d) { return d.id.replace("__project__/", "") + "\n" + format(d.value); });
 }

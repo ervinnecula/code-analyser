@@ -1,10 +1,10 @@
 package uaic.fii.service;
 
-import uaic.fii.bean.CommitChangeSize;
 import uaic.fii.bean.DateCountBean;
 import uaic.fii.bean.DateHashSetBean;
 import uaic.fii.bean.PathEditBean;
 import uaic.fii.model.Language;
+import uaic.fii.model.Period;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -108,6 +108,19 @@ public class ChartDataStringWriters {
                         .append(entry.getValue())
                         .append(eol);
             }
+        }
+        if (stringBuilder.length() != 0)
+            stringBuilder.replace(stringBuilder.length() - 2, stringBuilder.length(), "");
+        return stringBuilder.toString();
+    }
+
+    static String writePeriodOfTimeFilesToCSVFormat(Map<String, Period> periodOfTimeMap) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Map.Entry<String, Period> entry : periodOfTimeMap.entrySet()) {
+                stringBuilder.append(entry.getKey())
+                        .append(',')
+                        .append(entry.getValue())
+                        .append(eol);
         }
         if (stringBuilder.length() != 0)
             stringBuilder.replace(stringBuilder.length() - 2, stringBuilder.length(), "");

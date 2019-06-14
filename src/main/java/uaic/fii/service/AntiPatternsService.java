@@ -10,20 +10,21 @@ import uaic.fii.bean.CommitChangeSize;
 import uaic.fii.bean.CommitDiffBean;
 import uaic.fii.bean.DateHashSetBean;
 import uaic.fii.bean.DiffBean;
+import uaic.fii.bean.FilePeriodBean;
 import uaic.fii.bean.RuleViolationBean;
-import uaic.fii.controller.MainController;
 import uaic.fii.model.ChangeSize;
+import uaic.fii.model.Period;
 import uaic.fii.model.Properties;
 import uaic.fii.model.StaticDetectionKind;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
 import static java.lang.String.format;
@@ -32,7 +33,9 @@ import static uaic.fii.model.StaticDetectionKind.CODESIZE;
 import static uaic.fii.model.StaticDetectionKind.COUPLING;
 import static uaic.fii.model.StaticDetectionKind.DESIGN;
 import static uaic.fii.model.StaticDetectionKind.OPTIMIZATION;
+import static uaic.fii.service.ChartDataStringWriters.buildParentsOfPath;
 import static uaic.fii.service.ChartDataStringWriters.writeHeatMapContributorsToCSVFormat;
+import static uaic.fii.service.ChartDataStringWriters.writePeriodOfTimeFilesToCSVFormat;
 
 @Service
 public class AntiPatternsService {
@@ -81,31 +84,44 @@ public class AntiPatternsService {
 
     public Map<String, List<CommitChangeSize>> detectMediumAndMajorChangesPattern(List<CommitDiffBean> commitList) {
         Map<String, List<CommitChangeSize>> mediumAndMajorChangesPattern = new HashMap<>();
-        Set<String> filesChangedInCommit;
 
         for (CommitDiffBean commit : commitList) {
-            filesChangedInCommit = new HashSet<>();
-            int linesChangedInCommit = 0;
             for (DiffBean diff : commit.getDiffs()) {
                 int linesChangedInDiff = 0;
                 for (Edit edit : diff.getEdits()) {
                     linesChangedInDiff += edit.getLengthB() + edit.getLengthA();
                 }
-                filesChangedInCommit.add(diff.getFilePath());
-                linesChangedInCommit += linesChangedInDiff;
-            }
-            ChangeSize changeSize = getChangeSizeFromLocChanged(linesChangedInCommit);
-            for (String fileChanged : filesChangedInCommit) {
-                CommitChangeSize commitChangeSize = new CommitChangeSize(commit.getCommitHash(), commit.getCommitDate(), commit.getCommiterName(), linesChangedInCommit, changeSize);
-                List<CommitChangeSize> changesOnFile = mediumAndMajorChangesPattern.getOrDefault(fileChanged, new ArrayList<>());
-                changesOnFile.add(commitChangeSize);
-                mediumAndMajorChangesPattern.put(fileChanged, changesOnFile);
+                ChangeSize changeSize = getChangeSizeFromLocChanged(linesChangedInDiff);
+                if (changeSize.equals(ChangeSize.MAJOR) || changeSize.equals(ChangeSize.MEDIUM)) {
+                    CommitChangeSize commitChangeSize = new CommitChangeSize(commit.getCommitHash(), commit.getCommitDate(), commit.getCommiterName(), linesChangedInDiff, changeSize);
+                    List<CommitChangeSize> changesOnFile = mediumAndMajorChangesPattern.getOrDefault(diff.getFilePath(), new ArrayList<>());
+                    changesOnFile.add(commitChangeSize);
+                    mediumAndMajorChangesPattern.put(diff.getFilePath(), changesOnFile);
+                }
             }
         }
         return mediumAndMajorChangesPattern;
     }
 
-    public Map<StaticDetectionKind, List<RuleViolationBean>> loadStaticAnalysisResults(File projectPath) {
+    public String getPeriodOfTimeFiles(List<CommitDiffBean> commitList) {
+        Map<String, Period> filesAndPeriods = new HashMap<>();
+        for (CommitDiffBean commit : commitList) {
+            long daysBetweenCommitAndToday = ChronoUnit.DAYS.between(commit.getCommitDate().toInstant(), new Date().toInstant());
+            Period period = getPeriodOfTime(daysBetweenCommitAndToday);
+            for (DiffBean diff : commit.getDiffs()) {
+                if (!diff.getFilePath().equals("/dev/null")) {
+                    filesAndPeriods.put(diff.getFilePath(), period);
+                    List<String> parents = buildParentsOfPath(diff.getFilePath());
+                    for (String parent : parents) {
+                        filesAndPeriods.putIfAbsent(parent, Period.PARENT);
+                    }
+                }
+            }
+        }
+        return writePeriodOfTimeFilesToCSVFormat(filesAndPeriods);
+    }
+
+    public void loadStaticAnalysisResults(File projectPath) {
         logger.info("AntiPatternsService - staticAnalyse() - calling repoService.analyzeClonedProject() - getting BASIC flaws");
         try {
             staticRuleViolations = repoService.analyzeClonedProject(projectPath.getPath());
@@ -114,7 +130,6 @@ public class AntiPatternsService {
         } catch (PMDException e) {
             logger.error(format("AntiPatternsService - staticAnalyse() - Exception when running PMD over %s. Full exception: %s", projectPath, e));
         }
-        return staticRuleViolations;
     }
 
     public List<RuleViolationBean> getBasicAnalysis() {
@@ -154,5 +169,19 @@ public class AntiPatternsService {
             changeSize = ChangeSize.SMALL;
         }
         return changeSize;
+    }
+
+    private Period getPeriodOfTime(long daysBetween) {
+        Period period;
+        if (daysBetween < properties.getPeriodOfTime()) {
+            period = Period.RECENT;
+        } else if (daysBetween >= properties.getPeriodOfTime() && daysBetween < properties.getPeriodOfTime() * 2) {
+            period = Period.MEDIUM;
+        } else if (daysBetween >= properties.getPeriodOfTime() * 2 && daysBetween < properties.getPeriodOfTime() * 6) {
+            period = Period.OLD;
+        } else {
+            period = Period.VERY_OLD;
+        }
+        return period;
     }
 }

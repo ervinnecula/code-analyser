@@ -23,8 +23,8 @@ public class CommitService {
             List<DiffBean> diffs = commit.getDiffs();
             for (DiffBean diff : diffs) {
                 int currentCount = 0;
-                String filePathComplete = "project_/".concat(diff.getFilePath());
-                if (!filePathComplete.equals("project_//dev/null")) {
+                String filePathComplete = "__project__/".concat(diff.getFilePath());
+                if (!filePathComplete.equals("__project__//dev/null")) {
                     if (diffsPerFilePath.containsKey(filePathComplete)) {
                         currentCount = diffsPerFilePath.get(filePathComplete).getCount();
                     }

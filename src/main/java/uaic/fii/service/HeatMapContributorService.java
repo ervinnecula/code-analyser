@@ -25,8 +25,8 @@ public class HeatMapContributorService {
         for (CommitDiffBean commit : commitList) {
             List<DiffBean> diffs = commit.getDiffs();
             for (DiffBean diff : diffs) {
-                String filePathComplete = "project_/".concat(diff.getFilePath());
-                if (!filePathComplete.equals("project_//dev/null")) {
+                String filePathComplete = "__project__/".concat(diff.getFilePath());
+                if (!filePathComplete.equals("__project__//dev/null")) {
                     listOfContributors = new HashSet<>();
 
                     if (diffsPerFilePath.containsKey(filePathComplete)) {

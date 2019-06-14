@@ -32,19 +32,9 @@ a:hover tspan:last-child {
     fill-opacity: 1.0;
 }
 
-#dateSelectorSlider {
-    width: 99%;
-    margin-bottom: 10px
-}
-
-/*ul li:active li a {*/
-    /*background-color: black;*/
-/*}*/
-
 #overview {
     margin-top: 2%;
 }
-
 
 .margin-left-8px {
     margin-left: 8px;
@@ -63,4 +53,27 @@ a:hover tspan:last-child {
     position: absolute;
     top: 10px;
     left: 0;
+}
+
+.card-mandhchanges {
+    float: left;
+    margin: auto;
+    width: 48%;
+    min-height: 200px;
+    margin-bottom: 1%;
+}
+
+#dateSelectorSlider {
+    width: 98%;
+    margin-bottom: 10px;
+}
+
+#staticViolationsPage {
+    text-align: center;
+    padding-top: 2%;
+}
+
+g.node:hover circle {
+    stroke-width: 2px;
+    stroke: rgb(0,0,0);
 }

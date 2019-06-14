@@ -102,6 +102,7 @@ public class ReposPageController {
             model.addAttribute("addRemoveLinesData", writeLinesAddedRemovedToCSVFormat(locChartService.getAddRemoveLinesOverTime(commits)));
             model.addAttribute("locData", writeStringIntegerMapToCSVFormat(locChartService.getLOCOverTime(commits, startDate, endDate)));
             model.addAttribute("mediumAndHugeChanges", antipatternsService.detectMediumAndMajorChangesPattern(commits));
+            model.addAttribute("filesAndPeriods", antipatternsService.getPeriodOfTimeFiles(commits));
             model.addAllAttributes(prepareCustomAntiPatternsMap(commits));
             model.addAllAttributes(preparePMDAntiPatternsMap());
             model.addAttribute("repositoryName", repoBean.getRepoName());

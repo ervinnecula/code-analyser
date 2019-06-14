@@ -38,6 +38,9 @@ public class Properties {
     @Column(name = "major_change_size")
     private Integer majorChangeSize;
 
+    @Column(name = "period_of_time")
+    private Integer periodOfTime;
+
     public Integer getId() {
         return id;
     }
@@ -108,5 +111,13 @@ public class Properties {
 
     public void setMajorChangeSize(Integer majorChangeSize) {
         this.majorChangeSize = majorChangeSize;
+    }
+
+    public Integer getPeriodOfTime() {
+        return periodOfTime;
+    }
+
+    public void setPeriodOfTime(Integer periodOfTime) {
+        this.periodOfTime = periodOfTime;
     }
 }

@@ -3,9 +3,9 @@ package uaic.fii.bean;
 import org.eclipse.jgit.diff.EditList;
 
 public class DiffBean {
-    String changeType;
-    String filePath;
-    EditList edits;
+    private String changeType;
+    private String filePath;
+    private EditList edits;
 
     public DiffBean() {}
 
