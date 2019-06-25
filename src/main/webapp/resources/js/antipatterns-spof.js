@@ -11,7 +11,7 @@ var spofTreemap = d3.treemap()
     .round(true)
     .padding(1);
 
-function loadSinglePointOfFailure(username, repositoryName, data) {
+function loadSinglePointOfFailure(username, repositoryName, data, fewCommiters) {
     var array = [];
 
     var maximumValue = -1;
@@ -75,22 +75,11 @@ function loadSinglePointOfFailure(username, repositoryName, data) {
                 return d.y1 - d.y0;
             })
             .attr("fill", function (d) {
-                // Converting values to range 0 - 100
-                var newValue = (((d.data.size - minimumValue) * (100)) / (maximumValue - minimumValue));
                 var fillColor;
-                switch (true) {
-                    case newValue >= 0 && newValue < 25:
-                        fillColor = colorCommitsAntipatterns(3);
-                        break;
-                    case newValue >= 25 && newValue < 50:
-                        fillColor = colorCommitsAntipatterns(2);
-                        break;
-                    case newValue >= 50 && newValue < 75:
-                        fillColor = colorCommitsAntipatterns(1);
-                        break;
-                    case newValue >= 75:
-                        fillColor = colorCommitsAntipatterns(0);
-                        break;
+                if (d.data.size > fewCommiters) {
+                    fillColor = '#84e9ac';
+                } else {
+                    fillColor = '#ff1700';
                 }
                 return fillColor;
             });

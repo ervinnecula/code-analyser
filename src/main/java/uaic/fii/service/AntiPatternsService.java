@@ -8,9 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uaic.fii.bean.CommitChangeSize;
 import uaic.fii.bean.CommitDiffBean;
-import uaic.fii.bean.DateHashSetBean;
 import uaic.fii.bean.DiffBean;
-import uaic.fii.bean.FilePeriodBean;
 import uaic.fii.bean.RuleViolationBean;
 import uaic.fii.model.ChangeSize;
 import uaic.fii.model.Period;
@@ -25,7 +23,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import static java.lang.String.format;
 import static uaic.fii.model.StaticDetectionKind.BASIC;
@@ -34,15 +31,10 @@ import static uaic.fii.model.StaticDetectionKind.COUPLING;
 import static uaic.fii.model.StaticDetectionKind.DESIGN;
 import static uaic.fii.model.StaticDetectionKind.OPTIMIZATION;
 import static uaic.fii.service.ChartDataStringWriters.buildParentsOfPath;
-import static uaic.fii.service.ChartDataStringWriters.writeHeatMapContributorsToCSVFormat;
-import static uaic.fii.service.ChartDataStringWriters.writePeriodOfTimeFilesToCSVFormat;
 
 @Service
 public class AntiPatternsService {
     final static Logger logger = LoggerFactory.getLogger(AntiPatternsService.class);
-
-    @Autowired
-    private HeatMapContributorService heatMapContributorService;
 
     @Autowired
     private PropertiesService propertiesService;
@@ -58,34 +50,10 @@ public class AntiPatternsService {
         properties = propertiesService.getPropertiesByUserId(userName);
     }
 
-    public String singlePointOfFailurePattern(List<CommitDiffBean> commitList) {
-        Map<String, DateHashSetBean> allContributors = heatMapContributorService.getPathContributorsCsvFile(commitList);
-        Map<String, DateHashSetBean> potentialSinglePointOfFailures = new TreeMap<>();
-
-        for (Map.Entry<String, DateHashSetBean> entry : allContributors.entrySet()) {
-            if (entry.getValue().getListOfContributors().size() <= properties.getFewCommitersSize()) {
-                potentialSinglePointOfFailures.put(entry.getKey(), entry.getValue());
-            }
-        }
-        return writeHeatMapContributorsToCSVFormat(potentialSinglePointOfFailures);
-    }
-
-    public String conglomeratePattern(List<CommitDiffBean> commitList) {
-        Map<String, DateHashSetBean> allContributors = heatMapContributorService.getPathContributorsCsvFile(commitList);
-        Map<String, DateHashSetBean> potentialConglomerations = new TreeMap<>();
-
-        for (Map.Entry<String, DateHashSetBean> entry : allContributors.entrySet()) {
-            if (entry.getValue().getListOfContributors().size() >= properties.getManyCommitersSize()) {
-                potentialConglomerations.put(entry.getKey(), entry.getValue());
-            }
-        }
-        return writeHeatMapContributorsToCSVFormat(potentialConglomerations);
-    }
-
-    public Map<String, List<CommitChangeSize>> detectMediumAndMajorChangesPattern(List<CommitDiffBean> commitList) {
+    public Map<String, List<CommitChangeSize>> detectMediumAndMajorChangesPattern(List<CommitDiffBean> commits) {
         Map<String, List<CommitChangeSize>> mediumAndMajorChangesPattern = new HashMap<>();
 
-        for (CommitDiffBean commit : commitList) {
+        for (CommitDiffBean commit : commits) {
             for (DiffBean diff : commit.getDiffs()) {
                 int linesChangedInDiff = 0;
                 for (Edit edit : diff.getEdits()) {
@@ -103,9 +71,30 @@ public class AntiPatternsService {
         return mediumAndMajorChangesPattern;
     }
 
-    public String getPeriodOfTimeFiles(List<CommitDiffBean> commitList) {
+    public Integer getLocChangedRecently(List<CommitDiffBean> commits) {
+        int linesOfCodeChangedRecently = 0;
+        for (CommitDiffBean commit : commits) {
+            long daysBetweenCommitAndToday = ChronoUnit.DAYS.between(commit.getCommitDate().toInstant(), new Date().toInstant());
+            Period period = getPeriodOfTime(daysBetweenCommitAndToday);
+            if (period == Period.RECENT) {
+                for (DiffBean diff : commit.getDiffs()) {
+                    int linesAddedInFile = 0;
+                    if (!diff.getFilePath().equals("/dev/null")) {
+                        for (Edit edit : diff.getEdits()) {
+                            linesAddedInFile += edit.getLengthB();
+                            linesAddedInFile -= edit.getLengthA();
+                        }
+                        linesOfCodeChangedRecently += linesAddedInFile;
+                    }
+                }
+            }
+        }
+        return linesOfCodeChangedRecently;
+    }
+
+    public Map<String, Period> getPeriodOfTimeFiles(List<CommitDiffBean> commits) {
         Map<String, Period> filesAndPeriods = new HashMap<>();
-        for (CommitDiffBean commit : commitList) {
+        for (CommitDiffBean commit : commits) {
             long daysBetweenCommitAndToday = ChronoUnit.DAYS.between(commit.getCommitDate().toInstant(), new Date().toInstant());
             Period period = getPeriodOfTime(daysBetweenCommitAndToday);
             for (DiffBean diff : commit.getDiffs()) {
@@ -118,7 +107,18 @@ public class AntiPatternsService {
                 }
             }
         }
-        return writePeriodOfTimeFilesToCSVFormat(filesAndPeriods);
+        return filesAndPeriods;
+    }
+
+    public Map<String, Period> getPeriodOfTimeContributors(List<CommitDiffBean> commits) {
+        Map<String, Period> authorsAndPeriods = new HashMap<>();
+        for (CommitDiffBean commit : commits) {
+            long daysBetweenCommitAndToday = ChronoUnit.DAYS.between(commit.getCommitDate().toInstant(), new Date().toInstant());
+            Period period = getPeriodOfTime(daysBetweenCommitAndToday);
+            authorsAndPeriods.put(commit.getCommiterName(), period);
+        }
+
+        return authorsAndPeriods;
     }
 
     public void loadStaticAnalysisResults(File projectPath) {
@@ -183,5 +183,9 @@ public class AntiPatternsService {
             period = Period.VERY_OLD;
         }
         return period;
+    }
+
+    public Properties getProperties() {
+        return properties;
     }
 }

@@ -2,8 +2,6 @@ var conglomerateTree = d3.select("#conglomerate"),
     width = +sourceTreeCommitsSvg.attr("width"),
     height = +sourceTreeCommitsSvg.attr("height");
 
-var colorCommitsAntipatterns = d3.scaleOrdinal().range(['#ff1700', '#e94855', '#e88277', '#e8b5aa']);
-
 var format = d3.format(",d");
 
 var conglomerateTreemap = d3.treemap()
@@ -11,7 +9,7 @@ var conglomerateTreemap = d3.treemap()
     .round(true)
     .padding(1);
 
-function loadConglomerate(username, repositoryName, data) {
+function loadConglomerate(username, repositoryName, data, manyCommiters) {
     var array = [];
 
     var maximumValue = -1;
@@ -75,22 +73,11 @@ function loadConglomerate(username, repositoryName, data) {
                 return d.y1 - d.y0;
             })
             .attr("fill", function (d) {
-                // Converting values to range 0 - 10
-                var newValue = (((d.data.size - minimumValue) * (100)) / (maximumValue - minimumValue));
                 var fillColor;
-                switch (true) {
-                    case newValue >= 0 && newValue < 25:
-                        fillColor = colorCommitsAntipatterns(0);
-                        break;
-                    case newValue >= 25 && newValue < 50:
-                        fillColor = colorCommitsAntipatterns(1);
-                        break;
-                    case newValue >= 50 && newValue < 75:
-                        fillColor = colorCommitsAntipatterns(2);
-                        break;
-                    case newValue >= 75:
-                        fillColor = colorCommitsAntipatterns(3);
-                        break;
+                if (d.data.size < manyCommiters) {
+                    fillColor = '#84e9ac';
+                } else {
+                    fillColor = '#ff1700';
                 }
                 return fillColor;
             });

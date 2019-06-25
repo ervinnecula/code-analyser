@@ -1,25 +1,34 @@
 package uaic.fii.service;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.jgit.diff.Edit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uaic.fii.bean.CommitDiffBean;
+import uaic.fii.bean.DiffBean;
 import uaic.fii.model.Language;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class OverviewService {
 
     final static Logger logger = LoggerFactory.getLogger(RepoService.class);
+
+    @Autowired
+    private AntiPatternsService antiPatternsService;
 
     public String getLocByLanguage(File projectPath) {
         Map<Language, List<File>> languageFilesMap;
@@ -48,6 +57,62 @@ public class OverviewService {
             numberOfFilesByLanguageMap.put(languageFiles.getKey(), languageFiles.getValue().size());
         }
         return ChartDataStringWriters.writeNumberOfFilesPerLanguage(numberOfFilesByLanguageMap);
+    }
+
+    public String countRecentFilesChanged(List<CommitDiffBean> commits) {
+        return Integer.toString(antiPatternsService.getPeriodOfTimeFiles(commits).values().size());
+    }
+
+    public String countRecentLinesChanged(List<CommitDiffBean> commits) {
+        return Integer.toString(antiPatternsService.getLocChangedRecently(commits));
+    }
+
+    public String countRecentContributors(List<CommitDiffBean> commits) {
+        return Integer.toString(antiPatternsService.getPeriodOfTimeContributors(commits).values().size());
+    }
+
+    public Map<String, Integer> getActiveContributorsLoC(List<CommitDiffBean> commits) {
+        Map<String, Integer> contributorsLoC = new HashMap<>();
+
+        for (CommitDiffBean commit : commits) {
+            int linesChangedInCommit = 0;
+
+            for (DiffBean diff : commit.getDiffs()) {
+                for (Edit edit : diff.getEdits()) {
+                    linesChangedInCommit += edit.getLengthB() + edit.getLengthA();
+                }
+            }
+            int locMap = contributorsLoC.getOrDefault(commit.getCommiterName(), 0);
+            contributorsLoC.put(commit.getCommiterName(), locMap + linesChangedInCommit);
+        }
+        return contributorsLoC;
+    }
+
+    public Map<String, Integer> getActiveContributorsFilesTouched(List<CommitDiffBean> commits) {
+        Map<String, Integer> contributorsFilesTouched = new HashMap<>();
+
+        for (CommitDiffBean commit : commits) {
+            int filesTouched = contributorsFilesTouched.getOrDefault(commit.getCommiterName(), 0);
+            contributorsFilesTouched.put(commit.getCommiterName(), filesTouched + commit.getDiffs().size());
+        }
+
+        return contributorsFilesTouched;
+    }
+
+    public Map<String, String> getMostInvolvedContributors(List<CommitDiffBean> commits) {
+        Map<String, Integer> mostInvolvedContributors = getActiveContributorsFilesTouched(commits);
+        Map<String, String> result = new HashMap<>();
+
+        int totalNumberOfFiles = 0;
+        for (Integer value : mostInvolvedContributors.values()) {
+            totalNumberOfFiles += value;
+        }
+        for (Map.Entry<String, Integer> entry : mostInvolvedContributors.entrySet()) {
+            float percentage = (float) entry.getValue() / totalNumberOfFiles * 100;
+            result.put(entry.getKey(), String.format ("%,.2f", percentage));
+        }
+
+        return result;
     }
 
     private int countLocOfFile(File file) throws IOException {

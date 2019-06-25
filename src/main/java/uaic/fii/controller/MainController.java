@@ -32,7 +32,6 @@ public class MainController {
         Integer id = getAuthenticatedEntity().getUserId();
         User user = userService.getUserById(id);
 
-        antiPatternsService.loadProperties(user.getName());
         model.addAttribute("username", user.getName());
         return "main";
     }

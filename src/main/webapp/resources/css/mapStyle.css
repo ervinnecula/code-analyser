@@ -64,7 +64,7 @@ a:hover tspan:last-child {
 }
 
 #dateSelectorSlider {
-    width: 98%;
+    width: 1580px;
     margin-bottom: 10px;
 }
 
@@ -76,4 +76,8 @@ a:hover tspan:last-child {
 g.node:hover circle {
     stroke-width: 2px;
     stroke: rgb(0,0,0);
+}
+
+.card.text-white {
+    min-height: 260px;
 }

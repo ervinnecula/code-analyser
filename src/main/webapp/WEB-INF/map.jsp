@@ -24,7 +24,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary custom-nav" role="navigation" style="margin-bottom: 0">
     <div class="row">
         <div class="mr-auto pl-5 mt-1">
-            <a class="navbar-brand" style="color:white !important">Code Analyser</a>
+            <a href="" class="navbar-brand" style="color:white !important">Code Analyser</a>
         </div>
 
         <div class="form-inline custom-logout">
@@ -40,7 +40,7 @@
     <div class="row mt-3 custom-wrapper">
         <t:navTemplate/>
         <div class="col-md-10">
-            <div id="dateSelectorSlider"></div>
+            <div id="dateSelectorSlider" style="display:none"></div>
             <ul class="nav nav-tabs">
                 <li class="active">
                     <a class="nav-link" data-toggle="tab" href="#overview" aria-expanded="false" onclick="hideDateSelector()">Overview</a>
@@ -58,57 +58,63 @@
                     <a class="nav-link" data-toggle="tab" href="#loc" aria-expanded="false" onclick="showDateSelector()">LOC</a>
                 </li>
                 <li>
-                    <a class="nav-link" data-toggle="tab" href="#antipatterns" aria-expanded="false" onclick="hideDateSelector()">Antipatterns</a>
-                </li>
-                <li>
-                    <a class="nav-link" data-toggle="tab" href="#violations" aria-expanded="false" onclick="hideDateSelector()">Static Analysis</a>
+                    <a class="nav-link" data-toggle="tab" href="#antipatterns" aria-expanded="false" onclick="hideDateSelector()">Anti-Patterns</a>
                 </li>
             </ul>
             <div class="tab-content">
                 <div class="tab-pane in active" id="overview">
                     <div class="row">
-                        <div class="col-sm-4 min-height-220">
+                        <div class="col-sm-4">
                             <div id="locByLanguage"></div>
                         </div>
-                        <div class="col-sm-4 min-height-220">
+                        <div class="col-sm-4">
                             <div id="filesByLanguage"></div>
                         </div>
-                        <div class="col-sm-4 min-height-220">
-                            <div class="card text-white bg-success mb-3">
-                                <div class="card-header">Header</div>
-                                <div class="card-body">
-                                    <h4 class="card-title">Success card title</h4>
-                                    <p class="card-text">Some quick example text to build on the card title and make up
-                                        the bulk of the card's content.</p>
+                        <div class="col-sm-4">
+                            <div class="card card-overview text-white bg-success mb-3">
+                                <h3 class="card-header" style="text-align: center">Recent Activity</h3>
+                                <div class="card-body" style="width:100%">
+                                    <h5 class="card-text" style="padding-bottom:10px">
+                                        Files changed: <span class="badge badge-primary badge-pill margin-left-8px">${recentFilesChanged}</span>
+                                    </h5>
+                                    <h5 class="card-text" style="padding-bottom:10px">
+                                        Lines changed: <span class="badge badge-primary badge-pill margin-left-8px">${recentLinesChanged}</span>
+                                    </h5>
+                                    <h5 class="card-text" style="padding-bottom:10px">
+                                        Contributors involved: <span class="badge badge-primary badge-pill margin-left-8px">${recentContributors}</span>
+                                    </h5>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-sm-4 min-height-220">
-                            <div class="card text-white bg-danger mb-3">
-                                <div class="card-header">Header</div>
+                        <div class="col-sm-4">
+                            <div class="card card-overview text-white bg-danger mb-3">
+                                <h3 class="card-header" style="text-align: center">Top 5 Active Contributors by LoC</h3>
                                 <div class="card-body">
-                                    <h4 class="card-title">Danger card title</h4>
-                                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                    <c:forEach begin="0" end="4" items="${top5ActiveContributorsLoC}" var="entry">
+                                        <h5 class="card-text" style="padding-bottom:10px">${entry.key}: <span class="badge badge-info badge-pill margin-left-8px">${entry.value}</span></h5>
+                                    </c:forEach>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-sm-4 min-height-220">
-                            <div class="card text-white bg-warning mb-3">
-                                <div class="card-header">Header</div>
+                        <div class="col-sm-4">
+                            <div class="card card-overview text-white bg-warning mb-3">
+                                <h3 class="card-header" style="text-align: center">Top 5 Active Contributors by no. of Files</h3>
                                 <div class="card-body">
-                                    <h4 class="card-title">Warning card title</h4>
-                                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                    <c:forEach begin="0" end="4" items="${top5ActiveContributorsFiles}" var="entry">
+                                        <h5 class="card-text" style="padding-bottom:10px">${entry.key}: <span class="badge badge-secondary badge-pill margin-left-8px">${entry.value}</span></h5>
+                                    </c:forEach>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-sm-4 min-height-220">
-                            <div class="card text-white bg-info mb-3">
-                                <div class="card-header">Header</div>
+                        <div class="col-sm-4">
+                            <div class="card card-overview text-white bg-info mb-3">
+                                <h3 class="card-header" style="text-align: center">Percentage of Involvement</h3>
                                 <div class="card-body">
-                                    <h4 class="card-title">Info card title</h4>
-                                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                    <c:forEach begin="0" end="4" items="${top5InvolvedContributors}" var="entry">
+                                        <h5 class="card-text" style="padding-bottom:10px">${entry.key}: <span class="badge badge-warning badge-pill margin-left-8px">${entry.value} %</span></h5>
+                                    </c:forEach>
                                 </div>
                             </div>
                         </div>
@@ -136,11 +142,13 @@
                                     <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-spof" role="tab">Single Point of Failure</a>
                                     <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-conglomerate" role="tab">Conglomerate</a>
                                     <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-mandhchanges" role="tab">Medium and Huge Changes</a>
-                                    <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-optimizations" role="tab">Optimizations</a>
-                                    <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-coupling" role="tab">Coupling</a>
-                                    <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-codesize" role="tab">Code Size</a>
-                                    <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-design" role="tab">Design</a>
                                     <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-periodoftime" role="tab">Period of Time</a>
+                                    <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-violations" role="tab">Basic Violations  <span class="badge badge-warning">Java Only</span></a>
+                                    <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-optimizations" role="tab">Optimizations <span class="badge badge-warning">Java Only</span></a>
+                                    <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-coupling" role="tab">Coupling  <span class="badge badge-warning">Java Only</span></a>
+                                    <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-codesize" role="tab">Code Size  <span class="badge badge-warning">Java Only</span></a>
+                                    <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-design" role="tab">Design  <span class="badge badge-warning">Java Only</span></a>
+
                                 </div>
                             </div>
                             <div class="col-10">
@@ -198,6 +206,9 @@
                                             </c:forEach>
                                         </div>
                                     </div>
+                                    <div class="tab-pane" id="v-pills-periodoftime" role="tabpanel">
+                                        <svg id="periodoftime" width="1300" height="820" viewBox="430 0 600 800" preserveAspectRatio="xMidYMid meet"></svg>
+                                    </div>
                                     <div class="tab-pane" id="v-pills-optimizations" role="tabpanel">
                                         <div>
                                             <c:choose>
@@ -229,7 +240,7 @@
                                     <div class="tab-pane" id="v-pills-coupling" role="tabpanel">
                                         <c:choose>
                                             <c:when test="${fn:length(couplingViolations) == 0}">
-                                                <p class="text-success">You have no coupling issues.</p>
+                                                <p class="text-success">Static analysis detected you have no coupling issues.</p>
                                             </c:when>
                                             <c:otherwise>
                                                 <c:forEach items="${couplingViolations}" var="couplingViolation">
@@ -256,7 +267,7 @@
                                         <div>
                                             <c:choose>
                                                 <c:when test="${fn:length(codesizeViolations) == 0}">
-                                                    <p class="text-success">You have no code size problems.</p>
+                                                    <p class="text-success">Static analysis detected you have no code size problems.</p>
                                                 </c:when>
                                                 <c:otherwise>
                                                     <c:forEach items="${codesizeViolations}" var="codesizeViolation">
@@ -284,7 +295,7 @@
                                         <div>
                                             <c:choose>
                                                 <c:when test="${fn:length(designViolations) == 0}">
-                                                    <p class="text-success">You have no code size problems.</p>
+                                                    <p class="text-success">Static analysis detected you have no design problems.</p>
                                                 </c:when>
                                                 <c:otherwise>
                                                     <c:forEach items="${designViolations}" var="designViolation">
@@ -308,43 +319,41 @@
                                             </c:choose>
                                         </div>
                                     </div>
-                                    <div class="tab-pane" id="v-pills-periodoftime" role="tabpanel">
-                                        <svg id="periodoftime" width="1300" height="820" viewBox="430 0 600 760" preserveAspectRatio="xMidYMid meet"></svg>
+                                    <div class="tab-pane" id="v-pills-violations">
+                                        <div id="staticViolationsPage" width="1550" height="800">
+                                            <c:choose>
+                                                <c:when test="${fn:length(basicViolations) == 0}">
+                                                    <p class="text-success">You have no static analysis violations.</p>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <c:forEach items="${basicViolations}" var="violation">
+                                                        <div class="alert alert-dismissible alert-warning">
+                                                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                                            <h4 class="alert-heading">${violation.priority}</h4>
+                                                            <div class="mb-0">
+                                                                <div><b>${violation.message} </b></div>
+                                                                <div>${violation.description}</div>
+
+                                                                <a href="${violation.externalInfoUrl}" class="alert-link">
+                                                                    Check some extra info.
+                                                                </a>
+                                                            </div>
+                                                            <div>File: ${violation.fileName}</div>
+                                                            <div>Method: ${violation.methodName}</div>
+                                                            <div>Class: ${violation.className}</div>
+                                                            <div>Lines between ${violation.beginLine} and ${violation.endLine}</div>
+                                                        </div>
+                                                    </c:forEach>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="tab-pane" id="violations">
-                    <div id="staticViolationsPage" width="1550" height="800">
-                        <c:choose>
-                            <c:when test="${fn:length(basicViolations) == 0}">
-                                <p class="text-success">You have no static analysis violations.</p>
-                            </c:when>
-                            <c:otherwise>
-                                <c:forEach items="${basicViolations}" var="violation">
-                                    <div class="alert alert-dismissible alert-warning">
-                                        <button type="button" class="close" data-dismiss="alert">&times;</button>
-                                        <h4 class="alert-heading">${violation.priority}</h4>
-                                            <div class="mb-0">
-                                                <div><b>${violation.message} </b></div>
-                                                 <div>${violation.description}</div>
 
-                                                 <a href="${violation.externalInfoUrl}" class="alert-link">
-                                                    Check some extra info.
-                                                </a>
-                                            </div>
-                                        <div>File: ${violation.fileName}</div>
-                                        <div>Method: ${violation.methodName}</div>
-                                        <div>Class: ${violation.className}</div>
-                                        <div>Lines between ${violation.beginLine} and ${violation.endLine}</div>
-                                    </div>
-                                </c:forEach>
-                            </c:otherwise>
-                        </c:choose>
-                    </div>
-                </div>
 
             </div>
         </div>
@@ -384,8 +393,8 @@
     loadLocChart(`${locData}`, `${startDate}`, `${endDate}`);
     loadLocByLanguageOverview(`${locByLanguage}`);
     loadNumberOfFilesByLanguageOverview(`${filesByLanguage}`);
-    loadSinglePointOfFailure(`${username}`, `${repositoryName}`, `${singlePointOfFailure}`);
-    loadConglomerate(`${username}`, `${repositoryName}`, `${conglomerate}`);
+    loadSinglePointOfFailure(`${username}`, `${repositoryName}`, `${heatMapContributorsData}`, `${fewCommiters}`);
+    loadConglomerate(`${username}`, `${repositoryName}`, `${heatMapContributorsData}`, `${manyCommiters}`);
     periodOfTime(`${filesAndPeriods}`);
 
     $("#dateSelectorSlider").bind("valuesChanged", function (e, data) {

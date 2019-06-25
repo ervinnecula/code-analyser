@@ -114,7 +114,7 @@ public class ChartDataStringWriters {
         return stringBuilder.toString();
     }
 
-    static String writePeriodOfTimeFilesToCSVFormat(Map<String, Period> periodOfTimeMap) {
+    public static String writePeriodOfTimeFilesToCSVFormat(Map<String, Period> periodOfTimeMap) {
         StringBuilder stringBuilder = new StringBuilder();
         for (Map.Entry<String, Period> entry : periodOfTimeMap.entrySet()) {
                 stringBuilder.append(entry.getKey())

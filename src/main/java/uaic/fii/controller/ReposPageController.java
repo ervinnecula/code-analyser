@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import uaic.fii.bean.CommitDiffBean;
 import uaic.fii.bean.RepoNameHtmlGitUrlsBean;
 import uaic.fii.bean.RuleViolationBean;
+import uaic.fii.model.Properties;
 import uaic.fii.service.AntiPatternsService;
 import uaic.fii.service.CommitService;
 import uaic.fii.service.HeatMapContributorService;
@@ -88,6 +89,7 @@ public class ReposPageController {
         try {
             repoService.cloneOrPullRepo(repoBean, resourceFolder);
             antipatternsService.loadStaticAnalysisResults(resourceFolder);
+            antipatternsService.loadProperties(username);
 
             List<CommitDiffBean> commits = repoService.getCommitsAndDiffs(resourceFolder);
             Date startDate = commits.get(commits.size() - 1).getCommitDate();
@@ -95,15 +97,18 @@ public class ReposPageController {
 
             model.addAttribute("startDate", formatter.format(startDate));
             model.addAttribute("endDate", formatter.format(endDate));
-            model.addAttribute("locByLanguage", overviewService.getLocByLanguage(resourceFolder));
-            model.addAttribute("filesByLanguage", overviewService.getNumberOfFilesByLanguage(resourceFolder));
+            model.addAttribute("fewCommiters", antipatternsService.getProperties().getFewCommitersSize());
+            model.addAttribute("manyCommiters", antipatternsService.getProperties().getManyCommitersSize());
+            model.addAllAttributes(prepareCustomOverviewMap(resourceFolder, commits));
+            model.addAttribute("top5ActiveContributorsLoC", overviewService.getActiveContributorsLoC(commits));
+            model.addAttribute("top5ActiveContributorsFiles", overviewService.getActiveContributorsFilesTouched(commits));
+            model.addAttribute("top5InvolvedContributors", overviewService.getMostInvolvedContributors(commits));
             model.addAttribute("heatMapCommitsData", writeStringStringIntegerMapToCSVFormat(commitService.getPathDiffsCsvFile(commits)));
             model.addAttribute("heatMapContributorsData", writeHeatMapContributorsToCSVFormat(heatMapContributorService.getPathContributorsCsvFile(commits)));
             model.addAttribute("addRemoveLinesData", writeLinesAddedRemovedToCSVFormat(locChartService.getAddRemoveLinesOverTime(commits)));
             model.addAttribute("locData", writeStringIntegerMapToCSVFormat(locChartService.getLOCOverTime(commits, startDate, endDate)));
             model.addAttribute("mediumAndHugeChanges", antipatternsService.detectMediumAndMajorChangesPattern(commits));
-            model.addAttribute("filesAndPeriods", antipatternsService.getPeriodOfTimeFiles(commits));
-            model.addAllAttributes(prepareCustomAntiPatternsMap(commits));
+            model.addAttribute("filesAndPeriods", writePeriodOfTimeFilesToCSVFormat(antipatternsService.getPeriodOfTimeFiles(commits)));
             model.addAllAttributes(preparePMDAntiPatternsMap());
             model.addAttribute("repositoryName", repoBean.getRepoName());
             model.addAttribute("username", username);
@@ -118,12 +123,16 @@ public class ReposPageController {
         return "map";
     }
 
-    private Map<String, String> prepareCustomAntiPatternsMap(List<CommitDiffBean> commits) {
-        Map<String, String> customAntiPatternsMap = new HashMap<>();
-        customAntiPatternsMap.put("singlePointOfFailure", antipatternsService.singlePointOfFailurePattern(commits));
-        customAntiPatternsMap.put("conglomerate", antipatternsService.conglomeratePattern(commits));
+    private Map<String, String> prepareCustomOverviewMap(File resourceFolder, List<CommitDiffBean> commits) {
+        Map<String, String> customOverviewMap = new HashMap<>();
 
-        return customAntiPatternsMap;
+        customOverviewMap.put("locByLanguage", overviewService.getLocByLanguage(resourceFolder));
+        customOverviewMap.put("filesByLanguage", overviewService.getNumberOfFilesByLanguage(resourceFolder));
+        customOverviewMap.put("recentFilesChanged", overviewService.countRecentFilesChanged(commits));
+        customOverviewMap.put("recentLinesChanged", overviewService.countRecentLinesChanged(commits));
+        customOverviewMap.put("recentContributors", overviewService.countRecentContributors(commits));
+
+        return customOverviewMap;
     }
 
     private Map<String, List<RuleViolationBean>> preparePMDAntiPatternsMap() {
