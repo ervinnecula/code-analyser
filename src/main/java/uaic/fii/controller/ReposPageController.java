@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import uaic.fii.bean.CommitDiffBean;
 import uaic.fii.bean.RepoNameHtmlGitUrlsBean;
 import uaic.fii.bean.RuleViolationBean;
-import uaic.fii.model.Properties;
 import uaic.fii.service.AntiPatternsService;
+import uaic.fii.service.AuthorService;
 import uaic.fii.service.CommitService;
 import uaic.fii.service.HeatMapContributorService;
 import uaic.fii.service.LocChartService;
@@ -60,6 +60,9 @@ public class ReposPageController {
     @Autowired
     private AntiPatternsService antipatternsService;
 
+    @Autowired
+    private AuthorService authorService;
+
     @RequestMapping(value = "/repos", method = GET)
     public String getReposPage(@ModelAttribute("username") String username, Model model) {
         List<RepoNameHtmlGitUrlsBean> repoBeans = new ArrayList<>();
@@ -89,7 +92,7 @@ public class ReposPageController {
         try {
             repoService.cloneOrPullRepo(repoBean, resourceFolder);
             antipatternsService.loadStaticAnalysisResults(resourceFolder);
-            antipatternsService.loadProperties(username);
+            commitService.loadProperties(username);
 
             List<CommitDiffBean> commits = repoService.getCommitsAndDiffs(resourceFolder);
             Date startDate = commits.get(commits.size() - 1).getCommitDate();
@@ -97,8 +100,8 @@ public class ReposPageController {
 
             model.addAttribute("startDate", formatter.format(startDate));
             model.addAttribute("endDate", formatter.format(endDate));
-            model.addAttribute("fewCommiters", antipatternsService.getProperties().getFewCommitersSize());
-            model.addAttribute("manyCommiters", antipatternsService.getProperties().getManyCommitersSize());
+            model.addAttribute("fewCommiters", commitService.getProperties().getFewCommitersSize());
+            model.addAttribute("manyCommiters", commitService.getProperties().getManyCommitersSize());
             model.addAllAttributes(prepareCustomOverviewMap(resourceFolder, commits));
             model.addAttribute("top5ActiveContributorsLoC", overviewService.getActiveContributorsLoC(commits));
             model.addAttribute("top5ActiveContributorsFiles", overviewService.getActiveContributorsFilesTouched(commits));
@@ -107,8 +110,9 @@ public class ReposPageController {
             model.addAttribute("heatMapContributorsData", writeHeatMapContributorsToCSVFormat(heatMapContributorService.getPathContributorsCsvFile(commits)));
             model.addAttribute("addRemoveLinesData", writeLinesAddedRemovedToCSVFormat(locChartService.getAddRemoveLinesOverTime(commits)));
             model.addAttribute("locData", writeStringIntegerMapToCSVFormat(locChartService.getLOCOverTime(commits, startDate, endDate)));
+            model.addAttribute("authorsData", authorService.getAuthorActivityList(commits));
             model.addAttribute("mediumAndHugeChanges", antipatternsService.detectMediumAndMajorChangesPattern(commits));
-            model.addAttribute("filesAndPeriods", writePeriodOfTimeFilesToCSVFormat(antipatternsService.getPeriodOfTimeFiles(commits)));
+            model.addAttribute("filesAndPeriods", writePeriodOfTimeFilesToCSVFormat(antipatternsService.getPeriodOfTimeAllFiles(commits)));
             model.addAllAttributes(preparePMDAntiPatternsMap());
             model.addAttribute("repositoryName", repoBean.getRepoName());
             model.addAttribute("username", username);

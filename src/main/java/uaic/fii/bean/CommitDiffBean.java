@@ -20,31 +20,15 @@ public class CommitDiffBean {
         return commitHash;
     }
 
-    public void setCommitHash(String commitHash) {
-        this.commitHash = commitHash;
-    }
-
     public Date getCommitDate() {
         return commitDate;
-    }
-
-    public void setCommitDate(Date commitDate) {
-        this.commitDate = commitDate;
     }
 
     public List<DiffBean> getDiffs() {
         return diffs;
     }
 
-    public void setDiffs(List<DiffBean> diffs) {
-        this.diffs = diffs;
-    }
-
     public String getCommiterName() {
         return commiterName;
-    }
-
-    public void setCommiterName(String commiterName) {
-        this.commiterName = commiterName;
     }
 }

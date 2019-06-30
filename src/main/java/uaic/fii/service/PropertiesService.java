@@ -15,7 +15,6 @@ public class PropertiesService {
     @Autowired
     private UserRepository userRepository;
 
-
     public PropertiesService(PropertiesRepository propertiesRepository) {
         this.propertiesRepository = propertiesRepository;
     }

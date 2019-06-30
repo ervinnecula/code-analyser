@@ -1,10 +1,10 @@
-var periodOfTimeSvg = d3.select("#periodoftime"),
+var periodOfTimeSvg = d3.select("#periodoftimeChart"),
     width = +periodOfTimeSvg.attr("width"),
     height = +periodOfTimeSvg.attr("height");
 
 var format = d3.format(",d");
 
-var color =['#4afe00', '#a4e897', '#626a60','#322f2f'];
+var color = ['#4afe00', '#a4e897', '#626a60','#322f2f'];
 
 var pack = d3.pack()
     .size([width, height])

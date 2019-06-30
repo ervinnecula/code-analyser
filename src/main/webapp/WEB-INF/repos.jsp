@@ -42,7 +42,6 @@
                     <th scope="col">Repository Name</th>
                     <th scope="col">Url</th>
                     <th scope="col">Language</th>
-                    <th></th>
                 </tr>
                 </thead>
                 <tbody>

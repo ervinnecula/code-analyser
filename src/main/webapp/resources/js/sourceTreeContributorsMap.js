@@ -2,7 +2,7 @@ var sourceTreeContributorsSvg = d3.select("#sourceTreeContributorsMap"),
     sourceTreeContributorsWidth = +sourceTreeContributorsSvg.attr("width"),
     sourceTreeContributorsHeight = +sourceTreeContributorsSvg.attr("height");
 
-var colorContributors = d3.scaleOrdinal().range(['#ffc7ba', '#e17471', '#ff5755', '#ff3726','#910a07']);
+var colorContributors = ['#ffc7ba', '#e17471', '#ff5755', '#ff3726','#910a07'];
 
 var format = d3.format(",d");
 
@@ -70,19 +70,19 @@ function loadSourceTreeContributorsMap(username, repositoryName, data, startDate
             var fillColor;
             switch(true) {
                 case newValue >= 0 && newValue < 20:
-                    fillColor = colorContributors(0);
+                    fillColor = colorContributors[0];
                     break;
                 case newValue >= 20 && newValue < 40:
-                    fillColor = colorContributors(1);
+                    fillColor = colorContributors[1];
                     break;
                 case newValue >= 40 && newValue < 60:
-                    fillColor = colorContributors(2);
+                    fillColor = colorContributors[2];
                     break;
                 case newValue >= 60 && newValue < 80:
-                    fillColor = colorContributors(3);
+                    fillColor = colorContributors[3];
                     break;
                 case newValue >= 80:
-                    fillColor = colorContributors(4);
+                    fillColor = colorContributors[4];
                     break;
             }
             return fillColor;

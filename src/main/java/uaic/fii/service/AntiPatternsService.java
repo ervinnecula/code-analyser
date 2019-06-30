@@ -37,18 +37,12 @@ public class AntiPatternsService {
     final static Logger logger = LoggerFactory.getLogger(AntiPatternsService.class);
 
     @Autowired
-    private PropertiesService propertiesService;
-
-    @Autowired
     private RepoService repoService;
 
-    private Properties properties;
+    @Autowired
+    private CommitService commitService;
 
     private Map<StaticDetectionKind, List<RuleViolationBean>> staticRuleViolations;
-
-    public void loadProperties(String userName) {
-        properties = propertiesService.getPropertiesByUserId(userName);
-    }
 
     public Map<String, List<CommitChangeSize>> detectMediumAndMajorChangesPattern(List<CommitDiffBean> commits) {
         Map<String, List<CommitChangeSize>> mediumAndMajorChangesPattern = new HashMap<>();
@@ -74,29 +68,18 @@ public class AntiPatternsService {
     public Integer getLocChangedRecently(List<CommitDiffBean> commits) {
         int linesOfCodeChangedRecently = 0;
         for (CommitDiffBean commit : commits) {
-            long daysBetweenCommitAndToday = ChronoUnit.DAYS.between(commit.getCommitDate().toInstant(), new Date().toInstant());
-            Period period = getPeriodOfTime(daysBetweenCommitAndToday);
+            Period period = commitService.getPeriodOfTimeCommit(commit);
             if (period == Period.RECENT) {
-                for (DiffBean diff : commit.getDiffs()) {
-                    int linesAddedInFile = 0;
-                    if (!diff.getFilePath().equals("/dev/null")) {
-                        for (Edit edit : diff.getEdits()) {
-                            linesAddedInFile += edit.getLengthB();
-                            linesAddedInFile -= edit.getLengthA();
-                        }
-                        linesOfCodeChangedRecently += linesAddedInFile;
-                    }
-                }
+                linesOfCodeChangedRecently += commitService.getLoCChangedInCommit(commit);
             }
         }
         return linesOfCodeChangedRecently;
     }
 
-    public Map<String, Period> getPeriodOfTimeFiles(List<CommitDiffBean> commits) {
+    public Map<String, Period> getPeriodOfTimeAllFiles(List<CommitDiffBean> commits) {
         Map<String, Period> filesAndPeriods = new HashMap<>();
         for (CommitDiffBean commit : commits) {
-            long daysBetweenCommitAndToday = ChronoUnit.DAYS.between(commit.getCommitDate().toInstant(), new Date().toInstant());
-            Period period = getPeriodOfTime(daysBetweenCommitAndToday);
+            Period period = commitService.getPeriodOfTimeCommit(commit);
             for (DiffBean diff : commit.getDiffs()) {
                 if (!diff.getFilePath().equals("/dev/null")) {
                     filesAndPeriods.put(diff.getFilePath(), period);
@@ -113,8 +96,7 @@ public class AntiPatternsService {
     public Map<String, Period> getPeriodOfTimeContributors(List<CommitDiffBean> commits) {
         Map<String, Period> authorsAndPeriods = new HashMap<>();
         for (CommitDiffBean commit : commits) {
-            long daysBetweenCommitAndToday = ChronoUnit.DAYS.between(commit.getCommitDate().toInstant(), new Date().toInstant());
-            Period period = getPeriodOfTime(daysBetweenCommitAndToday);
+            Period period = commitService.getPeriodOfTimeCommit(commit);
             authorsAndPeriods.put(commit.getCommiterName(), period);
         }
 
@@ -159,33 +141,15 @@ public class AntiPatternsService {
 
     private ChangeSize getChangeSizeFromLocChanged(int locChanged) {
         ChangeSize changeSize = null;
-        if (locChanged >= properties.getMajorChangeSize()) {
+        if (locChanged >= commitService.getProperties().getMajorChangeSize()) {
             changeSize = ChangeSize.MAJOR;
         }
-        if (locChanged >= properties.getMediumChangeSize() && locChanged < properties.getMajorChangeSize()) {
+        if (locChanged >= commitService.getProperties().getMediumChangeSize() && locChanged < commitService.getProperties().getMajorChangeSize()) {
             changeSize = ChangeSize.MEDIUM;
         }
-        if (locChanged < properties.getMediumChangeSize()) {
+        if (locChanged < commitService.getProperties().getMediumChangeSize()) {
             changeSize = ChangeSize.SMALL;
         }
         return changeSize;
-    }
-
-    private Period getPeriodOfTime(long daysBetween) {
-        Period period;
-        if (daysBetween < properties.getPeriodOfTime()) {
-            period = Period.RECENT;
-        } else if (daysBetween >= properties.getPeriodOfTime() && daysBetween < properties.getPeriodOfTime() * 2) {
-            period = Period.MEDIUM;
-        } else if (daysBetween >= properties.getPeriodOfTime() * 2 && daysBetween < properties.getPeriodOfTime() * 6) {
-            period = Period.OLD;
-        } else {
-            period = Period.VERY_OLD;
-        }
-        return period;
-    }
-
-    public Properties getProperties() {
-        return properties;
     }
 }

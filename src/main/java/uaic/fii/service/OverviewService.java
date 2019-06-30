@@ -1,26 +1,24 @@
 package uaic.fii.service;
 
 import org.apache.commons.io.FileUtils;
-import org.eclipse.jgit.diff.Edit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uaic.fii.bean.CommitDiffBean;
-import uaic.fii.bean.DiffBean;
 import uaic.fii.model.Language;
+import uaic.fii.model.Period;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class OverviewService {
@@ -29,6 +27,9 @@ public class OverviewService {
 
     @Autowired
     private AntiPatternsService antiPatternsService;
+
+    @Autowired
+    private CommitService commitService;
 
     public String getLocByLanguage(File projectPath) {
         Map<Language, List<File>> languageFilesMap;
@@ -60,7 +61,14 @@ public class OverviewService {
     }
 
     public String countRecentFilesChanged(List<CommitDiffBean> commits) {
-        return Integer.toString(antiPatternsService.getPeriodOfTimeFiles(commits).values().size());
+        int counter = 0;
+        Collection<Period> filesAndPeriods = antiPatternsService.getPeriodOfTimeAllFiles(commits).values();
+        for (Period period : filesAndPeriods) {
+            if (period.equals(Period.RECENT)) {
+                counter++;
+            }
+        }
+        return Integer.toString(counter);
     }
 
     public String countRecentLinesChanged(List<CommitDiffBean> commits) {
@@ -68,22 +76,22 @@ public class OverviewService {
     }
 
     public String countRecentContributors(List<CommitDiffBean> commits) {
-        return Integer.toString(antiPatternsService.getPeriodOfTimeContributors(commits).values().size());
+        int counter = 0;
+        Collection<Period> contributorsAndPeriods = antiPatternsService.getPeriodOfTimeContributors(commits).values();
+        for (Period period : contributorsAndPeriods) {
+            if (period.equals(Period.RECENT)) {
+                counter++;
+            }
+        }
+        return Integer.toString(counter);
     }
 
     public Map<String, Integer> getActiveContributorsLoC(List<CommitDiffBean> commits) {
         Map<String, Integer> contributorsLoC = new HashMap<>();
 
         for (CommitDiffBean commit : commits) {
-            int linesChangedInCommit = 0;
-
-            for (DiffBean diff : commit.getDiffs()) {
-                for (Edit edit : diff.getEdits()) {
-                    linesChangedInCommit += edit.getLengthB() + edit.getLengthA();
-                }
-            }
             int locMap = contributorsLoC.getOrDefault(commit.getCommiterName(), 0);
-            contributorsLoC.put(commit.getCommiterName(), locMap + linesChangedInCommit);
+            contributorsLoC.put(commit.getCommiterName(), locMap + commitService.getLoCChangedInCommit(commit));
         }
         return contributorsLoC;
     }

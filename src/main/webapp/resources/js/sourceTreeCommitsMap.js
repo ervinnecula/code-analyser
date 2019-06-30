@@ -2,7 +2,7 @@ var sourceTreeCommitsSvg = d3.select("#sourceTreeCommitsMap"),
     sourceTreeCommitsWidth = +sourceTreeCommitsSvg.attr("width"),
     sourceTreeCommitsWeight = +sourceTreeCommitsSvg.attr("height");
 
-var colorCommits = d3.scaleOrdinal().range(['#B1DAE8', '#77CDE8', '#50C3E9', '#0278A0','#014C66']);
+var colorCommits = ['#B1DAE8', '#77CDE8', '#50C3E9', '#0278A0','#014C66'];
 
 var format = d3.format(",d");
 
@@ -70,19 +70,19 @@ function loadSourceTreeCommitsMap(username, repositoryName, data, startDate, end
             var fillColor;
             switch(true) {
                 case newValue >= 0 && newValue < 20:
-                    fillColor = colorCommits(0);
+                    fillColor = colorCommits[0];
                     break;
                 case newValue >= 20 && newValue < 40:
-                    fillColor = colorCommits(1);
+                    fillColor = colorCommits[1]
                     break;
                 case newValue >= 40 && newValue < 60:
-                    fillColor = colorCommits(2);
+                    fillColor = colorCommits[2];
                     break;
                 case newValue >= 60 && newValue < 80:
-                    fillColor = colorCommits(3);
+                    fillColor = colorCommits[3];
                     break;
                 case newValue >= 80:
-                    fillColor = colorCommits(4);
+                    fillColor = colorCommits[4];
                     break;
             }
             return fillColor;

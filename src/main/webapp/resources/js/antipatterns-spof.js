@@ -2,8 +2,6 @@ var spofTree = d3.select("#single-point-of-failure"),
     width = +sourceTreeCommitsSvg.attr("width"),
     height = +sourceTreeCommitsSvg.attr("height");
 
-var colorCommitsAntipatterns = d3.scaleOrdinal().range(['#ff1700', '#e94855', '#e88277', '#e8b5aa']);
-
 var format = d3.format(",d");
 
 var spofTreemap = d3.treemap()

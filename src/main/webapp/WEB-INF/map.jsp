@@ -58,6 +58,12 @@
                     <a class="nav-link" data-toggle="tab" href="#loc" aria-expanded="false" onclick="showDateSelector()">LOC</a>
                 </li>
                 <li>
+                    <a class="nav-link" data-toggle="tab" href="#periodoftime" aria-expanded="false" onclick="hideDateSelector()">Period of Time</a>
+                </li>
+                <li>
+                    <a class="nav-link" data-toggle="tab" href="#developers" aria-expanded="false" onclick="hideDateSelector()">Developers</a>
+                </li>
+                <li>
                     <a class="nav-link" data-toggle="tab" href="#antipatterns" aria-expanded="false" onclick="hideDateSelector()">Anti-Patterns</a>
                 </li>
             </ul>
@@ -134,6 +140,35 @@
                     <svg id="locLineChart" width="1550" height="750" viewBox="0 0 1550 800" preserveAspectRatio="xMidYMid meet"></svg>
                     <div id="tooltip-loc" class="tooltip" style="opacity:0"></div>
                 </div>
+                <div class="tab-pane" id="periodoftime">
+                    <svg id="periodoftimeChart" width="1500" height="820" viewBox="430 0 600 820" preserveAspectRatio="xMidYMid meet"></svg>
+                </div>
+                <div class="tab-pane" id="developers">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th scope="col">Username</th>
+                            <th scope="col">Number of Commits</th>
+                            <th scope="col">Total lines changed</th>
+                            <th scope="col">Net contribution LoC</th>
+                            <th scope="col">Active Recently</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <c:forEach items="${authorsData}" var="entry">
+                            <tr>
+                                <th scope="row">
+                                   ${entry.key}
+                                </th>
+                                <td>${entry.value.numberOfCommits}</td>
+                                <td>${entry.value.totalChanges}</td>
+                                <td>${entry.value.netContribution}</td>
+                                <td>${entry.value.developerStatus}</td>
+                            </tr>
+                        </c:forEach>
+                        </tbody>
+                    </table>
+                </div>
                 <div class="tab-pane" id="antipatterns" style="text-align:center">
                     <div id="antipatternsPage" style="padding-top:1%">
                         <div class="row">
@@ -141,8 +176,7 @@
                                 <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
                                     <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-spof" role="tab">Single Point of Failure</a>
                                     <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-conglomerate" role="tab">Conglomerate</a>
-                                    <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-mandhchanges" role="tab">Medium and Huge Changes</a>
-                                    <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-periodoftime" role="tab">Period of Time</a>
+                                    <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-mandhchanges" role="tab">Medium and Major Changes</a>
                                     <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-violations" role="tab">Basic Violations  <span class="badge badge-warning">Java Only</span></a>
                                     <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-optimizations" role="tab">Optimizations <span class="badge badge-warning">Java Only</span></a>
                                     <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-coupling" role="tab">Coupling  <span class="badge badge-warning">Java Only</span></a>
@@ -205,9 +239,6 @@
                                                     </div>
                                             </c:forEach>
                                         </div>
-                                    </div>
-                                    <div class="tab-pane" id="v-pills-periodoftime" role="tabpanel">
-                                        <svg id="periodoftime" width="1300" height="820" viewBox="430 0 600 800" preserveAspectRatio="xMidYMid meet"></svg>
                                     </div>
                                     <div class="tab-pane" id="v-pills-optimizations" role="tabpanel">
                                         <div>
@@ -353,8 +384,6 @@
                         </div>
                     </div>
                 </div>
-
-
             </div>
         </div>
     </div>
@@ -409,14 +438,23 @@
         var startDateSplit = startDate.split('-');
         var endDateSplit = endDate.split('-');
 
+        var start_year= startDateSplit[2];
+        var start_month = startDateSplit[1] - 1;
+        var start_day = startDateSplit[0];
+
+        var end_year= endDateSplit[2];
+        var end_month = endDateSplit[1] - 1;
+        var end_day = endDateSplit[0];
+
         $("#dateSelectorSlider").dateRangeSlider({
+
             bounds: {
-                min: new Date(startDateSplit[2], startDateSplit[1] - 1, startDateSplit[0]),
-                max: new Date(endDateSplit[2], endDateSplit[1] - 1, endDateSplit[0])
+                min: new Date(start_year, start_month, start_day),
+                max: new Date(end_year, end_month, end_day)
             },
             defaultValues: {
-                min: new Date(startDateSplit[2], startDateSplit[1] - 1, startDateSplit[0]),
-                max: new Date(endDateSplit[2], endDateSplit[1] - 1, endDateSplit[0])
+                min: new Date(start_year, start_month, start_day),
+                max: new Date(end_year, end_month, end_day)
             }
         });
     }
