@@ -72,7 +72,7 @@ public class CommitService {
         for (DiffBean diff : commit.getDiffs()) {
             if (!diff.getFilePath().equals("/dev/null"))
                 for (Edit edit : diff.getEdits()) {
-                    linesAddedInCommit += linesAddedInCommit + edit.getLengthB();
+                    linesAddedInCommit += edit.getLengthB();
                 }
         }
         return linesAddedInCommit;
@@ -84,7 +84,7 @@ public class CommitService {
         for (DiffBean diff : commit.getDiffs()) {
             if (!diff.getFilePath().equals("/dev/null"))
                 for (Edit edit : diff.getEdits()) {
-                    linesRemovedInCommit += linesRemovedInCommit + edit.getLengthA();
+                    linesRemovedInCommit += edit.getLengthA();
                 }
         }
         return linesRemovedInCommit;

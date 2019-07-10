@@ -81,3 +81,46 @@ g.node:hover circle {
 .card.text-white {
     min-height: 260px;
 }
+
+#total {
+    width: 100%;
+    height: 79%;
+}
+
+#user {
+    width: 100%;
+    height: 79%;
+}
+
+#add-delete {
+    width: 100%;
+    height: 79%;
+}
+
+#loc {
+    width: 100%;
+    height: 79%;
+}
+
+#periodoftime {
+    width: 100%;
+    height: 79%;
+}
+
+#v-pills-aa-spof {
+    width: 100%;
+    height: 76%;
+}
+
+#v-pills-aa-conglomerate {
+    width: 100%;
+    height: 76%;
+}
+
+#add-delete svg {
+    padding-left: 7%;
+}
+
+#loc svg {
+    padding-left: 7%;
+}

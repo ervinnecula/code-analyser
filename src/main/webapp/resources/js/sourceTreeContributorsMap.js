@@ -1,17 +1,22 @@
-var sourceTreeContributorsSvg = d3.select("#sourceTreeContributorsMap"),
-    sourceTreeContributorsWidth = +sourceTreeContributorsSvg.attr("width"),
-    sourceTreeContributorsHeight = +sourceTreeContributorsSvg.attr("height");
+var colorContributors = ['#ffc7ba', '#e17471', '#ff5755', '#ff3726', '#910a07'];
 
-var colorContributors = ['#ffc7ba', '#e17471', '#ff5755', '#ff3726','#910a07'];
+var sourceTreeContributorsSvg = d3.select("#user")
+    .append("svg")
+    .attr("height", "100%")
+    .attr("width", "100%")
+    .attr("preserveAspectRatio", "xMidYMid")
+    .attr("class", "pt-2");
+
 
 var format = d3.format(",d");
 
-var treemapContributors = d3.treemap()
-    .size([sourceTreeContributorsWidth, sourceTreeContributorsHeight])
-    .round(true)
-    .padding(1);
-
 function loadSourceTreeContributorsMap(username, repositoryName, data, startDate, endDate) {
+
+    var treemapContributors = d3.treemap()
+        .size([widthTotal * 0.98, heightTotal])
+        .round(true)
+        .padding(1);
+
     var array = [];
 
     var maximumValue = -1;
@@ -43,13 +48,25 @@ function loadSourceTreeContributorsMap(username, repositoryName, data, startDate
     }
 
     var root = d3.stratify()
-        .id(function(d) { return d.path; })
-        .parentId(function(d) { return d.path.substring(0, d.path.lastIndexOf("/")); })
+        .id(function (d) {
+            return d.path;
+        })
+        .parentId(function (d) {
+            return d.path.substring(0, d.path.lastIndexOf("/"));
+        })
         (array)
-        .sum(function(d) { if (d.size < minimumValue) { minimumValue = d.size }
-                            if (d.size > maximumValue) { maximumValue = d.size }
-                            return d.size; })
-        .sort(function(a, b) { return b.height - a.height || b.value - a.value; });
+        .sum(function (d) {
+            if (d.size < minimumValue) {
+                minimumValue = d.size
+            }
+            if (d.size > maximumValue) {
+                maximumValue = d.size
+            }
+            return d.size;
+        })
+        .sort(function (a, b) {
+            return b.height - a.height || b.value - a.value;
+        });
 
     treemapContributors(root);
 
@@ -57,18 +74,28 @@ function loadSourceTreeContributorsMap(username, repositoryName, data, startDate
         .data(root.leaves())
         .enter().append("a")
         .attr("target", "_blank")
-        .attr("xlink:href", function(d) { return "https://github.com/" + username + "/" + repositoryName + "/blob/master/" + d.data.path.replace("__project__/", "") })
-        .attr("transform", function(d) { return "translate(" + d.x0 + "," + d.y0 + ")"; });
+        .attr("xlink:href", function (d) {
+            return "https://github.com/" + username + "/" + repositoryName + "/blob/master/" + d.data.path.replace("__project__/", "")
+        })
+        .attr("transform", function (d) {
+            return "translate(" + d.x0 + "," + d.y0 + ")";
+        });
 
     cell.append("rect")
-        .attr("id", function(d) { return d.id; })
-        .attr("width", function(d) { return d.x1 - d.x0; })
-        .attr("height", function(d) { return d.y1 - d.y0; })
-        .attr("fill", function(d) {
+        .attr("id", function (d) {
+            return d.id;
+        })
+        .attr("width", function (d) {
+            return d.x1 - d.x0;
+        })
+        .attr("height", function (d) {
+            return d.y1 - d.y0;
+        })
+        .attr("fill", function (d) {
             // Converting values to range 0 - 100
             var newValue = (((d.data.size - minimumValue) * (100)) / (maximumValue - minimumValue));
             var fillColor;
-            switch(true) {
+            switch (true) {
                 case newValue >= 0 && newValue < 20:
                     fillColor = colorContributors[0];
                     break;
@@ -89,18 +116,24 @@ function loadSourceTreeContributorsMap(username, repositoryName, data, startDate
         });
 
     cell.append("clipPath")
-        .attr("id", function(d) { return "clip-" + d.id.replace("__project__/", ""); })
+        .attr("id", function (d) {
+            return "clip-" + d.id.replace("__project__/", "");
+        })
         .append("use")
-        .attr("xlink:href", function(d) { return "#" + d.id.replace("__project__/", ""); });
+        .attr("xlink:href", function (d) {
+            return "#" + d.id.replace("__project__/", "");
+        });
 
     var label = cell.append("text")
-        .attr("clip-path", function(d) { return d.id.replace("__project__/", "") });
+        .attr("clip-path", function (d) {
+            return d.id.replace("__project__/", "")
+        });
 
     label.append("tspan")
         .attr("x", 4)
         .attr("y", 25)
         .attr("fill", "white")
-        .text(function(d) {
+        .text(function (d) {
             var file = d.data.path.substring(d.data.path.lastIndexOf("/") + 1, d.data.path.lastIndexOf("."));
             file = file.replace("__project__/", "");
             return file;
@@ -110,8 +143,12 @@ function loadSourceTreeContributorsMap(username, repositoryName, data, startDate
         .attr("x", 4)
         .attr("y", 45)
         .attr("fill", "white")
-        .text(function(d) { return format(d.value); });
+        .text(function (d) {
+            return format(d.value);
+        });
 
     cell.append("title")
-        .text(function(d) { return d.id.replace("__project__/", "") + "\n" + format(d.value); });
+        .text(function (d) {
+            return d.id.replace("__project__/", "") + "\n" + format(d.value);
+        });
 }

@@ -1,25 +1,26 @@
+var widthLoc = $("#loc").width() * 0.90;
+var heightLoc = $("#loc").height() * 1.25;
+
+var locChart = d3.select("#loc")
+    .append("svg")
+    .attr("height", "100%")
+    .attr("width", "100%")
+    .attr("preserveAspectRatio", "xMidYMid meet")
+    .attr("class", "pt-5");
+
 var parseTime = d3.timeParse("%Y-%m-%d");
-// set the ranges
-var margin = {top: 50, right: 20, bottom: 70, left: 50},
-    width = 1450 - margin.left - margin.right,
-    height = 770 - margin.top - margin.bottom;
 
-var x = d3.scaleTime().range([0, width]);
-var y = d3.scaleLinear().range([height, 0]);
-
-var areaLoc = d3.area()
-    .x(function(d) { return x(d.date); })
-    .y0(height)
-    .y1(function(d) { return y(d.loc); });
-
-// moves the 'group' element to the top left margin
-var locLineSvg = d3.select("#locLineChart")
-    .append("g")
-    .attr("transform", "translate(" + 50 + "," + 20 + ")");
-
-// Get the data
 function loadLocChart(csv, startDate, endDate) {
+
     var data = [];
+
+    var x = d3.scaleTime().range([0, widthLoc]);
+    var y = d3.scaleLinear().range([heightLoc, 0]);
+
+    var areaLoc = d3.area()
+        .x(function(d) { return x(d.date); })
+        .y0(heightLoc)
+        .y1(function(d) { return y(d.loc); });
 
     var startDateObj = startDate;
     var endDateObj = endDate;
@@ -30,7 +31,8 @@ function loadLocChart(csv, startDate, endDate) {
         startDateObj = new Date(startDateSplit[2], Number(startDateSplit[1]) - 1, startDateSplit[0], 0);
         endDateObj = new Date(endDateSplit[2], Number(endDateSplit[1]) - 1, endDateSplit[0], 0);
     }
-    locLineSvg.selectAll("*").remove();
+
+    locChart.selectAll("*").remove();
 
     var rows = csv.split(/\n/);
     for (var i = 0; i < rows.length; i++) {
@@ -56,15 +58,15 @@ function loadLocChart(csv, startDate, endDate) {
     y.domain([0, d3.max(data, function(d) {return d.loc; })]);
 
     // add the area for lines added
-    locLineSvg.append("path")
+    locChart.append("path")
         .data([data])
         .attr("class", "areaLoc")
         .attr("d", areaLoc);
 
     // Add the X Axis
-    locLineSvg.append("g")
+    locChart.append("g")
         .attr("class", "axis")
-        .attr("transform", "translate(0," + 650 + ")")
+        .attr("transform", "translate(0," + heightLoc + ")")
         .call(d3.axisBottom(x).tickFormat(d3.timeFormat("%Y-%m-%d")))
         .selectAll("text")
         .style("text-anchor", "end")
@@ -73,7 +75,7 @@ function loadLocChart(csv, startDate, endDate) {
         .attr("transform", "rotate(-65)");
 
     // Add the Y Axis
-    locLineSvg.append("g")
+    locChart.append("g")
         .attr("class", "axis")
         .call(d3.axisLeft(y));
 
@@ -94,7 +96,7 @@ function loadLocChart(csv, startDate, endDate) {
     }
 
     // add the dots with tooltips
-    locLineSvg.append("g")
+    locChart.append("g")
         .selectAll("dot1")
         .data(data)
         .enter().append("circle")

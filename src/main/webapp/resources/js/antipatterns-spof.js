@@ -1,22 +1,25 @@
-var spofTree = d3.select("#single-point-of-failure"),
-    width = +sourceTreeCommitsSvg.attr("width"),
-    height = +sourceTreeCommitsSvg.attr("height");
+var spofTreeSvg = d3.select("#v-pills-aa-spof")
+    .append("svg")
+    .attr("height", "100%")
+    .attr("width", "100%")
+    .attr("preserveAspectRatio", "xMidYMid");
 
 var format = d3.format(",d");
 
-var spofTreemap = d3.treemap()
-    .size([width, height])
-    .round(true)
-    .padding(1);
-
 function loadSinglePointOfFailure(username, repositoryName, data, fewCommiters) {
+
     var array = [];
+
+    var spofTreemap = d3.treemap()
+        .size([widthTotal, heightTotal])
+        .round(true)
+        .padding(1);
 
     var maximumValue = -1;
     var minimumValue = 9999999;
 
     if (data !== '') {
-        spofTree.selectAll("*").remove();
+        spofTreeSvg.selectAll("*").remove();
 
         var rows = data.split(/\n/);
         for (var i = 0; i < rows.length; i++) {
@@ -51,7 +54,7 @@ function loadSinglePointOfFailure(username, repositoryName, data, fewCommiters) 
 
         spofTreemap(root);
 
-        var cell = spofTree.selectAll("a")
+        var cell = spofTreeSvg.selectAll("a")
             .data(root.leaves())
             .enter().append("a")
             .attr("target", "_blank")

@@ -1,13 +1,18 @@
-var periodOfTimeSvg = d3.select("#periodoftimeChart"),
-    width = +periodOfTimeSvg.attr("width"),
-    height = +periodOfTimeSvg.attr("height");
+var periodOfTimeSvg = d3.select("#periodoftime")
+    .append("svg")
+    .attr("height", "100%")
+    .attr("width", "100%")
+    .attr("preserveAspectRatio", "xMidYMid");
+
+var widthPeriodOfTime = $("#periodoftime").width() * 0.90;
+var heightPeriodOfTime = $("#periodoftime").height() * 1.60;
 
 var format = d3.format(",d");
 
-var color = ['#4afe00', '#a4e897', '#626a60','#322f2f'];
+var colorPeriodOfTime = ['#4afe00', '#a4e897', '#626a60', '#322f2f'];
 
 var pack = d3.pack()
-    .size([width, height])
+    .size([widthPeriodOfTime, heightPeriodOfTime])
     .padding(1.5);
 
 function periodOfTime(data) {
@@ -33,8 +38,8 @@ function periodOfTime(data) {
         }
     }
 
-    var root = d3.hierarchy({ children: array })
-        .sum(function(d) {
+    var root = d3.hierarchy({children: array})
+        .sum(function (d) {
             return d.period;
         });
 
@@ -42,44 +47,48 @@ function periodOfTime(data) {
         .data(pack(root).leaves())
         .enter().append("g")
         .attr("class", "node")
-        .attr("transform", function(d) {
-            return "translate(" + d.x + "," + d.y + ")"; });
+        .attr("transform", function (d) {
+            return "translate(" + d.x + "," + d.y + ")";
+        });
 
     node.append("circle")
-        .attr("id", function(d) {
+        .attr("id", function (d) {
             return d.data.periodInString;
-        }).attr("r", function(d) {
-            return d.r; })
-        .style("fill", function(d) {
+        }).attr("r", function (d) {
+        return d.r;
+    })
+        .style("fill", function (d) {
             var fillColor;
-            switch(d.data.periodInString) {
+            switch (d.data.periodInString) {
                 case "RECENT":
-                    fillColor = color[0];
+                    fillColor = colorPeriodOfTime[0];
                     break;
                 case "MEDIUM":
-                    fillColor = color[1];
+                    fillColor = colorPeriodOfTime[1];
                     break;
                 case "OLD":
-                    fillColor = color[2];
+                    fillColor = colorPeriodOfTime[2];
                     break;
                 case "VERY_OLD":
-                    fillColor = color[3];
+                    fillColor = colorPeriodOfTime[3];
                     break;
             }
             return fillColor;
         });
 
     node.append("clipPath")
-        .attr("id", function(d) {
-            return "clip-" + d.data.path; })
+        .attr("id", function (d) {
+            return "clip-" + d.data.path;
+        })
         .append("use")
-        .attr("xlink:href", function(d) {
+        .attr("xlink:href", function (d) {
             return "#" + d.data.path;
         });
 
     node.append("title")
-        .text(function(d) {
-            return d.data.path + "\n" + d.data.periodInString;;
+        .text(function (d) {
+            return d.data.path + "\n" + d.data.periodInString;
+            ;
         });
 }
 
@@ -87,11 +96,14 @@ function getNumericPeriod(stringPeriod) {
     var number;
     if (stringPeriod === "RECENT") {
         number = 20;
-    } if (stringPeriod === "MEDIUM") {
+    }
+    if (stringPeriod === "MEDIUM") {
         number = 10;
-    } if (stringPeriod === "OLD") {
+    }
+    if (stringPeriod === "OLD") {
         number = 5;
-    } if (stringPeriod === "VERY_OLD") {
+    }
+    if (stringPeriod === "VERY_OLD") {
         number = 3;
     }
     return number;

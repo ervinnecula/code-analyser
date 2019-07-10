@@ -1,38 +1,56 @@
+var widthAddDelete = $("#add-delete").width() * 0.90;
+var heightAddDelete = $("#add-delete").height() * 1.25;
+
+var addRemoveLineChart = d3.select("#add-delete")
+    .append("svg")
+    .attr("height", "100%")
+    .attr("width", "100%")
+    .attr("preserveAspectRatio", "xMidYMid meet")
+    .attr("class", "pt-5");
+
 var parseTime = d3.timeParse("%Y-%m-%d");
-// set the ranges
-var margin = {top: 50, right: 20, bottom: 70, left: 50},
-    width = 1450 - margin.left - margin.right,
-    height = 770 - margin.top - margin.bottom;
 
-var x = d3.scaleTime().range([0, width]);
-var y = d3.scaleLinear().range([height, 0]);
 
-var valuesLinesAdded = d3.line()
-    .x(function(d) { return x(d.date); })
-    .y(function(d) { return y(d.linesAdded); });
-
-var areaLinesAdded = d3.area()
-    .x(function(d) { return x(d.date); })
-    .y0(height)
-    .y1(function(d) { return y(d.linesAdded); });
-
-var valuesLinesRemoved = d3.line()
-    .x(function(d) { return x(d.date); })
-    .y(function(d) { return y(d.linesRemoved); });
-
-var areaLinesRemoved = d3.area()
-    .x(function(d) { return x(d.date); })
-    .y0(height)
-    .y1(function(d) { return y(d.linesRemoved); });
-
-// moves the 'group' element to the top left margin
-var addRemoveLineSvg = d3.select("#addRemoveLineChart")
-    .append("g")
-    .attr("transform", "translate(" + 50 + "," + 20 + ")");
-
-// Get the data
 function loadAddRemoveLineChart(csv, startDate, endDate) {
+
     var data = [];
+
+    var x = d3.scaleTime().range([0, widthAddDelete]);
+    var y = d3.scaleLinear().range([heightAddDelete, 0]);
+
+    var valuesLinesAdded = d3.line()
+        .x(function (d) {
+            return x(d.date);
+        })
+        .y(function (d) {
+            return y(d.linesAdded);
+        });
+
+    var areaLinesAdded = d3.area()
+        .x(function (d) {
+            return x(d.date);
+        })
+        .y0(heightAddDelete)
+        .y1(function (d) {
+            return y(d.linesAdded);
+        });
+
+    var valuesLinesRemoved = d3.line()
+        .x(function (d) {
+            return x(d.date);
+        })
+        .y(function (d) {
+            return y(d.linesRemoved);
+        });
+
+    var areaLinesRemoved = d3.area()
+        .x(function (d) {
+            return x(d.date);
+        })
+        .y0(heightAddDelete)
+        .y1(function (d) {
+            return y(d.linesRemoved);
+        });
 
     var startDateObj = startDate;
     var endDateObj = endDate;
@@ -43,7 +61,7 @@ function loadAddRemoveLineChart(csv, startDate, endDate) {
         startDateObj = new Date(startDateSplit[2], Number(startDateSplit[1]) - 1, startDateSplit[0], 0);
         endDateObj = new Date(endDateSplit[2], Number(endDateSplit[1]) - 1, endDateSplit[0], 0);
     }
-    addRemoveLineSvg.selectAll("*").remove();
+    addRemoveLineChart.selectAll("*").remove();
 
     var rows = csv.split(/\n/);
     for (var i = 0; i < rows.length; i++) {
@@ -60,42 +78,46 @@ function loadAddRemoveLineChart(csv, startDate, endDate) {
         }
     }
 
-    data.forEach(function(d) {
+    data.forEach(function (d) {
         d.date = parseTime(d.date);
         d.linesAdded = +d.linesAdded;
         d.linesRemoved = +d.linesRemoved;
     });
 
-    x.domain(d3.extent(data, function(d) { return d.date; }));
-    y.domain([0, d3.max(data, function(d) {return Math.max(d.linesAdded, d.linesRemoved); })]);
+    x.domain(d3.extent(data, function (d) {
+        return d.date;
+    }));
+    y.domain([0, d3.max(data, function (d) {
+        return Math.max(d.linesAdded, d.linesRemoved);
+    })]);
 
     // add the lines added blue line
-    addRemoveLineSvg.append("path")
+    addRemoveLineChart.append("path")
         .data([data])
         .attr("class", "lineLinesAdded")
         .attr("d", valuesLinesAdded);
 
     // add the area for lines added
-    addRemoveLineSvg.append("path")
+    addRemoveLineChart.append("path")
         .data([data])
         .attr("class", "areaLinesAdded")
         .attr("d", areaLinesAdded);
 
-    addRemoveLineSvg.append("path")
+    addRemoveLineChart.append("path")
         .data([data])
         .attr("class", "lineLinesRemoved")
         .attr("d", valuesLinesRemoved);
 
     // add the area for lines added
-    addRemoveLineSvg.append("path")
+    addRemoveLineChart.append("path")
         .data([data])
         .attr("class", "areaLinesRemoved")
         .attr("d", areaLinesRemoved);
 
     // Add the X Axis
-    addRemoveLineSvg.append("g")
+    addRemoveLineChart.append("g")
         .attr("class", "axis")
-        .attr("transform", "translate(0," + 650 + ")")
+        .attr("transform", "translate(0," + heightAddDelete + ")")
         .call(d3.axisBottom(x).tickFormat(d3.timeFormat("%Y-%m-%d")))
         .selectAll("text")
         .style("text-anchor", "end")
@@ -104,7 +126,7 @@ function loadAddRemoveLineChart(csv, startDate, endDate) {
         .attr("transform", "rotate(-65)");
 
     // Add the Y Axis
-    addRemoveLineSvg.append("g")
+    addRemoveLineChart.append("g")
         .attr("class", "axis")
         .call(d3.axisLeft(y));
 
@@ -125,14 +147,18 @@ function loadAddRemoveLineChart(csv, startDate, endDate) {
     }
 
     // add the dots with tooltips
-    addRemoveLineSvg.append("g")
+    addRemoveLineChart.append("g")
         .selectAll("dot1")
         .data(data)
         .enter().append("circle")
         .attr("r", 5)
-        .attr("cx", function(d) { return x(d.date); })
-        .attr("cy", function(d) { return y(d.linesAdded); })
-        .on("mouseover", function(d) {
+        .attr("cx", function (d) {
+            return x(d.date);
+        })
+        .attr("cy", function (d) {
+            return y(d.linesAdded);
+        })
+        .on("mouseover", function (d) {
             tooltip.transition()
                 .duration(200)
                 .style("opacity", .9)
@@ -141,20 +167,24 @@ function loadAddRemoveLineChart(csv, startDate, endDate) {
                 .style("left", (d3.event.pageX - 300))
                 .style("top", (d3.event.pageY - 100));
         })
-        .on("mouseout", function(d) {
+        .on("mouseout", function (d) {
             tooltip.transition()
                 .duration(500)
                 .style("opacity", 0);
         });
 
-    addRemoveLineSvg.append("g")
+    addRemoveLineChart.append("g")
         .selectAll("dot2")
         .data(data)
         .enter().append("circle")
         .attr("r", 5)
-        .attr("cx", function(d) { return x(d.date); })
-        .attr("cy", function(d) { return y(d.linesRemoved); })
-        .on("mouseover", function(d) {
+        .attr("cx", function (d) {
+            return x(d.date);
+        })
+        .attr("cy", function (d) {
+            return y(d.linesRemoved);
+        })
+        .on("mouseover", function (d) {
             tooltip.transition()
                 .duration(200)
                 .style("opacity", .9)
@@ -163,7 +193,7 @@ function loadAddRemoveLineChart(csv, startDate, endDate) {
                 .style("left", (d3.event.pageX - 300))
                 .style("top", (d3.event.pageY - 100));
         })
-        .on("mouseout", function(d) {
+        .on("mouseout", function (d) {
             tooltip.transition()
                 .duration(500)
                 .style("opacity", 0);

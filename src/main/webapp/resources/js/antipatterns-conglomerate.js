@@ -1,23 +1,24 @@
-var conglomerateTree = d3.select("#conglomerate"),
-    width = +sourceTreeCommitsSvg.attr("width"),
-    height = +sourceTreeCommitsSvg.attr("height");
+var conglomerateTreeSvg = d3.select("#conglomerate")
+    .attr("height", "100%")
+    .attr("width", "100%")
+    .attr("preserveAspectRatio", "xMidYMid");
 
 var format = d3.format(",d");
 
-var conglomerateTreemap = d3.treemap()
-    .size([width, height])
-    .round(true)
-    .padding(1);
-
 function loadConglomerate(username, repositoryName, data, manyCommiters) {
+
     var array = [];
+
+    var conglomerateTreemap = d3.treemap()
+        .size([widthTotal, heightTotal])
+        .round(true)
+        .padding(1);
 
     var maximumValue = -1;
     var minimumValue = 9999999;
 
     if (data !== '') {
-
-        conglomerateTree.selectAll("*").remove();
+        conglomerateTreeSvg.selectAll("*").remove();
 
         var rows = data.split(/\n/);
         for (var i = 0; i < rows.length; i++) {
@@ -51,7 +52,7 @@ function loadConglomerate(username, repositoryName, data, manyCommiters) {
 
         conglomerateTreemap(root);
 
-        var cell = conglomerateTree.selectAll("a")
+        var cell = conglomerateTreeSvg.selectAll("a")
             .data(root.leaves())
             .enter().append("a")
             .attr("target", "_blank")

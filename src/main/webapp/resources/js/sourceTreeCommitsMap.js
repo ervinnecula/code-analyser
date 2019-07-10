@@ -1,17 +1,24 @@
-var sourceTreeCommitsSvg = d3.select("#sourceTreeCommitsMap"),
-    sourceTreeCommitsWidth = +sourceTreeCommitsSvg.attr("width"),
-    sourceTreeCommitsWeight = +sourceTreeCommitsSvg.attr("height");
+var colorCommits = ['#B1DAE8', '#77CDE8', '#50C3E9', '#0278A0', '#014C66'];
 
-var colorCommits = ['#B1DAE8', '#77CDE8', '#50C3E9', '#0278A0','#014C66'];
+var widthTotal = $("#total").width() * 0.97;
+var heightTotal = $("#total").height() * 1.55;
+
+var sourceTreeCommitsSvg = d3.select("#total")
+    .append("svg")
+    .attr("height", "100%")
+    .attr("width", "100%")
+    .attr("preserveAspectRatio", "xMidYMid")
+    .attr("class", "pt-2");
 
 var format = d3.format(",d");
 
-var treemapCommits = d3.treemap()
-    .size([sourceTreeCommitsWidth, sourceTreeCommitsWeight])
-    .round(true)
-    .padding(1);
-
 function loadSourceTreeCommitsMap(username, repositoryName, data, startDate, endDate) {
+
+    var treemapCommits = d3.treemap()
+        .size([widthTotal, heightTotal])
+        .round(true)
+        .padding(1);
+
     var array = [];
 
     var maximumValue = -1;
@@ -43,13 +50,25 @@ function loadSourceTreeCommitsMap(username, repositoryName, data, startDate, end
     }
 
     var root = d3.stratify()
-        .id(function(d) { return d.path; })
-        .parentId(function(d) { return d.path.substring(0, d.path.lastIndexOf("/")); })
+        .id(function (d) {
+            return d.path;
+        })
+        .parentId(function (d) {
+            return d.path.substring(0, d.path.lastIndexOf("/"));
+        })
         (array)
-        .sum(function(d) { if (d.size < minimumValue) { minimumValue = d.size }
-                            if (d.size > maximumValue) { maximumValue = d.size }
-                            return d.size; })
-        .sort(function(a, b) { return b.height - a.height || b.value - a.value; });
+        .sum(function (d) {
+            if (d.size < minimumValue) {
+                minimumValue = d.size
+            }
+            if (d.size > maximumValue) {
+                maximumValue = d.size
+            }
+            return d.size;
+        })
+        .sort(function (a, b) {
+            return b.height - a.height || b.value - a.value;
+        });
 
     treemapCommits(root);
 
@@ -57,23 +76,33 @@ function loadSourceTreeCommitsMap(username, repositoryName, data, startDate, end
         .data(root.leaves())
         .enter().append("a")
         .attr("target", "_blank")
-        .attr("xlink:href", function(d) { return "https://github.com/" + username + "/" + repositoryName + "/blob/master/" + d.data.path.replace("__project__/", ""); })
-        .attr("transform", function(d) { return "translate(" + d.x0 + "," + d.y0 + ")"; });
+        .attr("xlink:href", function (d) {
+            return "https://github.com/" + username + "/" + repositoryName + "/blob/master/" + d.data.path.replace("__project__/", "");
+        })
+        .attr("transform", function (d) {
+            return "translate(" + d.x0 + "," + d.y0 + ")";
+        });
 
     cell.append("rect")
-        .attr("id", function(d) { return d.id; })
-        .attr("width", function(d) { return d.x1 - d.x0; })
-        .attr("height", function(d) { return d.y1 - d.y0; })
-        .attr("fill", function(d) {
+        .attr("id", function (d) {
+            return d.id;
+        })
+        .attr("width", function (d) {
+            return d.x1 - d.x0;
+        })
+        .attr("height", function (d) {
+            return d.y1 - d.y0;
+        })
+        .attr("fill", function (d) {
             // Converting values to range 0 - 100
             var newValue = (((d.data.size - minimumValue) * (100)) / (maximumValue - minimumValue));
             var fillColor;
-            switch(true) {
+            switch (true) {
                 case newValue >= 0 && newValue < 20:
                     fillColor = colorCommits[0];
                     break;
                 case newValue >= 20 && newValue < 40:
-                    fillColor = colorCommits[1]
+                    fillColor = colorCommits[1];
                     break;
                 case newValue >= 40 && newValue < 60:
                     fillColor = colorCommits[2];
@@ -89,18 +118,24 @@ function loadSourceTreeCommitsMap(username, repositoryName, data, startDate, end
         });
 
     cell.append("clipPath")
-        .attr("id", function(d) { return "clip-" + d.id.replace("__project__/", "") })
+        .attr("id", function (d) {
+            return "clip-" + d.id.replace("__project__/", "")
+        })
         .append("use")
-        .attr("xlink:href", function(d) { return "#" + d.id.replace("__project__/", ""); });
+        .attr("xlink:href", function (d) {
+            return "#" + d.id.replace("__project__/", "");
+        });
 
     var label = cell.append("text")
-        .attr("clip-path", function(d) { return d.id.replace("__project__/", ""); });
+        .attr("clip-path", function (d) {
+            return d.id.replace("__project__/", "");
+        });
 
     label.append("tspan")
         .attr("x", 4)
         .attr("y", 25)
         .attr("fill", "white")
-        .text(function(d) {
+        .text(function (d) {
             var file = d.data.path.substring(d.data.path.lastIndexOf("/") + 1, d.data.path.lastIndexOf("."));
             file = file.replace("__project__/", "");
             return file;
@@ -110,8 +145,12 @@ function loadSourceTreeCommitsMap(username, repositoryName, data, startDate, end
         .attr("x", 4)
         .attr("y", 45)
         .attr("fill", "white")
-        .text(function(d) { return format(d.value)});
+        .text(function (d) {
+            return format(d.value)
+        });
 
     cell.append("title")
-        .text(function(d) { return d.id.replace("__project__/", "") + "\n" + format(d.value); });
+        .text(function (d) {
+            return d.id.replace("__project__/", "") + "\n" + format(d.value);
+        });
 }
