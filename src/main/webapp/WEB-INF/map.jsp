@@ -40,7 +40,7 @@
     <div class="row mt-3 custom-wrapper">
         <t:navTemplate/>
         <div class="col-md-10">
-            <div id="dateSelectorSlider" style="display:none"></div>
+            <div id="dateSelectorSlider"></div>
             <ul class="nav nav-tabs">
                 <li class="active">
                     <a class="nav-link" data-toggle="tab" href="#overview" aria-expanded="false"
@@ -543,31 +543,6 @@
     function showDateSelector() {
         $("#dateSelectorSlider").css("display", "block");
     }
-
-    var sourceTreeContributorsChart = $("#sourceTreeContributorsMap"),
-        aspect = sourceTreeContributorsChart.width() / sourceTreeContributorsChart.height(),
-        container = sourceTreeContributorsChart.parent();
-
-    var sourceTreeCommitsChart = $("#sourceTreeCommitsMap"),
-        aspect2 = sourceTreeCommitsChart.width() / sourceTreeCommitsChart.height(),
-        container2 = sourceTreeCommitsChart.parent();
-
-    $(window).on("resize", function () {
-        var targetWidth = container.width();
-
-        console.log("width 1: " + targetWidth);
-        console.log("height 1: " + Math.round(targetWidth / aspect));
-        sourceTreeContributorsChart.attr("width", targetWidth);
-        sourceTreeContributorsChart.attr("height", Math.round(targetWidth / aspect));
-
-        var targetWidth2 = container2.width();
-
-        console.log("width 2: " + targetWidth2);
-        console.log("height 2: " + Math.round(targetWidth2 / aspect2));
-        sourceTreeCommitsChart.attr("width", targetWidth2);
-        sourceTreeCommitsChart.attr("height", Math.round(targetWidth2 / aspect2));
-    }).trigger("resize");
-
 </script>
 </body>
 </html>

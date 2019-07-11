@@ -10,7 +10,7 @@ function loadConglomerate(username, repositoryName, data, manyCommiters) {
     var array = [];
 
     var conglomerateTreemap = d3.treemap()
-        .size([widthTotal, heightTotal])
+        .size([widthTotal * 0.84, heightTotal * 0.95])
         .round(true)
         .padding(1);
 

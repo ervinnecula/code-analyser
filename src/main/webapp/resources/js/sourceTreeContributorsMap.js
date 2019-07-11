@@ -13,7 +13,7 @@ var format = d3.format(",d");
 function loadSourceTreeContributorsMap(username, repositoryName, data, startDate, endDate) {
 
     var treemapContributors = d3.treemap()
-        .size([widthTotal * 0.98, heightTotal])
+        .size([widthTotal, heightTotal])
         .round(true)
         .padding(1);
 
