@@ -22,9 +22,10 @@
 </head>
 <body class="fixed-nav sticky-footer">
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary custom-nav" role="navigation" style="margin-bottom: 0">
-    <div class="row">
-        <div class="mr-auto pl-5 mt-1">
-            <a href="" class="navbar-brand" style="color:white !important">Code Analyser</a>
+    <div class="row" id="top-bar">
+        <div class="mr-auto pl-5 mt-1" style="width:100%">
+            <a class="navbar-brand" id="brand">Code Analyser</a>
+            <a class="navbar-brand" id="central-title">Analysis for ${username}'s ${repositoryName}</a>
         </div>
 
         <div class="form-inline custom-logout">
@@ -41,46 +42,46 @@
         <t:navTemplate/>
         <div class="col-md-10">
             <div id="dateSelectorSlider"></div>
-            <ul class="nav nav-tabs">
-                <li class="active">
-                    <a class="nav-link" data-toggle="tab" href="#overview" aria-expanded="false"
-                       onclick="hideDateSelector()">Overview</a>
+            <ul class="nav nav-tabs mb-3" role="tablist" id="topTablist">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="tab" href="#overview" aria-controls="overview" aria-selected="true"
+                       role="tab" onclick="hideDateSelector()">Overview</a>
                 </li>
-                <li>
-                    <a class="nav-link" data-toggle="tab" href="#total" aria-expanded="false"
-                       onclick="showDateSelector()">Total Changes</a>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#total" aria-controls="total" aria-selected="false" role="tab"
+                       onclick="loadDateSelectorSlider(`${startDate}`, `${endDate}`);showDateSelector()">Total Changes</a>
                 </li>
-                <li>
-                    <a class="nav-link" data-toggle="tab" href="#user" aria-expanded="false"
-                       onclick="showDateSelector()">Changes by User</a>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#user" aria-controls="user" aria-selected="false" role="tab"
+                       onclick="loadDateSelectorSlider(`${startDate}`, `${endDate}`);showDateSelector()">Changes by User</a>
                 </li>
-                <li>
-                    <a class="nav-link" data-toggle="tab" href="#add-delete" aria-expanded="false"
-                       onclick="showDateSelector()">Additions/Deletions</a>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#add-delete" aria-controls="add-delete" aria-selected="false" role="tab"
+                       onclick="loadDateSelectorSlider(`${startDate}`, `${endDate}`);showDateSelector()">Additions/Deletions</a>
                 </li>
-                <li>
-                    <a class="nav-link" data-toggle="tab" href="#loc" aria-expanded="false"
-                       onclick="showDateSelector()">LOC</a>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#loc" aria-controls="loc" aria-selected="false" role="tab"
+                       onclick="loadDateSelectorSlider(`${startDate}`, `${endDate}`);showDateSelector()">LOC</a>
                 </li>
-                <li>
-                    <a class="nav-link" data-toggle="tab" href="#periodoftime" aria-expanded="false"
-                       onclick="hideDateSelector()">Period of Time</a>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#periodoftime" aria-controls="total" aria-selected="false"
+                       role="tab" onclick="hideDateSelector()">Period of Time</a>
                 </li>
-                <li>
-                    <a class="nav-link" data-toggle="tab" href="#developers" aria-expanded="false"
-                       onclick="hideDateSelector()">Developers</a>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#developers" aria-controls="total" aria-selected="false"
+                       role="tab" onclick="hideDateSelector()">Developers</a>
                 </li>
-                <li>
-                    <a class="nav-link" data-toggle="tab" href="#antipatterns" aria-expanded="false"
-                       onclick="hideDateSelector()">Anti-Patterns</a>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#antipatterns" aria-controls="total" aria-selected="false"
+                       role="tab" onclick="hideDateSelector()">Anti-Patterns</a>
                 </li>
-                <li>
-                    <a class="nav-link" data-toggle="tab" href="#staticanalysis" aria-expanded="false"
-                       onclick="hideDateSelector()">Static Analysis</a>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#staticanalysis" aria-controls="total" aria-selected="false"
+                       role="tab" onclick="hideDateSelector()">Static Analysis</a>
                 </li>
             </ul>
-            <div class="tab-content">
-                <div class="tab-pane in active" id="overview">
+            <div class="tab-content" id="mainTabContent">
+                <div class="tab-pane active" id="overview" role="tabpanel" aria-labelledby="overview">
                     <div class="row">
                         <div class="col-sm-4">
                             <div id="locByLanguage"></div>
@@ -148,16 +149,16 @@
                         </div>
                     </div>
                 </div>
-                <div class="tab-pane" id="total"></div>
-                <div class="tab-pane" id="user"></div>
-                <div class="tab-pane" id="add-delete">
+                <div class="tab-pane fade" id="total" role="tabpanel" aria-labelledby="total"></div>
+                <div class="tab-pane fade" id="user" role="tabpanel" aria-labelledby="user"></div>
+                <div class="tab-pane fade" id="add-delete" role="tabpanel" aria-labelledby="add-delete">
                     <div id="tooltip-add-remove" class="tooltip" style="opacity:0"></div>
                 </div>
-                <div class="tab-pane" id="loc" style="text-align:center; padding-top:2%">
+                <div class="tab-pane fade" id="loc" role="tabpanel" aria-labelledby="loc" style="text-align:center; padding-top:2%">
                     <div id="tooltip-loc" class="tooltip" style="opacity:0"></div>
                 </div>
-                <div class="tab-pane" id="periodoftime"></div>
-                <div class="tab-pane" id="developers">
+                <div class="tab-pane fade" id="periodoftime" role="tabpanel" aria-labelledby="periodoftime"></div>
+                <div class="tab-pane fade" id="developers" role="tabpanel" aria-labelledby="developers">
                     <table class="table table-hover">
                         <thead>
                         <tr>
@@ -183,13 +184,13 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="tab-pane" id="antipatterns" style="text-align:center">
+                <div class="tab-pane fade" id="antipatterns" role="tabpanel" aria-labelledby="antipatterns" style="text-align:center">
                     <div id="antipatternsPage" style="padding-top:1%">
                         <div class="row">
                             <div class="col-2">
                                 <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist"
                                      aria-orientation="vertical">
-                                    <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-aa-spof"
+                                    <a class="nav-link active bg-primary mb-2" data-toggle="pill" href="#v-pills-aa-spof"
                                        role="tab">Single Point of Failure</a>
                                     <a class="nav-link bg-primary mb-2" data-toggle="pill"
                                        href="#v-pills-aa-conglomerate" role="tab">Conglomerate</a>
@@ -200,7 +201,7 @@
                             </div>
                             <div class="col-10">
                                 <div class="tab-content" id="v-pills-aa-tabContent">
-                                    <div class="tab-pane in active" id="v-pills-aa-spof" role="tabpanel">
+                                    <div class="tab-pane active" id="v-pills-aa-spof" role="tabpanel">
                                         <div id="spof-description" class="alert alert-info">
                                             Represents those files that have been changed by few developers. These files
                                             usually have one or maybe two commiters at most during its lifetime, which
@@ -212,7 +213,7 @@
                                             reasons.
                                         </div>
                                     </div>
-                                    <div class="tab-pane" id="v-pills-aa-conglomerate" role="tabpanel"
+                                    <div class="tab-pane fade" id="v-pills-aa-conglomerate" role="tabpanel"
                                          style="text-align:center">
                                         <div id="conglomerate-description" class="alert alert-info">
                                             Consists on those files that have been changed by a lot of developers. These
@@ -235,7 +236,7 @@
                                             </c:otherwise>
                                         </c:choose>
                                     </div>
-                                    <div class="tab-pane" id="v-pills-aa-mandhchanges" role="tabpanel"
+                                    <div class="tab-pane fade" id="v-pills-aa-mandhchanges" role="tabpanel"
                                          style="text-align:center">
                                         <div class="row">
                                             <c:forEach begin="0" items="${mediumAndHugeChanges}" var="entry">
@@ -273,7 +274,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="tab-pane" id="staticanalysis" style="text-align:center">
+                <div class="tab-pane fade" id="staticanalysis" role="tabpanel" aria-labelledby="staticanalysis" style="text-align:center">
                     <div id="staticAnalysisPage" style="padding-top:1%">
                         <div class="row">
                             <div class="col-2">
@@ -492,7 +493,6 @@
 <script src="<c:url value='/resources/js/jQRuler.min.js' />"></script>
 
 <script>
-    setStartEndDates(`${startDate}`, `${endDate}`);
     loadSourceTreeCommitsMap(`${username}`, `${repositoryName}`, `${heatMapCommitsData}`, `${startDate}`, `${endDate}`);
     loadSourceTreeContributorsMap(`${username}`, `${repositoryName}`, `${heatMapContributorsData}`, `${startDate}`, `${endDate}`);
     loadAddRemoveLineChart(`${addRemoveLinesData}`, `${startDate}`, `${endDate}`);
@@ -510,7 +510,7 @@
         loadLocChart(`${locData}`, data.values.min, data.values.max);
     });
 
-    function setStartEndDates(startDate, endDate) {
+    function loadDateSelectorSlider(startDate, endDate) {
 
         var startDateSplit = startDate.split('-');
         var endDateSplit = endDate.split('-');
@@ -535,6 +535,22 @@
             }
         });
     }
+
+    $('#topTablist > .nav-item > .nav-link').on('click', function(e) {
+        var identifier = e.target.hash;
+        $('.nav-link.active').removeClass('active');
+        e.target.classList.add('active');
+        $('#mainTabContent > .tab-pane').addClass('fade').removeClass('active');
+        $(identifier).removeClass('fade');
+    });
+
+    $('#v-pills-tab > .nav-link').on('click', function(e) {
+        var identifier = e.target.hash;
+        $('#v-pills-tab > .nav-link').removeClass('active');
+        e.target.classList.add('active');
+        $('#v-pills-aa-tabContent > .tab-pane').addClass('fade').removeClass('active');
+        $(identifier).removeClass('fade');
+    });
 
     function hideDateSelector() {
         $("#dateSelectorSlider").css("display", "none");

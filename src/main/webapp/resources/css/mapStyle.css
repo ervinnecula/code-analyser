@@ -67,6 +67,7 @@ a:hover tspan:last-child {
     margin-bottom: 1%;
     width: 98%;
     margin-left: 0.5%;
+    display: none;
 }
 
 #staticViolationsPage {
@@ -124,4 +125,18 @@ g.node:hover circle {
 
 #loc svg {
     padding-left: 7%;
+}
+#brand {
+    float: left;
+    color: white !important;
+}
+
+#central-title {
+    color: #93C54B;
+    padding-left: 32%;
+    float: left;
+}
+
+#top-bar {
+    width: 100%;
 }

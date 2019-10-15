@@ -21,7 +21,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary custom-nav" role="navigation" style="margin-bottom: 0">
     <div class="row">
         <div class="mr-auto pl-5 mt-1">
-            <a href="" class="navbar-brand">Code Analyser</a>
+            <a class="navbar-brand">Code Analyser</a>
         </div>
 
         <div class="form-inline custom-logout">
