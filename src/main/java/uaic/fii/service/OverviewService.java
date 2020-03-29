@@ -90,8 +90,8 @@ public class OverviewService {
         Map<String, Integer> contributorsLoC = new HashMap<>();
 
         for (CommitDiffBean commit : commits) {
-            int locMap = contributorsLoC.getOrDefault(commit.getCommiterName(), 0);
-            contributorsLoC.put(commit.getCommiterName(), locMap + commitService.getLoCChangedInCommit(commit));
+            int locMap = contributorsLoC.getOrDefault(commit.getCommitterName(), 0);
+            contributorsLoC.put(commit.getCommitterName(), locMap + commitService.getLoCChangedInCommit(commit));
         }
         return contributorsLoC;
     }
@@ -100,8 +100,8 @@ public class OverviewService {
         Map<String, Integer> contributorsFilesTouched = new HashMap<>();
 
         for (CommitDiffBean commit : commits) {
-            int filesTouched = contributorsFilesTouched.getOrDefault(commit.getCommiterName(), 0);
-            contributorsFilesTouched.put(commit.getCommiterName(), filesTouched + commit.getDiffs().size());
+            int filesTouched = contributorsFilesTouched.getOrDefault(commit.getCommitterName(), 0);
+            contributorsFilesTouched.put(commit.getCommitterName(), filesTouched + commit.getDiffs().size());
         }
 
         return contributorsFilesTouched;

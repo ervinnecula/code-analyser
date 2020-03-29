@@ -32,7 +32,7 @@ public class HeatMapContributorService {
                     if (diffsPerFilePath.containsKey(filePathComplete)) {
                         listOfContributors = diffsPerFilePath.get(filePathComplete).getListOfContributors();
                     }
-                    listOfContributors.add(commit.getCommiterName());
+                    listOfContributors.add(commit.getCommitterName());
 
                     List<String> parents = buildParentsOfPath(filePathComplete);
                     for (String parent : parents) {

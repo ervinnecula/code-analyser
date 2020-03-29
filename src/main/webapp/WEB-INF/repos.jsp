@@ -38,43 +38,37 @@
             <h2>Repos available for ${username}</h2>
             <table class="table table-hover">
                 <thead>
-                <tr>
-                    <th scope="col">Repository Name</th>
-                    <th scope="col">Url</th>
-                    <th scope="col">Language</th>
-                </tr>
+                    <tr>
+                        <th scope="col">Repository Name</th>
+                        <th scope="col">Url</th>
+                        <th scope="col">Language</th>
+                        <th scope="col"></th>
+                    </tr>
                 </thead>
                 <tbody>
-                <c:forEach items="${repoNameHtmlGitUrlsBeans}" var="repoNameHtmlGitUrlsBean">
-                    <tr>
-                        <form action="/analysis" method="POST">
-                            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                            <input type="hidden" name="username" value="${username}"/>
-                            <th scope="row">
-                                <input type="hidden" value="${repoNameHtmlGitUrlsBean.repoName}"
-                                       name="repoName"/>
-                                    ${repoNameHtmlGitUrlsBean.repoName}
-                            </th>
-                            <input type="hidden" value="${repoNameHtmlGitUrlsBean.repoGitUrl}"
-                                   name="repoGitUrl"/>
-                            <td>
-                                <input type="hidden" value="${repoNameHtmlGitUrlsBean.repoHtmlUrl}"
-                                       name="repoHtmlUrl"/>
-                                <a target="_blank"
-                                   href="${repoNameHtmlGitUrlsBean.repoHtmlUrl}">${repoNameHtmlGitUrlsBean.repoHtmlUrl}</a>
-                            </td>
-                            <td>
-                                <input type="hidden" value="${repoNameHtmlGitUrlsBean.repoLanguage}"
-                                       name="repoLanguage"/>
-                                    ${repoNameHtmlGitUrlsBean.repoLanguage}
-                            </td>
-                            <td>
-                                <input type="submit" value="Analyse  ${repoNameHtmlGitUrlsBean.repoName}"
-                                       class="btn btn-primary"/>
-                            </td>
-                        </form>
-                    </tr>
-                </c:forEach>
+                    <c:forEach items="${repoNameHtmlGitUrlsBeans}" var="repoNameHtmlGitUrlsBean">
+                        <tr>
+                            <form action="/analysis" method="POST">
+                                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                                <input type="hidden" name="username" value="${username}"/>
+                                <th scope="row">
+                                    <input type="hidden" value="${repoNameHtmlGitUrlsBean.repoName}" name="repoName"/>
+                                        ${repoNameHtmlGitUrlsBean.repoName}
+                                </th>
+                                <input type="hidden" value="${repoNameHtmlGitUrlsBean.repoGitUrl}" name="repoGitUrl"/>
+                                <td>
+                                    <input type="hidden" value="${repoNameHtmlGitUrlsBean.repoHtmlUrl}" name="repoHtmlUrl"/>
+                                    <a target="_blank" href="${repoNameHtmlGitUrlsBean.repoHtmlUrl}">${repoNameHtmlGitUrlsBean.repoHtmlUrl}</a>
+                                </td>
+                                <td>
+                                    <input type="hidden" value="${repoNameHtmlGitUrlsBean.repoLanguage}" name="repoLanguage"/> ${repoNameHtmlGitUrlsBean.repoLanguage}
+                                </td>
+                                <td>
+                                    <input type="submit" value="Analyse  ${repoNameHtmlGitUrlsBean.repoName}" class="btn btn-primary"/>
+                                </td>
+                            </form>
+                        </tr>
+                    </c:forEach>
                 </tbody>
             </table>
         </div>

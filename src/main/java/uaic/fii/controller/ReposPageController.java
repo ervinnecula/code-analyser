@@ -113,6 +113,7 @@ public class ReposPageController {
             model.addAttribute("authorsData", authorService.getAuthorActivityList(commits));
             model.addAttribute("mediumAndHugeChanges", antipatternsService.detectMediumAndMajorChangesPattern(commits));
             model.addAttribute("filesAndPeriods", writePeriodOfTimeFilesToCSVFormat(antipatternsService.getPeriodOfTimeAllFiles(commits)));
+            model.addAttribute("orphanedFiles", antipatternsService.getOrphanedFiles(commits));
             model.addAllAttributes(preparePMDAntiPatternsMap());
             model.addAttribute("repositoryName", repoBean.getRepoName());
             model.addAttribute("username", username);

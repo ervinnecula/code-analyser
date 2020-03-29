@@ -9,17 +9,16 @@ import org.springframework.stereotype.Service;
 import uaic.fii.bean.CommitChangeSize;
 import uaic.fii.bean.CommitDiffBean;
 import uaic.fii.bean.DiffBean;
+import uaic.fii.bean.FileOwnerPeriodBean;
 import uaic.fii.bean.RuleViolationBean;
 import uaic.fii.model.ChangeSize;
+import uaic.fii.model.OwnerLinesAdded;
 import uaic.fii.model.Period;
-import uaic.fii.model.Properties;
 import uaic.fii.model.StaticDetectionKind;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +41,9 @@ public class AntiPatternsService {
     @Autowired
     private CommitService commitService;
 
+    @Autowired
+    private AuthorService authorService;
+
     private Map<StaticDetectionKind, List<RuleViolationBean>> staticRuleViolations;
 
     public Map<String, List<CommitChangeSize>> detectMediumAndMajorChangesPattern(List<CommitDiffBean> commits) {
@@ -55,7 +57,8 @@ public class AntiPatternsService {
                 }
                 ChangeSize changeSize = getChangeSizeFromLocChanged(linesChangedInDiff);
                 if (changeSize.equals(ChangeSize.MAJOR) || changeSize.equals(ChangeSize.MEDIUM)) {
-                    CommitChangeSize commitChangeSize = new CommitChangeSize(commit.getCommitHash(), commit.getCommitDate(), commit.getCommiterName(), linesChangedInDiff, changeSize);
+                    CommitChangeSize commitChangeSize =
+                            new CommitChangeSize(commit.getCommitHash(), commit.getCommitDate(), commit.getCommitterName(), linesChangedInDiff, changeSize);
                     List<CommitChangeSize> changesOnFile = mediumAndMajorChangesPattern.getOrDefault(diff.getFilePath(), new ArrayList<>());
                     changesOnFile.add(commitChangeSize);
                     mediumAndMajorChangesPattern.put(diff.getFilePath(), changesOnFile);
@@ -94,13 +97,7 @@ public class AntiPatternsService {
     }
 
     public Map<String, Period> getPeriodOfTimeContributors(List<CommitDiffBean> commits) {
-        Map<String, Period> authorsAndPeriods = new HashMap<>();
-        for (CommitDiffBean commit : commits) {
-            Period period = commitService.getPeriodOfTimeCommit(commit);
-            authorsAndPeriods.put(commit.getCommiterName(), period);
-        }
-
-        return authorsAndPeriods;
+        return authorService.getAuthorsAndPeriods(commits);
     }
 
     public void loadStaticAnalysisResults(File projectPath) {
@@ -112,6 +109,22 @@ public class AntiPatternsService {
         } catch (PMDException e) {
             logger.error(format("AntiPatternsService - staticAnalyse() - Exception when running PMD over %s. Full exception: %s", projectPath, e));
         }
+    }
+
+    public List<FileOwnerPeriodBean> getOrphanedFiles(List <CommitDiffBean> commits) {
+        Map<String, Period> authorsAndPeriod = authorService.getAuthorsAndPeriods(commits);
+        Map<String, OwnerLinesAdded> fileOwners = authorService.getFileOwners(commits);
+        logger.info("AntiPatternsService - staticAnalyse() - authorsAndPeriods retrieved file owners and periods of time");
+        List<FileOwnerPeriodBean> orphanedFiles = new ArrayList<>();
+
+        for (Map.Entry<String, OwnerLinesAdded> entry : fileOwners.entrySet()) {
+            Period period = authorsAndPeriod.get(entry.getValue().getOwner());
+            if (period.equals(Period.OLD) || period.equals(Period.VERY_OLD)) {
+                orphanedFiles.add(new FileOwnerPeriodBean(entry.getKey(), entry.getValue().getOwner(), period));
+            }
+        }
+        logger.info("AntiPatternsService- getOrphanedFiles() - Successfully retrieved potential orphan files");
+        return orphanedFiles;
     }
 
     public List<RuleViolationBean> getBasicAnalysis() {

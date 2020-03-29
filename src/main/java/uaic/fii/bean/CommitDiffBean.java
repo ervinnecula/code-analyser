@@ -7,13 +7,13 @@ public class CommitDiffBean {
     private String commitHash;
     private Date commitDate;
     private List<DiffBean> diffs;
-    private String commiterName;
+    private String committerName;
 
-    public CommitDiffBean(String commitHash, Date commitDate, List<DiffBean> diffs, String commiterName) {
+    public CommitDiffBean(String commitHash, Date commitDate, List<DiffBean> diffs, String committerName) {
         this.commitHash = commitHash;
         this.commitDate = commitDate;
         this.diffs = diffs;
-        this.commiterName = commiterName;
+        this.committerName = committerName;
     }
 
     public String getCommitHash() {
@@ -28,7 +28,7 @@ public class CommitDiffBean {
         return diffs;
     }
 
-    public String getCommiterName() {
-        return commiterName;
+    public String getCommitterName() {
+        return committerName;
     }
 }

@@ -44,40 +44,50 @@
             <div id="dateSelectorSlider"></div>
             <ul class="nav nav-tabs mb-3" role="tablist" id="topTablist">
                 <li class="nav-item">
-                    <a class="nav-link active" data-toggle="tab" href="#overview" aria-controls="overview" aria-selected="true"
-                       role="tab" onclick="hideDateSelector()">Overview</a>
+                    <a class="nav-link active" data-toggle="tab" href="#overview" aria-controls="overview" aria-selected="true" role="tab"
+                       onclick="loadDateSelectorSlider(`${startDate}`, `${endDate}`);hideDateSelector()">
+                        Overview
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#total" aria-controls="total" aria-selected="false" role="tab"
-                       onclick="loadDateSelectorSlider(`${startDate}`, `${endDate}`);showDateSelector()">Total Changes</a>
+                    <a class="nav-link" data-toggle="tab" href="#total" aria-controls="total" aria-selected="false" role="tab" onclick="showDateSelector()">
+                        Total Changes
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#user" aria-controls="user" aria-selected="false" role="tab"
-                       onclick="loadDateSelectorSlider(`${startDate}`, `${endDate}`);showDateSelector()">Changes by User</a>
+                    <a class="nav-link" data-toggle="tab" href="#user" aria-controls="user" aria-selected="false" role="tab" onclick="showDateSelector()">
+                        Changes by User
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#add-delete" aria-controls="add-delete" aria-selected="false" role="tab"
-                       onclick="loadDateSelectorSlider(`${startDate}`, `${endDate}`);showDateSelector()">Additions/Deletions</a>
+                    <a class="nav-link" data-toggle="tab" href="#add-delete" aria-controls="add-delete" aria-selected="false" role="tab" onclick="showDateSelector()">
+                        Additions/Deletions
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#loc" aria-controls="loc" aria-selected="false" role="tab"
-                       onclick="loadDateSelectorSlider(`${startDate}`, `${endDate}`);showDateSelector()">LOC</a>
+                    <a class="nav-link" data-toggle="tab" href="#loc" aria-controls="loc" aria-selected="false" role="tab" onclick="showDateSelector()">
+                        LOC
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#periodoftime" aria-controls="total" aria-selected="false"
-                       role="tab" onclick="hideDateSelector()">Period of Time</a>
+                    <a class="nav-link" data-toggle="tab" href="#periodoftime" aria-controls="total" aria-selected="false" role="tab" onclick="hideDateSelector()">
+                        Period of Time
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#developers" aria-controls="total" aria-selected="false"
-                       role="tab" onclick="hideDateSelector()">Developers</a>
+                    <a class="nav-link" data-toggle="tab" href="#developers" aria-controls="total" aria-selected="false" role="tab" onclick="hideDateSelector()">
+                        Developers
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#antipatterns" aria-controls="total" aria-selected="false"
-                       role="tab" onclick="hideDateSelector()">Anti-Patterns</a>
+                    <a class="nav-link" data-toggle="tab" href="#antipatterns" aria-controls="total" aria-selected="false" role="tab" onclick="hideDateSelector()">
+                        Anti-Patterns
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#staticanalysis" aria-controls="total" aria-selected="false"
-                       role="tab" onclick="hideDateSelector()">Static Analysis</a>
+                    <a class="nav-link" data-toggle="tab" href="#staticanalysis" aria-controls="total" aria-selected="false" role="tab" onclick="hideDateSelector()">
+                        Static Analysis
+                    </a>
                 </li>
             </ul>
             <div class="tab-content" id="mainTabContent">
@@ -94,16 +104,13 @@
                                 <h3 class="card-header" style="text-align: center">Recent Activity</h3>
                                 <div class="card-body" style="width:100%">
                                     <h5 class="card-text" style="padding-bottom:10px">
-                                        Files changed: <span
-                                            class="badge badge-primary badge-pill margin-left-8px">${recentFilesChanged}</span>
+                                        Files changed: <span class="badge badge-primary badge-pill margin-left-8px">${recentFilesChanged}</span>
                                     </h5>
                                     <h5 class="card-text" style="padding-bottom:10px">
-                                        Lines changed: <span
-                                            class="badge badge-primary badge-pill margin-left-8px">${recentLinesChanged}</span>
+                                        Lines changed: <span class="badge badge-primary badge-pill margin-left-8px">${recentLinesChanged}</span>
                                     </h5>
                                     <h5 class="card-text" style="padding-bottom:10px">
-                                        Contributors involved: <span
-                                            class="badge badge-primary badge-pill margin-left-8px">${recentContributors}</span>
+                                        Contributors involved: <span class="badge badge-primary badge-pill margin-left-8px">${recentContributors}</span>
                                     </h5>
                                 </div>
                             </div>
@@ -115,8 +122,8 @@
                                 <h3 class="card-header" style="text-align: center">Top 5 Active Contributors by LoC</h3>
                                 <div class="card-body">
                                     <c:forEach begin="0" end="4" items="${top5ActiveContributorsLoC}" var="entry">
-                                        <h5 class="card-text" style="padding-bottom:10px">${entry.key}: <span
-                                                class="badge badge-info badge-pill margin-left-8px">${entry.value}</span>
+                                        <h5 class="card-text" style="padding-bottom:10px">${entry.key}:
+                                            <span class="badge badge-info badge-pill margin-left-8px">${entry.value}</span>
                                         </h5>
                                     </c:forEach>
                                 </div>
@@ -124,12 +131,13 @@
                         </div>
                         <div class="col-sm-4">
                             <div class="card card-overview text-white bg-warning mb-3">
-                                <h3 class="card-header" style="text-align: center">Top 5 Active Contributors by no. of
-                                    Files</h3>
+                                <h4 class="card-header" style="text-align: center">
+                                    Top 5 Active Contributors by no. of Files
+                                </h4>
                                 <div class="card-body">
                                     <c:forEach begin="0" end="4" items="${top5ActiveContributorsFiles}" var="entry">
-                                        <h5 class="card-text" style="padding-bottom:10px">${entry.key}: <span
-                                                class="badge badge-secondary badge-pill margin-left-8px">${entry.value}</span>
+                                        <h5 class="card-text" style="padding-bottom:10px">${entry.key}:
+                                            <span class="badge badge-secondary badge-pill margin-left-8px">${entry.value}</span>
                                         </h5>
                                     </c:forEach>
                                 </div>
@@ -140,8 +148,8 @@
                                 <h3 class="card-header" style="text-align: center">Percentage of Involvement</h3>
                                 <div class="card-body">
                                     <c:forEach begin="0" end="4" items="${top5InvolvedContributors}" var="entry">
-                                        <h5 class="card-text" style="padding-bottom:10px">${entry.key}: <span
-                                                class="badge badge-warning badge-pill margin-left-8px">${entry.value} %</span>
+                                        <h5 class="card-text" style="padding-bottom:10px">${entry.key}:
+                                            <span class="badge badge-warning badge-pill margin-left-8px">${entry.value} %</span>
                                         </h5>
                                     </c:forEach>
                                 </div>
@@ -161,26 +169,26 @@
                 <div class="tab-pane fade" id="developers" role="tabpanel" aria-labelledby="developers">
                     <table class="table table-hover">
                         <thead>
-                        <tr>
-                            <th scope="col">Username</th>
-                            <th scope="col">Number of Commits</th>
-                            <th scope="col">Total lines changed</th>
-                            <th scope="col">Net contribution LoC</th>
-                            <th scope="col">Active Recently</th>
-                        </tr>
+                            <tr>
+                                <th scope="col">Username</th>
+                                <th scope="col">Number of Commits</th>
+                                <th scope="col">Total lines changed</th>
+                                <th scope="col">Net contribution LoC</th>
+                                <th scope="col">Active Recently</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        <c:forEach items="${authorsData}" var="entry">
-                            <tr>
-                                <th scope="row">
-                                        ${entry.key}
-                                </th>
-                                <td>${entry.value.numberOfCommits}</td>
-                                <td>${entry.value.totalChanges}</td>
-                                <td>${entry.value.netContribution}</td>
-                                <td>${entry.value.developerStatus}</td>
-                            </tr>
-                        </c:forEach>
+                            <c:forEach items="${authorsData}" var="entry">
+                                <tr>
+                                    <th scope="row">
+                                            ${entry.key}
+                                    </th>
+                                    <td style="text-align:center">${entry.value.numberOfCommits}</td>
+                                    <td style="text-align:center">${entry.value.totalChanges}</td>
+                                    <td style="text-align:center">${entry.value.netContribution}</td>
+                                    <td style="text-align:center">${entry.value.developerStatus}</td>
+                                </tr>
+                             </c:forEach>
                         </tbody>
                     </table>
                 </div>
@@ -190,13 +198,10 @@
                             <div class="col-2">
                                 <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist"
                                      aria-orientation="vertical">
-                                    <a class="nav-link active bg-primary mb-2" data-toggle="pill" href="#v-pills-aa-spof"
-                                       role="tab">Single Point of Failure</a>
-                                    <a class="nav-link bg-primary mb-2" data-toggle="pill"
-                                       href="#v-pills-aa-conglomerate" role="tab">Conglomerate</a>
-                                    <a class="nav-link bg-primary mb-2" data-toggle="pill"
-                                       href="#v-pills-aa-mandhchanges" role="tab">Medium and Major Changes</a>
-
+                                    <a class="nav-link active bg-primary mb-2" data-toggle="pill"  href="#v-pills-aa-spof" role="tab">Single Point of Failure</a>
+                                    <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-aa-conglomerate" role="tab">Conglomerate</a>
+                                    <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-aa-mandhchanges" role="tab">Medium and Major Changes</a>
+                                    <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-aa-orphaned" role="tab">Orphaned files</a>
                                 </div>
                             </div>
                             <div class="col-10">
@@ -204,7 +209,7 @@
                                     <div class="tab-pane active" id="v-pills-aa-spof" role="tabpanel">
                                         <div id="spof-description" class="alert alert-info">
                                             Represents those files that have been changed by few developers. These files
-                                            usually have one or maybe two commiters at most during its lifetime, which
+                                            usually have one or maybe two committers at most during its lifetime, which
                                             may cause issues inside the project, as shared and distributed knowledge is
                                             vital in any team project.
                                             This situation may cause issues, when the developers that have exclusive
@@ -213,12 +218,11 @@
                                             reasons.
                                         </div>
                                     </div>
-                                    <div class="tab-pane fade" id="v-pills-aa-conglomerate" role="tabpanel"
-                                         style="text-align:center">
+                                    <div class="tab-pane fade" id="v-pills-aa-conglomerate" role="tabpanel" style="text-align:center">
                                         <div id="conglomerate-description" class="alert alert-info">
                                             Consists on those files that have been changed by a lot of developers. These
                                             files
-                                            tend to have tons of commiters at most during its lifetime, which
+                                            tend to have tons of committers at most during its lifetime, which
                                             may cause issues inside the project. Each developer features its own
                                             flavour, style
                                             and ideas inside the code. Sometimes these ideas, born from several opinions
@@ -236,8 +240,7 @@
                                             </c:otherwise>
                                         </c:choose>
                                     </div>
-                                    <div class="tab-pane fade" id="v-pills-aa-mandhchanges" role="tabpanel"
-                                         style="text-align:center">
+                                    <div class="tab-pane fade" id="v-pills-aa-mandhchanges" role="tabpanel" style="text-align:center">
                                         <div class="row">
                                             <c:forEach begin="0" items="${mediumAndHugeChanges}" var="entry">
                                                 <div class="card card-mandhchanges">
@@ -254,11 +257,11 @@
                                                             <h6 class="card-subtitle mb-2">
                                                                 <c:if test="${item.changeSize == 'MAJOR'}">
                                                                     <span style="color: red">${item.changeSize}</span> change by
-                                                                    <b>${item.commiterName}</b>
+                                                                    <b>${item.committerName}</b>
                                                                 </c:if>
                                                                 <c:if test="${item.changeSize == 'MEDIUM'}">
                                                                     <span style="color: orange">${item.changeSize}</span> change by
-                                                                    <b>${item.commiterName}</b>
+                                                                    <b>${item.committerName}</b>
                                                                 </c:if>
                                                                 <p class="card-link">${item.linesChanged} lines
                                                                     changed</p>
@@ -268,6 +271,28 @@
                                                 </div>
                                             </c:forEach>
                                         </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="v-pills-aa-orphaned" role="tabpanel" style="text-align:center">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Owner</th>
+                                                    <th scope="col">File</th>
+                                                    <th scope="col">Time since last change</th>
+                                                    <th scope="col">Orphan</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <c:forEach items="${orphanedFiles}" var="item">
+                                                    <tr>
+                                                        <td style="text-align:center">${item.owner}</td>
+                                                        <td style="text-align:center">${item.filePath}</td>
+                                                        <td style="text-align:center">${item.period}</td>
+                                                        <td><span style="color: red;"><b>High Chance</b></span></td>
+                                                    </tr>
+                                                </c:forEach>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
@@ -279,12 +304,20 @@
                         <div class="row">
                             <div class="col-2">
                                 <div class="nav flex-column nav-pills" id="v-pills-sa-tab" role="tablist" aria-orientation="vertical">
-                                    <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-sa-violations" role="tab">Basic Violations <span class="badge badge-warning">Java Only</span></a>
-                                    <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-sa-optimizations" role="tab">Optimizations <span class="badge badge-warning">Java Only</span></a>
-                                    <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-sa-coupling" role="tab">Coupling <span class="badge badge-warning">Java Only</span></a>
-                                    <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-sa-codesize" role="tab">Code Size <span class="badge badge-warning">Java Only</span></a>
-                                    <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-sa-design" role="tab">Design <span class="badge badge-warning">Java Only</span></a>
-
+                                    <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-sa-violations" role="tab">
+                                        Basic Violations <span class="badge badge-warning">Java Only</span>
+                                    </a>
+                                    <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-sa-optimizations" role="tab">
+                                        Optimizations <span class="badge badge-warning">Java Only</span>
+                                    </a>
+                                    <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-sa-coupling" role="tab">
+                                        Coupling <span class="badge badge-warning">Java Only</span>
+                                    </a>
+                                    <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-sa-codesize" role="tab">
+                                        Code Size <span class="badge badge-warning">Java Only</span>
+                                    </a>
+                                    <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-sa-design" role="tab">
+                                        Design <span class="badge badge-warning">Java Only</span></a>
                                 </div>
                             </div>
                             <div class="col-10">
@@ -305,7 +338,6 @@
                                                             <div class="mb-0">
                                                                 <div><b>${violation.message} </b></div>
                                                                 <div>${violation.description}</div>
-
                                                                 <a href="${violation.externalInfoUrl}" class="alert-link">
                                                                     Check some extra info.
                                                                 </a>
@@ -328,8 +360,7 @@
                                                     <p class="text-success">You have no optimization suggestions.</p>
                                                 </c:when>
                                                 <c:otherwise>
-                                                    <c:forEach items="${optimizationViolations}"
-                                                               var="optimizationViolation">
+                                                    <c:forEach items="${optimizationViolations}" var="optimizationViolation">
                                                         <div class="alert alert-dismissible alert-success">
                                                             <button type="button" class="close" data-dismiss="alert">
                                                                 &times;
@@ -391,8 +422,7 @@
                                         <div>
                                             <c:choose>
                                                 <c:when test="${fn:length(codesizeViolations) == 0}">
-                                                    <p class="text-success">Static analysis detected you have no code size
-                                                        problems.</p>
+                                                    <p class="text-success">Static analysis detected you have no code size problems.</p>
                                                 </c:when>
                                                 <c:otherwise>
                                                     <c:forEach items="${codesizeViolations}" var="codesizeViolation">
@@ -511,45 +541,49 @@
     });
 
     function loadDateSelectorSlider(startDate, endDate) {
+        if (startDate !== endDate) {
+            var startDateSplit = startDate.split('-');
+            var endDateSplit = endDate.split('-');
 
-        var startDateSplit = startDate.split('-');
-        var endDateSplit = endDate.split('-');
+            var start_year = startDateSplit[2];
+            var start_month = startDateSplit[1] - 1;
+            var start_day = startDateSplit[0];
 
-        var start_year = startDateSplit[2];
-        var start_month = startDateSplit[1] - 1;
-        var start_day = startDateSplit[0];
+            var end_year = endDateSplit[2];
+            var end_month = endDateSplit[1] - 1;
+            var end_day = endDateSplit[0];
 
-        var end_year = endDateSplit[2];
-        var end_month = endDateSplit[1] - 1;
-        var end_day = endDateSplit[0];
-
-        $("#dateSelectorSlider").dateRangeSlider({
-
-            bounds: {
-                min: new Date(start_year, start_month, start_day),
-                max: new Date(end_year, end_month, end_day)
-            },
-            defaultValues: {
-                min: new Date(start_year, start_month, start_day),
-                max: new Date(end_year, end_month, end_day)
-            }
-        });
+            $("#dateSelectorSlider").dateRangeSlider({
+                bounds: {
+                    min: new Date(start_year, start_month, start_day),
+                    max: new Date(end_year, end_month, end_day)
+                },
+                defaultValues: {
+                    min: new Date(start_year, start_month, start_day),
+                    max: new Date(end_year, end_month, end_day)
+                }
+            });
+        }
     }
 
-    $('#topTablist > .nav-item > .nav-link').on('click', function(e) {
-        var identifier = e.target.hash;
-        $('.nav-link.active').removeClass('active');
-        e.target.classList.add('active');
-        $('#mainTabContent > .tab-pane').addClass('fade').removeClass('active');
-        $(identifier).removeClass('fade');
+    $('#topTablist > .nav-item > .nav-link').on('click', function (e) {
+        var selected = $(e.target.hash);
+        if (!selected.hasClass('active')) {
+            $('.nav-link.active').removeClass('active');
+            $('#mainTabContent > .tab-pane').addClass('fade').removeClass('active').removeClass('in');
+            e.target.classList.add('active');
+            $(selected).removeClass('fade');
+        }
     });
 
-    $('#v-pills-tab > .nav-link').on('click', function(e) {
-        var identifier = e.target.hash;
-        $('#v-pills-tab > .nav-link').removeClass('active');
-        e.target.classList.add('active');
-        $('#v-pills-aa-tabContent > .tab-pane').addClass('fade').removeClass('active');
-        $(identifier).removeClass('fade');
+    $('#v-pills-tab > .nav-link').on('click', function (e) {
+        var selected = $(e.target.hash);
+        if (!selected.hasClass('active')) {
+            $('#v-pills-tab > .nav-link').removeClass('active');
+            e.target.classList.add('active');
+            $('#v-pills-aa-tabContent > .tab-pane').addClass('fade').removeClass('active').removeClass('in');
+            $(selected).removeClass('fade');
+        }
     });
 
     function hideDateSelector() {
