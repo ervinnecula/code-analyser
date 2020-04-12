@@ -3,6 +3,7 @@ package uaic.fii.config;
 import com.mysql.cj.jdbc.MysqlDataSource;
 import org.hibernate.ejb.HibernatePersistence;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -14,11 +15,11 @@ import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.util.Properties;
 
+@Configuration
 @EnableTransactionManagement
 @PropertySource("classpath:application.properties")
 @EnableJpaRepositories("uaic.fii.repository")
 public class PersistenceConfig {
-
 
     private static final String PROPERTY_NAME_HIBERNATE_DIALECT = "hibernate.dialect";
     private static final String PROPERTY_NAME_HIBERNATE_SHOW_SQL = "hibernate.show_sql";

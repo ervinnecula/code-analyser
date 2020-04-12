@@ -2,8 +2,8 @@ package uaic.fii.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uaic.fii.model.Properties;
-import uaic.fii.model.User;
+import uaic.fii.model.PropertiesDAO;
+import uaic.fii.model.UserDAO;
 import uaic.fii.repository.PropertiesRepository;
 import uaic.fii.repository.UserRepository;
 
@@ -12,16 +12,16 @@ public class PropertiesService {
 
     private PropertiesRepository propertiesRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    public PropertiesService(PropertiesRepository propertiesRepository) {
+    @Autowired
+    public PropertiesService(PropertiesRepository propertiesRepository, UserRepository userRepository) {
         this.propertiesRepository = propertiesRepository;
+        this.userRepository = userRepository;
     }
 
-    public Properties getPropertiesByUserId(String userName) {
-        User user = userRepository.findByName(userName);
-        Properties properties = propertiesRepository.findByUserId(user.getId());
-        return properties;
+    public PropertiesDAO getPropertiesByUserId(String userName) {
+        UserDAO user = userRepository.findByName(userName);
+        return propertiesRepository.findByUserId(user.getId());
     }
 }

@@ -8,7 +8,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "properties")
-public class Properties {
+public class PropertiesDAO {
 
     @Id
     @GeneratedValue

@@ -4,14 +4,14 @@ import uaic.fii.model.ChangeSize;
 
 import java.util.Date;
 
-public class CommitChangeSize {
+public class CommitChangeSizeBean {
     private String commitHash;
     private Date commitDate;
     private String committerName;
     private int linesChanged;
     private ChangeSize changeSize;
 
-    public CommitChangeSize(String commitHash, Date commitDate, String committerName, int linesChanged, ChangeSize changeSize) {
+    public CommitChangeSizeBean(String commitHash, Date commitDate, String committerName, int linesChanged, ChangeSize changeSize) {
         this.commitHash = commitHash;
         this.commitDate = commitDate;
         this.committerName = committerName;

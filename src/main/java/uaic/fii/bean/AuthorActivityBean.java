@@ -2,13 +2,13 @@ package uaic.fii.bean;
 
 import uaic.fii.model.DeveloperStatus;
 
-public class AuthorActivity {
+public class AuthorActivityBean {
     private Integer numberOfCommits;
     private Integer totalChanges;
     private Integer netContribution;
     private DeveloperStatus developerStatus;
 
-    public AuthorActivity(Integer numberOfCommits, Integer totalChanges, Integer netContribution, DeveloperStatus developerStatus) {
+    public AuthorActivityBean(Integer numberOfCommits, Integer totalChanges, Integer netContribution, DeveloperStatus developerStatus) {
         this.numberOfCommits = numberOfCommits;
         this.totalChanges = totalChanges;
         this.netContribution = netContribution;

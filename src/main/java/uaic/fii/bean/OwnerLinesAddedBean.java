@@ -1,11 +1,11 @@
-package uaic.fii.model;
+package uaic.fii.bean;
 
 
-public class OwnerLinesAdded {
+public class OwnerLinesAddedBean {
     private String owner;
     private Integer linesAdded;
 
-    public OwnerLinesAdded(String owner, Integer linesAdded) {
+    public OwnerLinesAddedBean(String owner, Integer linesAdded) {
         this.owner = owner;
         this.linesAdded = linesAdded;
     }

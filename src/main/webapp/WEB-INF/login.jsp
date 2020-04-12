@@ -24,13 +24,6 @@
         <div class="mr-auto pl-5 mt-1">
             <a class="navbar-brand">Code Analyser</a>
         </div>
-
-        <div class="form-inline custom-logout">
-            <form id="logout" action="/logout" method="post">
-                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                <input name="submit" type="submit" value="Logout" class="btn btn-secondary my-2 my-sm-0"/>
-            </form>
-        </div>
     </div>
 </nav>
 <div class="row mt-3 custom-wrapper">
@@ -43,9 +36,9 @@
                 <div class="container">
 
                         <form class="form-signin" name='f' action="/login" method='POST'>
-                            <input type="text" name='username' value='ervinnecula' id="inputEmail" class="form-control mt-3"
+                            <input type="text" id="inputEmail" class="form-control mt-3"
                                    placeholder="Name" required autofocus>
-                            <input type="password" name='password' value='pass' id="inputPassword" class="form-control mt-3"
+                            <input type="password" id="inputPassword" class="form-control mt-3"
                                    placeholder="Password" required>
                             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                             <button class="btn btn-lg btn-primary btn-block btn-signin mt-3" type="submit">Sign in</button>

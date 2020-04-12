@@ -1,8 +1,10 @@
 package uaic.fii.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import uaic.fii.model.Properties;
+import org.springframework.stereotype.Repository;
+import uaic.fii.model.PropertiesDAO;
 
-public interface PropertiesRepository extends JpaRepository<Properties, Integer> {
-    Properties findByUserId(Integer id);
+@Repository
+public interface PropertiesRepository extends JpaRepository<PropertiesDAO, Integer> {
+    PropertiesDAO findByUserId(Integer id);
 }

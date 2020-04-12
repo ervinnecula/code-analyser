@@ -1,7 +1,7 @@
 var colorCommits = ['#B1DAE8', '#77CDE8', '#50C3E9', '#0278A0', '#014C66'];
 
 var widthTotal = $("#total").width() * 0.97;
-var heightTotal = $("#total").height() * 1.55;
+var heightTotal = $("#total").height() * 1.45;
 
 var sourceTreeCommitsSvg = d3.select("#total")
     .append("svg")

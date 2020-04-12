@@ -1,13 +1,15 @@
 package uaic.fii.service;
 
 import org.eclipse.jgit.diff.Edit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uaic.fii.bean.CommitDiffBean;
 import uaic.fii.bean.DateCountBean;
 import uaic.fii.bean.DiffBean;
 import uaic.fii.model.Period;
-import uaic.fii.model.Properties;
+import uaic.fii.model.PropertiesDAO;
 
 import java.text.SimpleDateFormat;
 import java.time.temporal.ChronoUnit;
@@ -21,16 +23,23 @@ import static uaic.fii.service.ChartDataStringWriters.buildParentsOfPath;
 @Service
 public class CommitService {
 
-    @Autowired
+    private final static Logger logger = LoggerFactory.getLogger(CommitService.class);
+
     private PropertiesService propertiesService;
 
-    private Properties properties;
+    private PropertiesDAO properties;
+
+    @Autowired
+    public CommitService(PropertiesService propertiesService) {
+        this.propertiesService = propertiesService;
+    }
 
     public void loadProperties(String userName) {
         properties = propertiesService.getPropertiesByUserId(userName);
     }
 
     public Map<String, DateCountBean> getPathDiffsCsvFile(List<CommitDiffBean> commitList) {
+        logger.info("CommitService - getPathDiffsCsvFile() - getting data for heat map commits");
         Map<String, DateCountBean> diffsPerFilePath = new TreeMap<>();
         SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd");
 
@@ -51,6 +60,7 @@ public class CommitService {
                 }
             }
         }
+        logger.info("CommitService - getPathDiffsCsvFile() - loaded data for heat map commits");
         return diffsPerFilePath;
     }
 
@@ -106,7 +116,7 @@ public class CommitService {
         return period;
     }
 
-    public Properties getProperties() {
+    public PropertiesDAO getProperties() {
         return properties;
     }
 }

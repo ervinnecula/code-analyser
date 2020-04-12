@@ -5,7 +5,7 @@ var periodOfTimeSvg = d3.select("#periodoftime")
     .attr("preserveAspectRatio", "xMidYMid");
 
 var widthPeriodOfTime = $("#periodoftime").width() * 0.90;
-var heightPeriodOfTime = $("#periodoftime").height() * 1.60;
+var heightPeriodOfTime = $("#periodoftime").height() * 1.55;
 
 var format = d3.format(",d");
 

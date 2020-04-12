@@ -58,21 +58,17 @@ a:hover tspan:last-child {
 .card-mandhchanges {
     float: left;
     margin: auto;
-    width: 33%;
+    width: 48%;
     min-height: 200px;
     margin-bottom: 1%;
 }
 
 #dateSelectorSlider {
     margin-bottom: 1%;
-    width: 98%;
-    margin-left: 0.5%;
-    display: none;
 }
 
 #staticViolationsPage {
     text-align: center;
-    padding-top: 2%;
 }
 
 g.node:hover circle {
@@ -86,27 +82,27 @@ g.node:hover circle {
 
 #total {
     width: 100%;
-    height: 77%;
+    height: 79%;
 }
 
 #user {
     width: 100%;
-    height: 77%;
+    height: 79%;
 }
 
 #add-delete {
     width: 100%;
-    height: 77%;
+    height: 79%;
 }
 
 #loc {
     width: 100%;
-    height: 77%;
+    height: 79%;
 }
 
 #periodoftime {
     width: 100%;
-    height: 77%;
+    height: 88%;
 }
 
 #v-pills-aa-spof {
@@ -120,11 +116,11 @@ g.node:hover circle {
 }
 
 #add-delete svg {
-    padding-left: 7%;
+    padding-left: 4%;
 }
 
 #loc svg {
-    padding-left: 7%;
+    padding-left: 4%;
 }
 #brand {
     float: left;

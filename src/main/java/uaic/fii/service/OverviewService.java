@@ -23,13 +23,17 @@ import java.util.Map;
 @Service
 public class OverviewService {
 
-    final static Logger logger = LoggerFactory.getLogger(RepoService.class);
+    private final static Logger logger = LoggerFactory.getLogger(OverviewService.class);
+
+    private final AntiPatternsService antiPatternsService;
+
+    private final CommitService commitService;
 
     @Autowired
-    private AntiPatternsService antiPatternsService;
-
-    @Autowired
-    private CommitService commitService;
+    public OverviewService(AntiPatternsService antiPatternsService, CommitService commitService) {
+        this.antiPatternsService = antiPatternsService;
+        this.commitService = commitService;
+    }
 
     public String getLocByLanguage(File projectPath) {
         Map<Language, List<File>> languageFilesMap;

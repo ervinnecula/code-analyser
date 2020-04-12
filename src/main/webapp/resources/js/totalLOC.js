@@ -1,5 +1,5 @@
 var widthLoc = $("#loc").width() * 0.90;
-var heightLoc = $("#loc").height() * 1.25;
+var heightLoc = $("#loc").height() * 1.20;
 
 var locChart = d3.select("#loc")
     .append("svg")

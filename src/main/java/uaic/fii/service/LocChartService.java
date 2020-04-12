@@ -1,6 +1,8 @@
 package uaic.fii.service;
 
 import org.eclipse.jgit.diff.Edit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import uaic.fii.bean.CommitDiffBean;
 import uaic.fii.bean.DiffBean;
@@ -16,7 +18,10 @@ import java.util.TreeMap;
 @Service
 public class LocChartService {
 
+    private static final Logger logger = LoggerFactory.getLogger(LocChartService.class);
+
     public Map<String, PathEditBean> getAddRemoveLinesOverTime(List<CommitDiffBean> commitList) {
+        logger.info("LocChartService - getAddRemoveLinesOverTime() - getting added and removed lines over time");
         Map<String, PathEditBean> locChangePerFilePath = new TreeMap<>();
         SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd");
 
@@ -35,10 +40,12 @@ public class LocChartService {
                 }
             }
         }
+        logger.info("LocChartService - getAddRemoveLinesOverTime() - got lines added and removed over time");
         return locChangePerFilePath;
     }
 
     public Map<String, Integer> getLOCOverTime(List<CommitDiffBean> commitList, Date startDate, Date endDate) {
+        logger.info("LocChartService - getLOCOverTime() - getting LOC increase over time");
         Map<String, Integer> locChangePerFilePath = new TreeMap<>();
         SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd");
         Collections.reverse(commitList);
@@ -59,6 +66,7 @@ public class LocChartService {
                 locChangePerFilePath.put(dateFormat.format(commit.getCommitDate()), loc);
             }
         }
+        logger.info("LocChartService - getLOCOverTime() - got LOC increase over time");
         return locChangePerFilePath;
     }
 }

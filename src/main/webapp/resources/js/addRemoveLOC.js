@@ -1,5 +1,5 @@
 var widthAddDelete = $("#add-delete").width() * 0.90;
-var heightAddDelete = $("#add-delete").height() * 1.25;
+var heightAddDelete = $("#add-delete").height() * 1.20;
 
 var addRemoveLineChart = d3.select("#add-delete")
     .append("svg")

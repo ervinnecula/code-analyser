@@ -42,10 +42,10 @@
         <t:navTemplate/>
         <div class="col-md-10">
             <div id="dateSelectorSlider"></div>
-            <ul class="nav nav-tabs mb-3" role="tablist" id="topTablist">
+            <ul class="nav nav-tabs" role="tablist" id="topTablist">
                 <li class="nav-item">
-                    <a class="nav-link active" data-toggle="tab" href="#overview" aria-controls="overview" aria-selected="true" role="tab"
-                       onclick="loadDateSelectorSlider(`${startDate}`, `${endDate}`);hideDateSelector()">
+                    <a class="nav-link active" data-toggle="tab" href="#overview" aria-controls="overview" aria-selected="true" role="tab" onload="hideDateSelector()"
+                       onclick="hideDateSelector()">
                         Overview
                     </a>
                 </li>
@@ -162,7 +162,7 @@
                 <div class="tab-pane fade" id="add-delete" role="tabpanel" aria-labelledby="add-delete">
                     <div id="tooltip-add-remove" class="tooltip" style="opacity:0"></div>
                 </div>
-                <div class="tab-pane fade" id="loc" role="tabpanel" aria-labelledby="loc" style="text-align:center; padding-top:2%">
+                <div class="tab-pane fade" id="loc" role="tabpanel" aria-labelledby="loc" style="text-align:center">
                     <div id="tooltip-loc" class="tooltip" style="opacity:0"></div>
                 </div>
                 <div class="tab-pane fade" id="periodoftime" role="tabpanel" aria-labelledby="periodoftime"></div>
@@ -540,6 +540,15 @@
         loadLocChart(`${locData}`, data.values.min, data.values.max);
     });
 
+
+    function hideDateSelector() {
+        $("#dateSelectorSlider").css("display", "none");
+    }
+
+    function showDateSelector() {
+        $("#dateSelectorSlider").css("display", "block");
+    }
+
     function loadDateSelectorSlider(startDate, endDate) {
         if (startDate !== endDate) {
             var startDateSplit = startDate.split('-');
@@ -566,6 +575,10 @@
         }
     }
 
+    window.onload = function() {
+        loadDateSelectorSlider(`${startDate}`, `${endDate}`)
+    };
+
     $('#topTablist > .nav-item > .nav-link').on('click', function (e) {
         var selected = $(e.target.hash);
         if (!selected.hasClass('active')) {
@@ -585,14 +598,6 @@
             $(selected).removeClass('fade');
         }
     });
-
-    function hideDateSelector() {
-        $("#dateSelectorSlider").css("display", "none");
-    }
-
-    function showDateSelector() {
-        $("#dateSelectorSlider").css("display", "block");
-    }
 </script>
 </body>
 </html>

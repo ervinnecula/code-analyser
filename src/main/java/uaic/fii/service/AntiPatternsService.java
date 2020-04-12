@@ -6,15 +6,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uaic.fii.bean.CommitChangeSize;
+import uaic.fii.bean.CommitChangeSizeBean;
 import uaic.fii.bean.CommitDiffBean;
 import uaic.fii.bean.DiffBean;
 import uaic.fii.bean.FileOwnerPeriodBean;
 import uaic.fii.bean.RuleViolationBean;
 import uaic.fii.model.ChangeSize;
-import uaic.fii.model.OwnerLinesAdded;
+import uaic.fii.bean.OwnerLinesAddedBean;
 import uaic.fii.model.Period;
-import uaic.fii.model.StaticDetectionKind;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
+import static uaic.fii.model.ChangeSize.MAJOR;
+import static uaic.fii.model.ChangeSize.MEDIUM;
 import static uaic.fii.model.StaticDetectionKind.BASIC;
 import static uaic.fii.model.StaticDetectionKind.CODESIZE;
 import static uaic.fii.model.StaticDetectionKind.COUPLING;
@@ -33,21 +34,25 @@ import static uaic.fii.service.ChartDataStringWriters.buildParentsOfPath;
 
 @Service
 public class AntiPatternsService {
-    final static Logger logger = LoggerFactory.getLogger(AntiPatternsService.class);
+
+    private final static Logger logger = LoggerFactory.getLogger(AntiPatternsService.class);
+
+    private final RepoService repoService;
+
+    private final CommitService commitService;
+
+    private final AuthorService authorService;
 
     @Autowired
-    private RepoService repoService;
+    public AntiPatternsService(RepoService repoService, CommitService commitService, AuthorService authorService) {
+        this.repoService = repoService;
+        this.commitService = commitService;
+        this.authorService = authorService;
+    }
 
-    @Autowired
-    private CommitService commitService;
-
-    @Autowired
-    private AuthorService authorService;
-
-    private Map<StaticDetectionKind, List<RuleViolationBean>> staticRuleViolations;
-
-    public Map<String, List<CommitChangeSize>> detectMediumAndMajorChangesPattern(List<CommitDiffBean> commits) {
-        Map<String, List<CommitChangeSize>> mediumAndMajorChangesPattern = new HashMap<>();
+    public Map<String, List<CommitChangeSizeBean>> detectMediumAndMajorChangesPattern(List<CommitDiffBean> commits) {
+        logger.info("AntiPatternsService - detectMediumAndMajorChangesPattern()");
+        Map<String, List<CommitChangeSizeBean>> mediumAndMajorChangesPattern = new HashMap<>();
 
         for (CommitDiffBean commit : commits) {
             for (DiffBean diff : commit.getDiffs()) {
@@ -56,19 +61,22 @@ public class AntiPatternsService {
                     linesChangedInDiff += edit.getLengthB() + edit.getLengthA();
                 }
                 ChangeSize changeSize = getChangeSizeFromLocChanged(linesChangedInDiff);
-                if (changeSize.equals(ChangeSize.MAJOR) || changeSize.equals(ChangeSize.MEDIUM)) {
-                    CommitChangeSize commitChangeSize =
-                            new CommitChangeSize(commit.getCommitHash(), commit.getCommitDate(), commit.getCommitterName(), linesChangedInDiff, changeSize);
-                    List<CommitChangeSize> changesOnFile = mediumAndMajorChangesPattern.getOrDefault(diff.getFilePath(), new ArrayList<>());
+                if (changeSize.equals(MAJOR) || changeSize.equals(MEDIUM)) {
+                    CommitChangeSizeBean commitChangeSize =
+                            new CommitChangeSizeBean(commit.getCommitHash(), commit.getCommitDate(), commit.getCommitterName(), linesChangedInDiff, changeSize);
+                    List<CommitChangeSizeBean> changesOnFile = mediumAndMajorChangesPattern.getOrDefault(diff.getFilePath(), new ArrayList<>());
                     changesOnFile.add(commitChangeSize);
                     mediumAndMajorChangesPattern.put(diff.getFilePath(), changesOnFile);
                 }
             }
         }
+        logger.info("AntiPatternsService - detectMediumAndMajorChangesPattern() ended");
         return mediumAndMajorChangesPattern;
     }
 
     public Integer getLocChangedRecently(List<CommitDiffBean> commits) {
+        logger.info("AntiPatternsService - getLocChangedRecently() - getting number of LOC changed recently");
+
         int linesOfCodeChangedRecently = 0;
         for (CommitDiffBean commit : commits) {
             Period period = commitService.getPeriodOfTimeCommit(commit);
@@ -76,10 +84,12 @@ public class AntiPatternsService {
                 linesOfCodeChangedRecently += commitService.getLoCChangedInCommit(commit);
             }
         }
+        logger.info("AntiPatternsService - getLocChangedRecently() - calculated number of LOC changed recently");
         return linesOfCodeChangedRecently;
     }
 
     public Map<String, Period> getPeriodOfTimeAllFiles(List<CommitDiffBean> commits) {
+        logger.info("AntiPatternsService - getPeriodOfTimeAllFiles() - loading period of time for all source files");
         Map<String, Period> filesAndPeriods = new HashMap<>();
         for (CommitDiffBean commit : commits) {
             Period period = commitService.getPeriodOfTimeCommit(commit);
@@ -93,6 +103,7 @@ public class AntiPatternsService {
                 }
             }
         }
+        logger.info("AntiPatternsService - getPeriodOfTimeAllFiles() - computed period of time for all source files");
         return filesAndPeriods;
     }
 
@@ -103,7 +114,7 @@ public class AntiPatternsService {
     public void loadStaticAnalysisResults(File projectPath) {
         logger.info("AntiPatternsService - staticAnalyse() - calling repoService.analyzeClonedProject() - getting BASIC flaws");
         try {
-            staticRuleViolations = repoService.analyzeClonedProject(projectPath.getPath());
+            repoService.analyzeClonedProject(projectPath.getPath());
         } catch (IOException e) {
             logger.error(format("AntiPatternsService - staticAnalyse() - Git exception happened when opening folder %s. Full exception: %s", projectPath, e));
         } catch (PMDException e) {
@@ -112,12 +123,12 @@ public class AntiPatternsService {
     }
 
     public List<FileOwnerPeriodBean> getOrphanedFiles(List <CommitDiffBean> commits) {
-        Map<String, Period> authorsAndPeriod = authorService.getAuthorsAndPeriods(commits);
-        Map<String, OwnerLinesAdded> fileOwners = authorService.getFileOwners(commits);
         logger.info("AntiPatternsService - staticAnalyse() - authorsAndPeriods retrieved file owners and periods of time");
+        Map<String, Period> authorsAndPeriod = authorService.getAuthorsAndPeriods(commits);
+        Map<String, OwnerLinesAddedBean> fileOwners = authorService.getFileOwners(commits);
         List<FileOwnerPeriodBean> orphanedFiles = new ArrayList<>();
 
-        for (Map.Entry<String, OwnerLinesAdded> entry : fileOwners.entrySet()) {
+        for (Map.Entry<String, OwnerLinesAddedBean> entry : fileOwners.entrySet()) {
             Period period = authorsAndPeriod.get(entry.getValue().getOwner());
             if (period.equals(Period.OLD) || period.equals(Period.VERY_OLD)) {
                 orphanedFiles.add(new FileOwnerPeriodBean(entry.getKey(), entry.getValue().getOwner(), period));
@@ -128,37 +139,37 @@ public class AntiPatternsService {
     }
 
     public List<RuleViolationBean> getBasicAnalysis() {
-        logger.info("AntiPatternsService - getBasicAnalysis() - calling repoService.getBasicAnalysis() ");
-        return staticRuleViolations.get(BASIC);
+        logger.info("AntiPatternsService - getBasicAnalysis() - calling repoService.getBasicAnalysis()");
+        return repoService.getRuleViolations().get(BASIC.getDetectedKind());
     }
 
     public List<RuleViolationBean> getOptimizationViolations() {
-        logger.info("AntiPatternsService - getOptimizationViolations() - calling repoService.getOptimizationViolations() ");
-        return staticRuleViolations.get(OPTIMIZATION);
+        logger.info("AntiPatternsService - getOptimizationViolations() - calling repoService.getOptimizationViolations()");
+        return repoService.getRuleViolations().get(OPTIMIZATION.getDetectedKind());
     }
 
     public List<RuleViolationBean> getCouplingViolations() {
-        logger.info("AntiPatternsService - getCouplingViolations() - calling repoService.getCouplingViolations() ");
-        return staticRuleViolations.get(COUPLING);
+        logger.info("AntiPatternsService - getCouplingViolations() - calling repoService.getCouplingViolations()");
+        return repoService.getRuleViolations().get(COUPLING.getDetectedKind());
     }
 
     public List<RuleViolationBean> getCodesizeViolations() {
-        logger.info("AntiPatternsService - getCodesizeViolations() - calling repoService.getCodesizeViolations() ");
-        return staticRuleViolations.get(CODESIZE);
+        logger.info("AntiPatternsService - getCodesizeViolations() - calling repoService.getCodesizeViolations()");
+        return repoService.getRuleViolations().get(CODESIZE.getDetectedKind());
     }
 
     public List<RuleViolationBean> getDesignViolations() {
-        logger.info("AntiPatternsService - getDesignViolations() - calling repoService.getDesignViolations() ");
-        return staticRuleViolations.get(DESIGN);
+        logger.info("AntiPatternsService - getDesignViolations() - calling repoService.getDesignViolations()");
+        return repoService.getRuleViolations().get(DESIGN.getDetectedKind());
     }
 
     private ChangeSize getChangeSizeFromLocChanged(int locChanged) {
         ChangeSize changeSize = null;
         if (locChanged >= commitService.getProperties().getMajorChangeSize()) {
-            changeSize = ChangeSize.MAJOR;
+            changeSize = MAJOR;
         }
         if (locChanged >= commitService.getProperties().getMediumChangeSize() && locChanged < commitService.getProperties().getMajorChangeSize()) {
-            changeSize = ChangeSize.MEDIUM;
+            changeSize = MEDIUM;
         }
         if (locChanged < commitService.getProperties().getMediumChangeSize()) {
             changeSize = ChangeSize.SMALL;

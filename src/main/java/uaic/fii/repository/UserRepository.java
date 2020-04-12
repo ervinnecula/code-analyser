@@ -1,8 +1,10 @@
 package uaic.fii.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import uaic.fii.model.User;
+import org.springframework.stereotype.Repository;
+import uaic.fii.model.UserDAO;
 
-public interface UserRepository extends JpaRepository<User, Integer> {
-    User findByName(String name);
+@Repository
+public interface UserRepository extends JpaRepository<UserDAO, Integer> {
+    UserDAO findByName(String name);
 }

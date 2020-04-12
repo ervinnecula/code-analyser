@@ -59,7 +59,11 @@ import static uaic.fii.model.StaticDetectionKind.OPTIMIZATION;
 @Service
 public class RepoService {
 
-    final static Logger logger = LoggerFactory.getLogger(RepoService.class);
+    private final static Logger logger = LoggerFactory.getLogger(RepoService.class);
+
+    private List<RuleViolationBean> ruleViolationList;
+
+    private Map<String, List<RuleViolationBean>> ruleViolations;
 
     public String getPathToCloneDir() {
         ClassLoader classLoader = getClass().getClassLoader();
@@ -68,18 +72,12 @@ public class RepoService {
         return filePath.substring(0, lastIndexOfSlash);
     }
 
-    public Map<StaticDetectionKind, List<RuleViolationBean>> analyzeClonedProject(String path) throws PMDException, IOException {
+    public void analyzeClonedProject(String path) throws PMDException, IOException {
         String fileContent;
+        ruleViolations = new HashMap<>();
         RuleContext context;
         Rule rule;
         File javaFile;
-        Map<StaticDetectionKind, List<RuleViolationBean>> ruleViolationBeans = new HashMap<>();
-        List<RuleViolationBean> basicRuleViolations;
-        List<RuleViolationBean> couplingRuleViolations;
-        List<RuleViolationBean> optimizationRuleViolations;
-        List<RuleViolationBean> codesizeRuleViolations;
-        List<RuleViolationBean> designRuleViolations;
-        List<RuleViolationBean> allRuleViolationBeans = new ArrayList<>();
         Iterator<File> files = getJavaFilesInDirectory(path);
 
         while (files.hasNext()) {
@@ -91,37 +89,11 @@ public class RepoService {
 
             for (RuleViolation ruleViolation : context.getReport()) {
                 rule = ruleViolation.getRule();
-                allRuleViolationBeans.add(new RuleViolationBean(rule.getMessage(), rule.getDescription(), rule.getExternalInfoUrl(),
-                        rule.getPriority().toString(), javaFile.getName(), ruleViolation.getMethodName(),
-                        ruleViolation.getClassName(), ruleViolation.getBeginLine(), ruleViolation.getEndLine()));
-                if (rule.getRuleSetName().equalsIgnoreCase(BASIC.getDetectedKind())) {
-                    basicRuleViolations = fitToSpecificRuleViolationsKind(rule, javaFile, ruleViolationBeans, ruleViolation, BASIC);
-                    ruleViolationBeans.put(BASIC, basicRuleViolations);
-                } if (rule.getRuleSetName().equalsIgnoreCase(COUPLING.getDetectedKind())) {
-                    couplingRuleViolations = fitToSpecificRuleViolationsKind(rule, javaFile, ruleViolationBeans, ruleViolation, COUPLING);
-                    ruleViolationBeans.put(COUPLING, couplingRuleViolations);
-                } if (rule.getRuleSetName().equalsIgnoreCase(OPTIMIZATION.getDetectedKind())) {
-                    optimizationRuleViolations = fitToSpecificRuleViolationsKind(rule, javaFile, ruleViolationBeans, ruleViolation, OPTIMIZATION);
-                    ruleViolationBeans.put(OPTIMIZATION, optimizationRuleViolations);
-                } if (rule.getRuleSetName().equalsIgnoreCase(CODESIZE.getDetectedKind())) {
-                    codesizeRuleViolations = fitToSpecificRuleViolationsKind(rule, javaFile, ruleViolationBeans, ruleViolation, CODESIZE);
-                    ruleViolationBeans.put(CODESIZE, codesizeRuleViolations);
-                } if (rule.getRuleSetName().equalsIgnoreCase(DESIGN.getDetectedKind())) {
-                    designRuleViolations = fitToSpecificRuleViolationsKind(rule, javaFile, ruleViolationBeans, ruleViolation, DESIGN);
-                    ruleViolationBeans.put(DESIGN, designRuleViolations);
-                }
+                ruleViolationList = fitToSpecificRuleViolationsKind(rule, javaFile, ruleViolations, ruleViolation, BASIC);
+                ruleViolations.put(rule.getRuleSetName(), ruleViolationList);
+
             }
         }
-        return ruleViolationBeans;
-    }
-
-    private List<RuleViolationBean> fitToSpecificRuleViolationsKind(Rule rule, File javaFile, Map<StaticDetectionKind, List<RuleViolationBean>> ruleViolationBeans, RuleViolation ruleViolation, StaticDetectionKind coupling) {
-        List<RuleViolationBean> couplingRuleViolations;
-        couplingRuleViolations = ruleViolationBeans.getOrDefault(coupling, new ArrayList<>());
-        couplingRuleViolations.add(new RuleViolationBean(rule.getMessage(), rule.getDescription(), rule.getExternalInfoUrl(),
-                rule.getPriority().toString(), javaFile.getName(), ruleViolation.getMethodName(),
-                ruleViolation.getClassName(), ruleViolation.getBeginLine(), ruleViolation.getEndLine()));
-        return couplingRuleViolations;
     }
 
     public void cloneOrPullRepo(RepoNameHtmlGitUrlsBean repoBean, File resourceFolder) throws IOException, GitAPIException {
@@ -130,16 +102,17 @@ public class RepoService {
         if (resourceFolder.exists()) {
             git = Git.open(resourceFolder);
             command = git.pull();
-            logger.info(format("MainController - cloneOrPullRepo() - Local directory already exists. Pulling latest changes to %s", resourceFolder));
+            logger.info(format("RepoService - cloneOrPullRepo() - Local directory already exists. Pulling latest changes to %s", resourceFolder));
         } else {
             command = Git.cloneRepository().setURI(repoBean.getRepoGitUrl()).setDirectory(resourceFolder);
-            logger.info(format("MainController - cloneOrPullRepo() - Cloning repo: %s", repoBean.getRepoName()));
+            logger.info(format("RepoService - cloneOrPullRepo() - Cloning repo: %s", repoBean.getRepoName()));
 
         }
         command.call();
     }
 
     public List<CommitDiffBean> getCommitsAndDiffs(File resourceFolder) throws IOException {
+        logger.info("RepoService - getCommitsAndDiffs() - getting diffs for each commit");
         Git git = Git.open(resourceFolder);
         List<CommitDiffBean> commits = new ArrayList<>();
 
@@ -170,7 +143,16 @@ public class RepoService {
                 }
             }
         }
+        logger.info("RepoService - getCommitsAndDiffs() - loaded diffs for existing commits");
         return commits;
+    }
+
+    private List<RuleViolationBean> fitToSpecificRuleViolationsKind(Rule rule, File javaFile, Map<String, List<RuleViolationBean>> ruleViolationBeans, RuleViolation ruleViolation, StaticDetectionKind staticDetectionKind) {
+        List<RuleViolationBean> ruleViolationList = ruleViolationBeans.getOrDefault(staticDetectionKind.getDetectedKind(), new ArrayList<>());
+        ruleViolationList.add(new RuleViolationBean(rule.getMessage(), rule.getDescription(), rule.getExternalInfoUrl(),
+                rule.getPriority().toString(), javaFile.getName(), ruleViolation.getMethodName(),
+                ruleViolation.getClassName(), ruleViolation.getBeginLine(), ruleViolation.getEndLine()));
+        return ruleViolationList;
     }
 
     private List<DiffBean> getDiffsBetweenCommits(AbstractTreeIterator tree, AbstractTreeIterator parentTree, Repository repository) throws IOException {
@@ -214,6 +196,7 @@ public class RepoService {
     }
 
     private RuleSets getPMDRuleSets() {
+        RuleSets ruleSets = new RuleSets();
         RuleSet basicRuleSet = null;
         RuleSet couplingRuleSet = null;
         RuleSet optimizationsRuleSet = null;
@@ -229,7 +212,6 @@ public class RepoService {
         } catch (RuleSetNotFoundException e) {
             logger.error(String.format("RepoService - getPMDRuleSets(). Could not find ruleset file : %s", e));
         }
-        RuleSets ruleSets = new RuleSets();
         ruleSets.addRuleSet(basicRuleSet);
         ruleSets.addRuleSet(couplingRuleSet);
         ruleSets.addRuleSet(optimizationsRuleSet);
@@ -237,5 +219,9 @@ public class RepoService {
         ruleSets.addRuleSet(designRuleSet);
 
         return ruleSets;
+    }
+
+    public Map<String, List<RuleViolationBean>> getRuleViolations() {
+        return ruleViolations;
     }
 }

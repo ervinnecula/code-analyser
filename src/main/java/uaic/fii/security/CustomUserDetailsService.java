@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import uaic.fii.model.User;
+import uaic.fii.model.UserDAO;
 import uaic.fii.repository.UserRepository;
 
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByName(username);
+        UserDAO user = userRepository.findByName(username);
 
         return new CustomUserDetails(
                 user.getName(),
