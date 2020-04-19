@@ -11,7 +11,7 @@ function loadSinglePointOfFailure(username, repositoryName, data, fewCommiters) 
     var array = [];
 
     var spofTreemap = d3.treemap()
-        .size([widthTotal * 0.84, heightTotal * 0.95])
+        .size([widthTotal * 0.84, heightTotal * 0.92])
         .round(true)
         .padding(1);
 

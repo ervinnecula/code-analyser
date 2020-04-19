@@ -44,8 +44,7 @@
             <div id="dateSelectorSlider"></div>
             <ul class="nav nav-tabs" role="tablist" id="topTablist">
                 <li class="nav-item">
-                    <a class="nav-link active" data-toggle="tab" href="#overview" aria-controls="overview" aria-selected="true" role="tab" onload="hideDateSelector()"
-                       onclick="hideDateSelector()">
+                    <a class="nav-link active" data-toggle="tab" href="#overview" aria-controls="overview" aria-selected="true" role="tab" onclick="hideDateSelector()">
                         Overview
                     </a>
                 </li>
@@ -540,16 +539,15 @@
         loadLocChart(`${locData}`, data.values.min, data.values.max);
     });
 
-
     function hideDateSelector() {
-        $("#dateSelectorSlider").css("display", "none");
+        $("#dateSelectorSlider").css("visibility", "hidden").css("height", "0px").css("margin-bottom", "0px");
     }
 
     function showDateSelector() {
-        $("#dateSelectorSlider").css("display", "block");
+        $("#dateSelectorSlider").css("visibility", "visible").css("height","30px").css("margin-bottom", "1%");
     }
 
-    function loadDateSelectorSlider(startDate, endDate) {
+    function loadDateSelectorSlider(startDate, endDate, callback) {
         if (startDate !== endDate) {
             var startDateSplit = startDate.split('-');
             var endDateSplit = endDate.split('-');
@@ -573,10 +571,12 @@
                 }
             });
         }
+        console.log("callback() is " + callback);
+        callback();
     }
 
     window.onload = function() {
-        loadDateSelectorSlider(`${startDate}`, `${endDate}`)
+        loadDateSelectorSlider(`${startDate}`, `${endDate}`, hideDateSelector);
     };
 
     $('#topTablist > .nav-item > .nav-link').on('click', function (e) {
