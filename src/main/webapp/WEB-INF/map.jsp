@@ -81,6 +81,7 @@
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#antipatterns" aria-controls="total" aria-selected="false" role="tab" onclick="hideDateSelector()">
                         Anti-Patterns
+                        <span class="badge badge-danger badge-pill badge-custom">${orphanedFiles.size() + mediumAndHugeChanges.size() + fewCommitterPoints + manyCommitterPoints + forgottenPoints}</span>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -197,10 +198,31 @@
                             <div class="col-2">
                                 <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist"
                                      aria-orientation="vertical">
-                                    <a class="nav-link active bg-primary mb-2" data-toggle="pill"  href="#v-pills-aa-spof" role="tab">Single Point of Failure</a>
-                                    <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-aa-conglomerate" role="tab">Conglomerate</a>
-                                    <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-aa-mandhchanges" role="tab">Medium and Major Changes</a>
-                                    <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-aa-orphaned" role="tab">Orphaned files</a>
+                                    <a class="nav-link active bg-primary mb-2" data-toggle="pill"  href="#v-pills-aa-spof" role="tab">Single Point of Failure
+                                        <c:if test="${fewCommitterPoints != 0}">
+                                            <span class="badge badge-danger badge-pill badge-custom">${fewCommitterPoints}</span>
+                                        </c:if>
+                                    </a>
+                                    <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-aa-conglomerate" role="tab">Conglomerate
+                                        <c:if test="${manyCommitterPoints != 0}">
+                                            <span class="badge badge-danger badge-pill badge-custom">${manyCommitterPoints}</span>
+                                        </c:if>
+                                    </a>
+                                    <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-aa-mandhchanges" role="tab">Medium and Major Changes
+                                        <c:if test="${mediumAndHugeChanges.size() != 0}">
+                                            <span class="badge badge-danger badge-pill badge-custom">${mediumAndHugeChanges.size()}</span>
+                                        </c:if>
+                                    </a>
+                                    <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-aa-orphaned" role="tab">Orphaned files
+                                        <c:if test="${orphanedFiles.size() != 0}">
+                                            <span class="badge badge-danger badge-pill badge-custom">${orphanedFiles.size()}</span>
+                                        </c:if>
+                                    </a>
+                                    <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-forgotten" role="tab">Forgotten
+                                        <c:if test="${forgottenPoints != 0}">
+                                            <span class="badge badge-danger badge-pill badge-custom">${forgottenPoints}</span>
+                                        </c:if>
+                                    </a>
                                 </div>
                             </div>
                             <div class="col-10">
@@ -243,27 +265,23 @@
                                         <div class="row">
                                             <c:forEach begin="0" items="${mediumAndHugeChanges}" var="entry">
                                                 <div class="card card-mandhchanges">
-                                                    <h6 class="card-header">File <a target="_blank"
-                                                                                    href="https://github.com/${username}/${repositoryName}/blob/master/${entry.key}">${entry.key}</a>
+                                                    <h6 class="card-header">File
+                                                        <a target="_blank" href="https://github.com/${username}/${repositoryName}/blob/master/${entry.key}">${entry.key}</a>
                                                     </h6>
                                                     <c:forEach items="${entry.value}" var="item">
                                                         <div class="card-body card-body-padding">
                                                             <h6 class="card-title">
-                                                                Commit <b>${item.commitHash}</b> on <fmt:formatDate
-                                                                    value="${item.commitDate}" type="date"
-                                                                    pattern="dd-MMM-yyyy"/>
+                                                                Commit <b>${item.commitHash}</b> on
+                                                                <fmt:formatDate value="${item.commitDate}" type="date" pattern="dd-MMM-yyyy"/>
                                                             </h6>
                                                             <h6 class="card-subtitle mb-2">
                                                                 <c:if test="${item.changeSize == 'MAJOR'}">
-                                                                    <span style="color: red">${item.changeSize}</span> change by
-                                                                    <b>${item.committerName}</b>
+                                                                    <span style="color: red">${item.changeSize}</span> change by <b>${item.committerName}</b>
                                                                 </c:if>
                                                                 <c:if test="${item.changeSize == 'MEDIUM'}">
-                                                                    <span style="color: orange">${item.changeSize}</span> change by
-                                                                    <b>${item.committerName}</b>
+                                                                    <span style="color: orange">${item.changeSize}</span> change by <b>${item.committerName}</b>
                                                                 </c:if>
-                                                                <p class="card-link">${item.linesChanged} lines
-                                                                    changed</p>
+                                                                <p class="card-link">${item.linesChanged} lines changed</p>
                                                             </h6>
                                                         </div>
                                                     </c:forEach>
@@ -290,6 +308,24 @@
                                                         <td><span style="color: red;"><b>High Chance</b></span></td>
                                                     </tr>
                                                 </c:forEach>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="tab-pane fade" id="v-pills-forgotten" role="tabpanel" style="text-align:center">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">File name</th>
+                                                    <th scope="col">Period</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            <c:forEach items="${forgotten}" var="item">
+                                                <tr>
+                                                    <td>${item.key}</td>
+                                                    <td style="text-align:center">${item.value}</td>
+                                                </tr>
+                                            </c:forEach>
                                             </tbody>
                                         </table>
                                     </div>
@@ -528,8 +564,8 @@
     loadLocChart(`${locData}`, `${startDate}`, `${endDate}`);
     loadLocByLanguageOverview(`${locByLanguage}`);
     loadNumberOfFilesByLanguageOverview(`${filesByLanguage}`);
-    loadSinglePointOfFailure(`${username}`, `${repositoryName}`, `${heatMapContributorsData}`, `${fewCommiters}`);
-    loadConglomerate(`${username}`, `${repositoryName}`, `${heatMapContributorsData}`, `${manyCommiters}`);
+    loadSinglePointOfFailure(`${username}`, `${repositoryName}`, `${heatMapContributorsData}`, `${fewCommitters}`);
+    loadConglomerate(`${username}`, `${repositoryName}`, `${heatMapContributorsData}`, `${manyCommitters}`);
     periodOfTime(`${filesAndPeriods}`);
 
     $("#dateSelectorSlider").bind("valuesChanged", function (e, data) {

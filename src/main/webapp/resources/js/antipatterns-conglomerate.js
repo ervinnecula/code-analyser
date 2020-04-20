@@ -5,12 +5,12 @@ var conglomerateTreeSvg = d3.select("#conglomerate")
 
 var format = d3.format(",d");
 
-function loadConglomerate(username, repositoryName, data, manyCommiters) {
+function loadConglomerate(username, repositoryName, data, manyCommitters) {
 
     var array = [];
 
     var conglomerateTreemap = d3.treemap()
-        .size([widthTotal * 0.84, heightTotal * 0.92])
+        .size([widthTotal * 0.84, heightTotal * 0.90])
         .round(true)
         .padding(1);
 
@@ -75,7 +75,7 @@ function loadConglomerate(username, repositoryName, data, manyCommiters) {
             })
             .attr("fill", function (d) {
                 var fillColor;
-                if (d.data.size < manyCommiters) {
+                if (d.data.size < manyCommitters) {
                     fillColor = '#84e9ac';
                 } else {
                     fillColor = '#ff1700';
@@ -94,7 +94,7 @@ function loadConglomerate(username, repositoryName, data, manyCommiters) {
 
         var label = cell.append("text")
             .attr("clip-path", function (d) {
-                return d.id.replace("__project_/", "");
+                return d.id.replace("__project__/", "");
             });
 
         label.append("tspan")

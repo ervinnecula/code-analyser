@@ -14,11 +14,13 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import static java.util.Collections.singletonList;
+import static uaic.fii.model.Period.RECENT;
 
 @Service
 public class OverviewService {
@@ -65,29 +67,25 @@ public class OverviewService {
     }
 
     public String countRecentFilesChanged(List<CommitDiffBean> commits) {
-        int counter = 0;
-        Collection<Period> filesAndPeriods = antiPatternsService.getPeriodOfTimeAllFiles(commits).values();
-        for (Period period : filesAndPeriods) {
-            if (period.equals(Period.RECENT)) {
-                counter++;
-            }
-        }
-        return Integer.toString(counter);
+        return Integer.toString(antiPatternsService.getFilteredFilesByPeriod(commits, singletonList(RECENT)).size());
     }
 
     public String countRecentLinesChanged(List<CommitDiffBean> commits) {
-        return Integer.toString(antiPatternsService.getLocChangedRecently(commits));
+        logger.info("OverviewService - countRecentLinesChanged() - getting number of LOC changed recently");
+
+        int linesOfCodeChangedRecently = 0;
+        for (CommitDiffBean commit : commits) {
+            Period period = commitService.getPeriodOfTimeCommit(commit);
+            if (period == RECENT) {
+                linesOfCodeChangedRecently += commitService.getLoCChangedInCommit(commit);
+            }
+        }
+        logger.info("OverviewService - countRecentLinesChanged() - calculated number of LOC changed recently");
+        return Integer.toString(linesOfCodeChangedRecently);
     }
 
     public String countRecentContributors(List<CommitDiffBean> commits) {
-        int counter = 0;
-        Collection<Period> contributorsAndPeriods = antiPatternsService.getPeriodOfTimeContributors(commits).values();
-        for (Period period : contributorsAndPeriods) {
-            if (period.equals(Period.RECENT)) {
-                counter++;
-            }
-        }
-        return Integer.toString(counter);
+        return Integer.toString(antiPatternsService.getFilteredContributorsByPeriod(commits, singletonList(RECENT)).size());
     }
 
     public Map<String, Integer> getActiveContributorsLoC(List<CommitDiffBean> commits) {

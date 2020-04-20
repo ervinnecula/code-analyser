@@ -74,21 +74,7 @@ public class AntiPatternsService {
         return mediumAndMajorChangesPattern;
     }
 
-    public Integer getLocChangedRecently(List<CommitDiffBean> commits) {
-        logger.info("AntiPatternsService - getLocChangedRecently() - getting number of LOC changed recently");
-
-        int linesOfCodeChangedRecently = 0;
-        for (CommitDiffBean commit : commits) {
-            Period period = commitService.getPeriodOfTimeCommit(commit);
-            if (period == Period.RECENT) {
-                linesOfCodeChangedRecently += commitService.getLoCChangedInCommit(commit);
-            }
-        }
-        logger.info("AntiPatternsService - getLocChangedRecently() - calculated number of LOC changed recently");
-        return linesOfCodeChangedRecently;
-    }
-
-    public Map<String, Period> getPeriodOfTimeAllFiles(List<CommitDiffBean> commits) {
+    public Map<String, Period> getPeriodOfTimeAllFiles(List<CommitDiffBean> commits, boolean withParents) {
         logger.info("AntiPatternsService - getPeriodOfTimeAllFiles() - loading period of time for all source files");
         Map<String, Period> filesAndPeriods = new HashMap<>();
         for (CommitDiffBean commit : commits) {
@@ -96,19 +82,17 @@ public class AntiPatternsService {
             for (DiffBean diff : commit.getDiffs()) {
                 if (!diff.getFilePath().equals("/dev/null")) {
                     filesAndPeriods.put(diff.getFilePath(), period);
-                    List<String> parents = buildParentsOfPath(diff.getFilePath());
-                    for (String parent : parents) {
-                        filesAndPeriods.putIfAbsent(parent, Period.PARENT);
+                    if(withParents) {
+                        List<String> parents = buildParentsOfPath(diff.getFilePath());
+                        for (String parent : parents) {
+                            filesAndPeriods.putIfAbsent(parent, Period.PARENT);
+                        }
                     }
                 }
             }
         }
         logger.info("AntiPatternsService - getPeriodOfTimeAllFiles() - computed period of time for all source files");
         return filesAndPeriods;
-    }
-
-    public Map<String, Period> getPeriodOfTimeContributors(List<CommitDiffBean> commits) {
-        return authorService.getAuthorsAndPeriods(commits);
     }
 
     public void loadStaticAnalysisResults(File projectPath) {
@@ -122,7 +106,7 @@ public class AntiPatternsService {
         }
     }
 
-    public List<FileOwnerPeriodBean> getOrphanedFiles(List <CommitDiffBean> commits) {
+    public List<FileOwnerPeriodBean> getOrphanedFiles(List<CommitDiffBean> commits) {
         logger.info("AntiPatternsService - staticAnalyse() - authorsAndPeriods retrieved file owners and periods of time");
         Map<String, Period> authorsAndPeriod = authorService.getAuthorsAndPeriods(commits);
         Map<String, OwnerLinesAddedBean> fileOwners = authorService.getFileOwners(commits);
@@ -136,6 +120,28 @@ public class AntiPatternsService {
         }
         logger.info("AntiPatternsService- getOrphanedFiles() - Successfully retrieved potential orphan files");
         return orphanedFiles;
+    }
+
+    public Map<String, Period> getFilteredFilesByPeriod(List<CommitDiffBean> commits, List<Period> acceptedPeriods) {
+        Map<String, Period> filteredMap = new HashMap<>();
+        Map<String, Period> fileNamePeriodMap = getPeriodOfTimeAllFiles(commits, false);
+        for (Map.Entry<String, Period> entry : fileNamePeriodMap.entrySet()) {
+            if (acceptedPeriods.contains(entry.getValue())) {
+                filteredMap.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return filteredMap;
+    }
+
+    public Map<String, Period> getFilteredContributorsByPeriod(List<CommitDiffBean> commits, List<Period> acceptedPeriods) {
+        Map<String, Period> filteredMap = new HashMap<>();
+        Map<String, Period> contributorsPeriodMap = authorService.getAuthorsAndPeriods(commits);
+        for (Map.Entry<String, Period> entry : contributorsPeriodMap.entrySet()) {
+            if (acceptedPeriods.contains(entry.getValue())) {
+                filteredMap.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return filteredMap;
     }
 
     public List<RuleViolationBean> getBasicAnalysis() {

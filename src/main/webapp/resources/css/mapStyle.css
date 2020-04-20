@@ -107,12 +107,12 @@ g.node:hover circle {
 
 #v-pills-aa-spof {
     width: 100%;
-    height: 75%;
+    height: 71%;
 }
 
 #v-pills-aa-conglomerate {
     width: 100%;
-    height: 75%;
+    height: 71%;
 }
 
 #add-delete svg {
@@ -135,4 +135,15 @@ g.node:hover circle {
 
 #top-bar {
     width: 100%;
+}
+
+.badge-custom {
+    font-size: 11px;
+}
+
+.periodOfTimeStroke {
+    fill: white;
+    stroke: black;
+    stroke-width: 0.4px;
+    stroke-linejoin: round;
 }

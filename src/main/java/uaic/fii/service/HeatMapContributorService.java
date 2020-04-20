@@ -21,7 +21,7 @@ public class HeatMapContributorService {
 
     private static final Logger logger = LoggerFactory.getLogger(HeatMapContributorService.class);
 
-    public Map<String, DateHashSetBean> getPathContributorsCsvFile(List<CommitDiffBean> commitList) {
+    public Map<String, DateHashSetBean> getPathContributorsCsvFile(List<CommitDiffBean> commitList, boolean withParents) {
         logger.info("HeatMapContributorService - getPathContributorsCsvFile() - getting data for heat map contributor");
         Map<String, DateHashSetBean> diffsPerFilePath = new TreeMap<>();
         SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd");
@@ -39,9 +39,11 @@ public class HeatMapContributorService {
                     }
                     listOfContributors.add(commit.getCommitterName());
 
-                    List<String> parents = buildParentsOfPath(filePathComplete);
-                    for (String parent : parents) {
-                        diffsPerFilePath.put(parent, new DateHashSetBean(dateFormat.format(commit.getCommitDate()), new HashSet<>()));
+                    if (withParents) {
+                        List<String> parents = buildParentsOfPath(filePathComplete);
+                        for (String parent : parents) {
+                            diffsPerFilePath.put(parent, new DateHashSetBean(dateFormat.format(commit.getCommitDate()), new HashSet<>()));
+                        }
                     }
                     diffsPerFilePath.put(filePathComplete, new DateHashSetBean(dateFormat.format(commit.getCommitDate()), listOfContributors));
                 }

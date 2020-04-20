@@ -51,13 +51,12 @@ function periodOfTime(data) {
             return "translate(" + d.x + "," + d.y + ")";
         });
 
-    node.append("circle")
+    var circle = node.append("circle")
         .attr("id", function (d) {
             return d.data.periodInString;
         }).attr("r", function (d) {
-        return d.r;
-    })
-        .style("fill", function (d) {
+            return d.r;
+        }).style("fill", function (d) {
             var fillColor;
             switch (d.data.periodInString) {
                 case "RECENT":
@@ -76,6 +75,14 @@ function periodOfTime(data) {
             return fillColor;
         });
 
+    node.append("text")
+        .attr("class", "periodOfTimeStroke")
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "central")
+        .html(function (d) {
+            return d.data.periodInString
+        });
+
     node.append("clipPath")
         .attr("id", function (d) {
             return "clip-" + d.data.path;
@@ -88,23 +95,22 @@ function periodOfTime(data) {
     node.append("title")
         .text(function (d) {
             return d.data.path + "\n" + d.data.periodInString;
-            ;
         });
 }
 
 function getNumericPeriod(stringPeriod) {
     var number;
     if (stringPeriod === "RECENT") {
-        number = 20;
+        number = 25;
     }
     if (stringPeriod === "MEDIUM") {
-        number = 10;
+        number = 15;
     }
     if (stringPeriod === "OLD") {
-        number = 5;
+        number = 10;
     }
     if (stringPeriod === "VERY_OLD") {
-        number = 3;
+        number = 5;
     }
     return number;
 }

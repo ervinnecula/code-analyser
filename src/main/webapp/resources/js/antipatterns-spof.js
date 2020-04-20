@@ -6,12 +6,12 @@ var spofTreeSvg = d3.select("#v-pills-aa-spof")
 
 var format = d3.format(",d");
 
-function loadSinglePointOfFailure(username, repositoryName, data, fewCommiters) {
+function loadSinglePointOfFailure(username, repositoryName, data, fewCommitters) {
 
     var array = [];
 
     var spofTreemap = d3.treemap()
-        .size([widthTotal * 0.84, heightTotal * 0.92])
+        .size([widthTotal * 0.84, heightTotal * 0.90])
         .round(true)
         .padding(1);
 
@@ -77,7 +77,7 @@ function loadSinglePointOfFailure(username, repositoryName, data, fewCommiters) 
             })
             .attr("fill", function (d) {
                 var fillColor;
-                if (d.data.size > fewCommiters) {
+                if (d.data.size > fewCommitters) {
                     fillColor = '#84e9ac';
                 } else {
                     fillColor = '#ff1700';

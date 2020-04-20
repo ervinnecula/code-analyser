@@ -34,7 +34,7 @@
             <div class="col align-self-center">
                 <h1 class="custom-center">Code Analyser</h1>
                 <div class="container">
-                    <form class="form-signin" name='f' action="/login" method='POST'>
+                    <form class="form-signin" name="f" action="/login" method="POST">
                         <input type="text" id="inputEmail" name="username" class="form-control mt-3" placeholder="Name" required autofocus>
                         <input type="password" id="inputPassword" name="password" class="form-control mt-3" placeholder="Password" required>
                         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>

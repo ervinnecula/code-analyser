@@ -12,18 +12,21 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import uaic.fii.bean.CommitDiffBean;
 import uaic.fii.bean.RepoNameHtmlGitUrlsBean;
 import uaic.fii.bean.RuleViolationBean;
+import uaic.fii.model.Period;
 import uaic.fii.service.AntiPatternsService;
 import uaic.fii.service.AuthorService;
 import uaic.fii.service.CommitService;
 import uaic.fii.service.HeatMapContributorService;
 import uaic.fii.service.LocChartService;
 import uaic.fii.service.OverviewService;
+import uaic.fii.service.PointsService;
 import uaic.fii.service.RepoService;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -55,10 +58,18 @@ public class AnalysisController {
 
     private final AuthorService authorService;
 
+    private final PointsService pointsService;
+
+    private Integer fewCommitters;
+
+    private Integer manyCommitters;
+
+    private List<Period> periods;
+
     @Autowired
     public AnalysisController(RepoService repoService, CommitService commitService, LocChartService locChartService,
                               HeatMapContributorService heatMapContributorService, OverviewService overviewService,
-                              AntiPatternsService antipatternsService, AuthorService authorService) {
+                              AntiPatternsService antipatternsService, AuthorService authorService, PointsService pointsService) {
         this.repoService = repoService;
         this.commitService = commitService;
         this.locChartService = locChartService;
@@ -66,6 +77,7 @@ public class AnalysisController {
         this.overviewService = overviewService;
         this.antipatternsService = antipatternsService;
         this.authorService = authorService;
+        this.pointsService = pointsService;
     }
 
     @RequestMapping(value = "/analysis", method = RequestMethod.POST)
@@ -74,29 +86,32 @@ public class AnalysisController {
         DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
         try {
             repoService.cloneOrPullRepo(repoBean, resourceFolder);
-            antipatternsService.loadStaticAnalysisResults(resourceFolder);
-            commitService.loadProperties(username);
-
             List<CommitDiffBean> commits = repoService.getCommitsAndDiffs(resourceFolder);
             Date startDate = commits.get(commits.size() - 1).getCommitDate();
             Date endDate = commits.get(0).getCommitDate();
 
+            loadPrerequisites(resourceFolder);
+
             model.addAttribute("startDate", formatter.format(startDate));
             model.addAttribute("endDate", formatter.format(endDate));
-            model.addAttribute("fewCommiters", commitService.getProperties().getFewCommitersSize());
-            model.addAttribute("manyCommiters", commitService.getProperties().getManyCommitersSize());
+            model.addAttribute("fewCommitters", fewCommitters);
+            model.addAttribute("manyCommitters", manyCommitters);
             model.addAllAttributes(prepareCustomOverviewMap(resourceFolder, commits));
             model.addAttribute("top5ActiveContributorsLoC", overviewService.getActiveContributorsLoC(commits));
             model.addAttribute("top5ActiveContributorsFiles", overviewService.getActiveContributorsFilesTouched(commits));
             model.addAttribute("top5InvolvedContributors", overviewService.getMostInvolvedContributors(commits));
             model.addAttribute("heatMapCommitsData", writeStringStringIntegerMapToCSVFormat(commitService.getPathDiffsCsvFile(commits)));
-            model.addAttribute("heatMapContributorsData", writeHeatMapContributorsToCSVFormat(heatMapContributorService.getPathContributorsCsvFile(commits)));
+            model.addAttribute("heatMapContributorsData", writeHeatMapContributorsToCSVFormat(heatMapContributorService.getPathContributorsCsvFile(commits, true)));
             model.addAttribute("addRemoveLinesData", writeLinesAddedRemovedToCSVFormat(locChartService.getAddRemoveLinesOverTime(commits)));
             model.addAttribute("locData", writeStringIntegerMapToCSVFormat(locChartService.getLOCOverTime(commits, startDate, endDate)));
             model.addAttribute("authorsData", authorService.getAuthorActivityList(commits));
             model.addAttribute("mediumAndHugeChanges", antipatternsService.detectMediumAndMajorChangesPattern(commits));
-            model.addAttribute("filesAndPeriods", writePeriodOfTimeFilesToCSVFormat(antipatternsService.getPeriodOfTimeAllFiles(commits)));
+            model.addAttribute("filesAndPeriods", writePeriodOfTimeFilesToCSVFormat(antipatternsService.getPeriodOfTimeAllFiles(commits, true)));
             model.addAttribute("orphanedFiles", antipatternsService.getOrphanedFiles(commits));
+            model.addAttribute("forgotten", antipatternsService.getFilteredFilesByPeriod(commits, periods));
+            model.addAttribute("forgottenPoints", pointsService.periodOfTimeAllFilesPoints(commits, periods));
+            model.addAttribute("fewCommitterPoints", pointsService.getFewCommittersPoints(commits));
+            model.addAttribute("manyCommitterPoints", pointsService.getManyCommittersPoints(commits));
             model.addAllAttributes(preparePMDAntiPatternsMap());
             model.addAttribute("repositoryName", repoBean.getRepoName());
             model.addAttribute("username", username);
@@ -109,6 +124,15 @@ public class AnalysisController {
             return "error";
         }
         return "map";
+    }
+
+    private void loadPrerequisites(File resourceFolder) {
+        antipatternsService.loadStaticAnalysisResults(resourceFolder);
+        fewCommitters = commitService.getProperties().getFewCommittersSize();
+        manyCommitters = commitService.getProperties().getManyCommittersSize();
+        periods = Arrays.asList(Period.OLD, Period.VERY_OLD);
+        fewCommitters = commitService.getProperties().getFewCommittersSize();
+        manyCommitters = commitService.getProperties().getManyCommittersSize();
     }
 
     private Map<String, String> prepareCustomOverviewMap(File resourceFolder, List<CommitDiffBean> commits) {

@@ -23,11 +23,11 @@ public class PropertiesDAO {
     @Column(name = "huge_file_size")
     private Integer hugeFileSize;
 
-    @Column(name = "many_commiters_size")
-    private Integer manyCommitersSize;
+    @Column(name = "many_committers_size")
+    private Integer manyCommittersSize;
 
-    @Column(name = "few_commiters_size")
-    private Integer fewCommitersSize;
+    @Column(name = "few_committers_size")
+    private Integer fewCommittersSize;
 
     @Column(name = "small_change_size")
     private Integer smallChangeSize;
@@ -48,76 +48,23 @@ public class PropertiesDAO {
     public void setId(Integer id) {
         this.id = id;
     }
-
-    public Integer getLargeFileSize() {
-        return largeFileSize;
+    public Integer getManyCommittersSize() {
+        return manyCommittersSize;
     }
 
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
-
-    public void setLargeFileSize(Integer largeFileSize) {
-        this.largeFileSize = largeFileSize;
-    }
-
-    public Integer getHugeFileSize() {
-        return hugeFileSize;
-    }
-
-    public void setHugeFileSize(Integer hugeFileSize) {
-        this.hugeFileSize = hugeFileSize;
-    }
-
-    public Integer getManyCommitersSize() {
-        return manyCommitersSize;
-    }
-
-    public void setManyCommitersSize(Integer manyCommitersSize) {
-        this.manyCommitersSize = manyCommitersSize;
-    }
-
-    public Integer getFewCommitersSize() {
-        return fewCommitersSize;
-    }
-
-    public void setFewCommitersSize(Integer fewCommitersSize) {
-        this.fewCommitersSize = fewCommitersSize;
-    }
-
-    public Integer getSmallChangeSize() {
-        return smallChangeSize;
-    }
-
-    public void setSmallChangeSize(Integer smallChangeSize) {
-        this.smallChangeSize = smallChangeSize;
+    public Integer getFewCommittersSize() {
+        return fewCommittersSize;
     }
 
     public Integer getMediumChangeSize() {
         return mediumChangeSize;
     }
 
-    public void setMediumChangeSize(Integer mediumChangeSize) {
-        this.mediumChangeSize = mediumChangeSize;
-    }
-
     public Integer getMajorChangeSize() {
         return majorChangeSize;
     }
 
-    public void setMajorChangeSize(Integer majorChangeSize) {
-        this.majorChangeSize = majorChangeSize;
-    }
-
     public Integer getPeriodOfTime() {
         return periodOfTime;
-    }
-
-    public void setPeriodOfTime(Integer periodOfTime) {
-        this.periodOfTime = periodOfTime;
     }
 }
