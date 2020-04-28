@@ -14,10 +14,13 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonList;
 import static uaic.fii.model.Period.RECENT;
@@ -95,7 +98,8 @@ public class OverviewService {
             int locMap = contributorsLoC.getOrDefault(commit.getCommitterName(), 0);
             contributorsLoC.put(commit.getCommitterName(), locMap + commitService.getLoCChangedInCommit(commit));
         }
-        return contributorsLoC;
+
+        return entriesSortedByValuesInteger(contributorsLoC);
     }
 
     public Map<String, Integer> getActiveContributorsFilesTouched(List<CommitDiffBean> commits) {
@@ -106,12 +110,12 @@ public class OverviewService {
             contributorsFilesTouched.put(commit.getCommitterName(), filesTouched + commit.getDiffs().size());
         }
 
-        return contributorsFilesTouched;
+        return entriesSortedByValuesInteger(contributorsFilesTouched);
     }
 
     public Map<String, String> getMostInvolvedContributors(List<CommitDiffBean> commits) {
         Map<String, Integer> mostInvolvedContributors = getActiveContributorsFilesTouched(commits);
-        Map<String, String> result = new HashMap<>();
+        Map<String, Float> result = new HashMap<>();
 
         int totalNumberOfFiles = 0;
         for (Integer value : mostInvolvedContributors.values()) {
@@ -119,10 +123,10 @@ public class OverviewService {
         }
         for (Map.Entry<String, Integer> entry : mostInvolvedContributors.entrySet()) {
             float percentage = (float) entry.getValue() / totalNumberOfFiles * 100;
-            result.put(entry.getKey(), String.format ("%,.2f", percentage));
+            result.put(entry.getKey(), percentage);
         }
 
-        return result;
+        return entriesSortedByValuesFloat(result);
     }
 
     private int countLocOfFile(File file) throws IOException {
@@ -154,5 +158,22 @@ public class OverviewService {
             }
         }
         return languageFilesMap;
+    }
+
+    public static LinkedHashMap<String, Integer> entriesSortedByValuesInteger(Map<String, Integer> map) {
+        return map.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .limit(5)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                        (e1, e2) -> e1, LinkedHashMap::new));
+    }
+
+    public static LinkedHashMap<String, String> entriesSortedByValuesFloat(Map<String, Float> map) {
+        return map.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .limit(5)
+                .collect(Collectors.toMap(Map.Entry::getKey, entry -> String.format ("%,.2f", entry.getValue()),
+                        (e1, e2) -> e1, LinkedHashMap::new));
+
     }
 }

@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 import static java.lang.String.format;
@@ -77,7 +78,11 @@ public class AntiPatternsService {
     public Map<String, Period> getPeriodOfTimeAllFiles(List<CommitDiffBean> commits, boolean withParents) {
         logger.info("AntiPatternsService - getPeriodOfTimeAllFiles() - loading period of time for all source files");
         Map<String, Period> filesAndPeriods = new HashMap<>();
-        for (CommitDiffBean commit : commits) {
+        ListIterator<CommitDiffBean> commitIterator = commits.listIterator(commits.size());
+        CommitDiffBean commit;
+
+        while (commitIterator.hasPrevious()) {
+            commit = commitIterator.previous();
             Period period = commitService.getPeriodOfTimeCommit(commit);
             for (DiffBean diff : commit.getDiffs()) {
                 if (!diff.getFilePath().equals("/dev/null")) {
@@ -109,7 +114,7 @@ public class AntiPatternsService {
     public List<FileOwnerPeriodBean> getOrphanedFiles(List<CommitDiffBean> commits) {
         logger.info("AntiPatternsService - staticAnalyse() - authorsAndPeriods retrieved file owners and periods of time");
         Map<String, Period> authorsAndPeriod = authorService.getAuthorsAndPeriods(commits);
-        Map<String, OwnerLinesAddedBean> fileOwners = authorService.getFileOwners(commits);
+        Map<String, OwnerLinesAddedBean> fileOwners = authorService.getFileOwners(commits, false);
         List<FileOwnerPeriodBean> orphanedFiles = new ArrayList<>();
 
         for (Map.Entry<String, OwnerLinesAddedBean> entry : fileOwners.entrySet()) {

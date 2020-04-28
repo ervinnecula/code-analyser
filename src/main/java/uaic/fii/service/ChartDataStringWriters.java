@@ -2,6 +2,7 @@ package uaic.fii.service;
 
 import uaic.fii.bean.DateCountBean;
 import uaic.fii.bean.DateHashSetBean;
+import uaic.fii.bean.OwnerLinesAddedBean;
 import uaic.fii.bean.PathEditBean;
 import uaic.fii.model.Language;
 import uaic.fii.model.Period;
@@ -9,6 +10,7 @@ import uaic.fii.model.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class ChartDataStringWriters {
     private static final String eol = System.getProperty("line.separator");
@@ -27,14 +29,15 @@ public class ChartDataStringWriters {
         return parentsOfPath;
     }
 
-    public static String writeStringStringIntegerMapToCSVFormat(Map<String, DateCountBean> diffsPerFilePath) {
+    public static String writeHeatMapCommitsToCSVFormat(Map<String, DateCountBean> diffsPerFilePath) {
         StringBuilder stringBuilder = new StringBuilder();
         for (Map.Entry<String, DateCountBean> entry : diffsPerFilePath.entrySet()) {
             stringBuilder.append(entry.getKey())
                     .append(',')
                     .append(entry.getValue().getDate())
                     .append(',')
-                    .append(entry.getValue().getCount()).append(eol);
+                    .append(entry.getValue().getCount())
+                    .append(eol);
         }
         if (stringBuilder.length() != 0)
             stringBuilder.replace(stringBuilder.length() - 2, stringBuilder.length(), "");
@@ -84,6 +87,21 @@ public class ChartDataStringWriters {
         return stringBuilder.toString();
     }
 
+    public static String writeHeatMapFileOwners(Map<String, OwnerLinesAddedBean> contributorsPerFilePath) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Map.Entry<String, OwnerLinesAddedBean> entry : contributorsPerFilePath.entrySet()) {
+            stringBuilder.append(entry.getKey())
+                    .append(',')
+                    .append(entry.getValue() == null ? null : entry.getValue().getDate())
+                    .append(',')
+                    .append(entry.getValue() == null ? null : entry.getValue().getOwner())
+                    .append(eol);
+        }
+        if (stringBuilder.length() != 0)
+            stringBuilder.replace(stringBuilder.length() - 2, stringBuilder.length(), "");
+        return stringBuilder.toString();
+    }
+
     static String writeLanguageLocCount(Map<Language, Long> languageLocCount) {
         StringBuilder stringBuilder = new StringBuilder();
         for (Map.Entry<Language, Long> entry : languageLocCount.entrySet()) {
@@ -94,8 +112,7 @@ public class ChartDataStringWriters {
                         .append(eol);
             }
         }
-        if (stringBuilder.length() != 0)
-            stringBuilder.replace(stringBuilder.length() - 2, stringBuilder.length(), "");
+
         return stringBuilder.toString();
     }
 
@@ -109,8 +126,7 @@ public class ChartDataStringWriters {
                         .append(eol);
             }
         }
-        if (stringBuilder.length() != 0)
-            stringBuilder.replace(stringBuilder.length() - 2, stringBuilder.length(), "");
+
         return stringBuilder.toString();
     }
 
@@ -124,6 +140,19 @@ public class ChartDataStringWriters {
         }
         if (stringBuilder.length() != 0)
             stringBuilder.replace(stringBuilder.length() - 2, stringBuilder.length(), "");
+        return stringBuilder.toString();
+    }
+
+    public static String writeJavaSetToJSList(Set<String> contributorsList) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (String contributorName : contributorsList) {
+            stringBuilder
+                    .append(contributorName)
+                    .append(',');
+        }
+        if (stringBuilder.length() != 0)
+            stringBuilder.replace(stringBuilder.length() - 1, stringBuilder.length(), "");
         return stringBuilder.toString();
     }
 }

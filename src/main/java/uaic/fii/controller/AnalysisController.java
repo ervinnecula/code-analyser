@@ -33,11 +33,13 @@ import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
+import static uaic.fii.service.ChartDataStringWriters.writeHeatMapCommitsToCSVFormat;
 import static uaic.fii.service.ChartDataStringWriters.writeHeatMapContributorsToCSVFormat;
+import static uaic.fii.service.ChartDataStringWriters.writeHeatMapFileOwners;
+import static uaic.fii.service.ChartDataStringWriters.writeJavaSetToJSList;
 import static uaic.fii.service.ChartDataStringWriters.writeLinesAddedRemovedToCSVFormat;
 import static uaic.fii.service.ChartDataStringWriters.writePeriodOfTimeFilesToCSVFormat;
 import static uaic.fii.service.ChartDataStringWriters.writeStringIntegerMapToCSVFormat;
-import static uaic.fii.service.ChartDataStringWriters.writeStringStringIntegerMapToCSVFormat;
 
 @Controller
 public class AnalysisController {
@@ -96,12 +98,14 @@ public class AnalysisController {
             model.addAttribute("endDate", formatter.format(endDate));
             model.addAttribute("fewCommitters", fewCommitters);
             model.addAttribute("manyCommitters", manyCommitters);
+            model.addAttribute("contributorsList", writeJavaSetToJSList(authorService.getAuthorActivityList(commits).keySet()));
             model.addAllAttributes(prepareCustomOverviewMap(resourceFolder, commits));
             model.addAttribute("top5ActiveContributorsLoC", overviewService.getActiveContributorsLoC(commits));
             model.addAttribute("top5ActiveContributorsFiles", overviewService.getActiveContributorsFilesTouched(commits));
             model.addAttribute("top5InvolvedContributors", overviewService.getMostInvolvedContributors(commits));
-            model.addAttribute("heatMapCommitsData", writeStringStringIntegerMapToCSVFormat(commitService.getPathDiffsCsvFile(commits)));
+            model.addAttribute("heatMapCommitsData", writeHeatMapCommitsToCSVFormat(commitService.getPathDiffsCsvFile(commits)));
             model.addAttribute("heatMapContributorsData", writeHeatMapContributorsToCSVFormat(heatMapContributorService.getPathContributorsCsvFile(commits, true)));
+            model.addAttribute("heatMapFileOwnersData", writeHeatMapFileOwners(authorService.getFileOwners(commits, true)));
             model.addAttribute("addRemoveLinesData", writeLinesAddedRemovedToCSVFormat(locChartService.getAddRemoveLinesOverTime(commits)));
             model.addAttribute("locData", writeStringIntegerMapToCSVFormat(locChartService.getLOCOverTime(commits, startDate, endDate)));
             model.addAttribute("authorsData", authorService.getAuthorActivityList(commits));

@@ -12,9 +12,14 @@ import uaic.fii.model.DeveloperStatus;
 import uaic.fii.bean.OwnerLinesAddedBean;
 import uaic.fii.model.Period;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
+import java.util.TreeMap;
+
+import static uaic.fii.service.ChartDataStringWriters.buildParentsOfPath;
 
 @Service
 public class AuthorService {
@@ -52,9 +57,11 @@ public class AuthorService {
 
     public Map<String, Period> getAuthorsAndPeriods(List<CommitDiffBean> commits) {
         logger.info("AuthorService - getAuthorsAndPeriods() - collecting authors and periods inside project");
-
         Map<String, Period> authorsAndPeriods = new HashMap<>();
-        for (CommitDiffBean commit : commits) {
+        ListIterator<CommitDiffBean> listIterator = commits.listIterator(commits.size());
+        CommitDiffBean commit;
+        while (listIterator.hasPrevious()) {
+            commit = listIterator.previous();
             Period period = commitService.getPeriodOfTimeCommit(commit);
             authorsAndPeriods.put(commit.getCommitterName(), period);
         }
@@ -63,30 +70,36 @@ public class AuthorService {
         return authorsAndPeriods;
     }
 
-    public Map<String, OwnerLinesAddedBean> getFileOwners(List<CommitDiffBean> commits) {
+    public Map<String, OwnerLinesAddedBean> getFileOwners(List<CommitDiffBean> commits, boolean withParents) {
         logger.info("AuthorService - getFileOwners() - collecting file owners");
-
-        Map<String, OwnerLinesAddedBean> fileOwners = new HashMap<>();
+        Map<String, OwnerLinesAddedBean> fileOwners = new TreeMap<>();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd");
         OwnerLinesAddedBean currentFileOwner;
-        String filePath;
         String potentialOwner;
 
         for (CommitDiffBean commit : commits) {
             int linesAddedInFile = 0;
             for (DiffBean diff : commit.getDiffs()) {
-                if (!diff.getFilePath().equals("/dev/null")) {
+                String filePathComplete = "__project__/".concat(diff.getFilePath());
+                if (!filePathComplete.equals("__project__//dev/null")) {
                     for (Edit edit : diff.getEdits()) {
                         linesAddedInFile += edit.getLengthB();
                         linesAddedInFile -= edit.getLengthA();
                     }
-                }
-                filePath = diff.getFilePath();
-                fileOwners.putIfAbsent(filePath, new OwnerLinesAddedBean(commit.getCommitterName(), linesAddedInFile));
-                currentFileOwner = fileOwners.get(filePath);
-                potentialOwner = commit.getCommitterName();
 
-                if (!potentialOwner.equals(currentFileOwner.getOwner()) && linesAddedInFile > currentFileOwner.getLinesAdded()) {
-                    fileOwners.put(filePath, new OwnerLinesAddedBean(potentialOwner, linesAddedInFile));
+                    fileOwners.putIfAbsent(filePathComplete, new OwnerLinesAddedBean(commit.getCommitterName(), dateFormat.format(commit.getCommitDate()), linesAddedInFile));
+                    currentFileOwner = fileOwners.get(filePathComplete);
+                    potentialOwner = commit.getCommitterName();
+
+                    if (!potentialOwner.equals(currentFileOwner.getOwner()) && linesAddedInFile > currentFileOwner.getLinesAdded()) {
+                        fileOwners.put(filePathComplete, new OwnerLinesAddedBean(potentialOwner, dateFormat.format(commit.getCommitDate()), linesAddedInFile));
+                    }
+                    if (withParents) {
+                        List<String> parents = buildParentsOfPath(filePathComplete);
+                        for (String parent : parents) {
+                            fileOwners.putIfAbsent(parent, null);
+                        }
+                    }
                 }
             }
         }

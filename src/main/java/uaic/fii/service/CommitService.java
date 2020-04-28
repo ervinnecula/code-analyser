@@ -44,8 +44,7 @@ public class CommitService {
         SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd");
 
         for (CommitDiffBean commit : commitList) {
-            List<DiffBean> diffs = commit.getDiffs();
-            for (DiffBean diff : diffs) {
+            for (DiffBean diff : commit.getDiffs()) {
                 int currentCount = 0;
                 String filePathComplete = "__project__/".concat(diff.getFilePath());
                 if (!filePathComplete.equals("__project__//dev/null")) {

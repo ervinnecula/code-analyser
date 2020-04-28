@@ -59,6 +59,11 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#owner" aria-controls="owner" aria-selected="false" role="tab" onclick="hideDateSelector()">
+                        Owners
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#add-delete" aria-controls="add-delete" aria-selected="false" role="tab" onclick="showDateSelector()">
                         Additions/Deletions
                     </a>
@@ -159,6 +164,7 @@
                 </div>
                 <div class="tab-pane fade" id="total" role="tabpanel" aria-labelledby="total"></div>
                 <div class="tab-pane fade" id="user" role="tabpanel" aria-labelledby="user"></div>
+                <div class="tab-pane fade" id="owner" role="tabpanel" aria-labelledby="owner"></div>
                 <div class="tab-pane fade" id="add-delete" role="tabpanel" aria-labelledby="add-delete">
                     <div id="tooltip-add-remove" class="tooltip" style="opacity:0"></div>
                 </div>
@@ -305,7 +311,12 @@
                                                         <td style="text-align:center">${item.owner}</td>
                                                         <td style="text-align:center">${item.filePath}</td>
                                                         <td style="text-align:center">${item.period}</td>
-                                                        <td><span style="color: red;"><b>High Chance</b></span></td>
+                                                        <td>
+                                                            <c:if test="${item.period == 'VERY_OLD'}">
+                                                                <span style="color: red;"><b>High Chance</b></span>
+                                                            </c:if>
+                                                                <span style="color: #ff922e;"><b>Possible</b></span>
+                                                        </td>
                                                     </tr>
                                                 </c:forEach>
                                             </tbody>
@@ -537,10 +548,12 @@
 <script src="<c:url value='/resources/js/jquery.js' />"></script>
 <script src="<c:url value='/resources/js/jquery-ui.min.js' />"></script>
 <script src="<c:url value='/resources/js/bootstrap.min.js'  />"></script>
+<script src="<c:url value='/resources/js/chroma.min.js'  />"></script>
 <script src="<c:url value='/resources/js/sourceTreeCommitsMap.js' />"></script>
+<script src="<c:url value='/resources/js/sourceTreeContributorsMap.js' />"></script>
+<script src="<c:url value='/resources/js/sourceTreeOwnersMap.js' />"></script>
 <script src="<c:url value='/resources/js/addRemoveLOC.js' />"></script>
 <script src="<c:url value='/resources/js/totalLOC.js' />"></script>
-<script src="<c:url value='/resources/js/sourceTreeContributorsMap.js' />"></script>
 <script src="<c:url value='/resources/js/overview.js' />"></script>
 <script src="<c:url value='/resources/js/antipatterns-spof.js' />"></script>
 <script src="<c:url value='/resources/js/antipatterns-conglomerate.js' />"></script>
@@ -560,6 +573,7 @@
 <script>
     loadSourceTreeCommitsMap(`${username}`, `${repositoryName}`, `${heatMapCommitsData}`, `${startDate}`, `${endDate}`);
     loadSourceTreeContributorsMap(`${username}`, `${repositoryName}`, `${heatMapContributorsData}`, `${startDate}`, `${endDate}`);
+    loadSourceTreeOwnersMap(`${username}`, `${repositoryName}`, `${heatMapFileOwnersData}`, `${contributorsList}`, `${startDate}`, `${endDate}`);
     loadAddRemoveLineChart(`${addRemoveLinesData}`, `${startDate}`, `${endDate}`);
     loadLocChart(`${locData}`, `${startDate}`, `${endDate}`);
     loadLocByLanguageOverview(`${locByLanguage}`);
@@ -607,7 +621,6 @@
                 }
             });
         }
-        console.log("callback() is " + callback);
         callback();
     }
 

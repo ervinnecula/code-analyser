@@ -82,22 +82,27 @@ g.node:hover circle {
 
 #total {
     width: 100%;
-    height: 79%;
+    height: 100%;
 }
 
 #user {
     width: 100%;
-    height: 79%;
+    height: 100%;
+}
+
+#owner {
+    width: 100%;
+    height: 100%;
 }
 
 #add-delete {
     width: 100%;
-    height: 79%;
+    height: 100%;
 }
 
 #loc {
     width: 100%;
-    height: 79%;
+    height: 100%;
 }
 
 #periodoftime {
