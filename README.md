@@ -21,7 +21,7 @@ Most of these features are available for any programming language inside the rep
 ## Prerequisites
 
 - clone this repository
-- sign Up for an account on GitHub.com
+- Sign Up/In for an account on GitHub.com
 - install a `MySQL` database. I've used `8.0.16 (MySQL Community Server - GPL)`
 - install a Tomcat server. I've personally used Tomcat 8.5.42, but you could also try with newer versions, I guess.
 
@@ -35,15 +35,18 @@ you used for signing up on GitHub.com
 - set the database properties for your own connection under `spring.datasource.username`, `spring.datasource.password` and `spring.datasource.url`
 (if you are not using default ones)
 - build the project via Maven `mvn clean install`
-- deploy the result *war* file on Tomcat
+- deploy the resulting *war* file on Tomcat
 - open *http://localhost:8080/*
 
 ## Using code-analyser
 
 - unfortunately you will not be able to provide a valid `name` and `password` to login as you have no entry inside table `codeanalyser.user`
-- create a SQL insert script and add an entry inside `codeanalyser.user` (ID | name | password)
+- SQL scrips can be found under: <project-root>/src/main/resources/scripts.sql. If for some reason Spring JPA does not create the necessary tables,
+ please use the DDL scripts provided in `scripts.sql`. Create a SQL insert script and add an entry inside `codeanalyser.user` using ths DML 
+ scrips provided in `scripts.sql`
 - use the values you inserted above as `name` and `password`
+- if you've ran the scrips just as in `scrips.sql` then user should be `test` and user should be `pass`
 - in the next screen, provide a valid GitHub username and retrieve all its public repositories
-- enjoy stalking
+- enjoy stalking repositories
 
 
