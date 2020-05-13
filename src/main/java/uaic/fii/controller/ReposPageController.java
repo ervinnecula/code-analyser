@@ -26,9 +26,9 @@ public class ReposPageController {
     public String getReposPage(@ModelAttribute("username") String username, Model model) {
         List<RepoNameHtmlGitUrlsBean> repoBeans = new ArrayList<>();
         GitHubClient client = new GitHubClient();
+        RepositoryService service = new RepositoryService(client);
 
         client.setCredentials(System.getenv("GITHUB_USER"), System.getenv("GITHUB_PASS"));
-        RepositoryService service = new RepositoryService(client);
         try {
             for (Repository repo : service.getRepositories(username)) {
                 repoBeans.add(new RepoNameHtmlGitUrlsBean(repo.getName(), repo.getHtmlUrl(), repo.getGitUrl(), repo.getLanguage(), false));
@@ -36,7 +36,9 @@ public class ReposPageController {
 
         } catch (IOException e) {
             logger.error("ReposPageController - getReposPage() - Could not get repositories for username {}", username, e);
-            return "error";
+            model.addAttribute("isInvalid", "is-invalid");
+            model.addAttribute("errorMessage", "Couldn't find such user named \"" + username + "\"");
+            return "main";
         }
 
         model.addAttribute("repoNameHtmlGitUrlsBeans", repoBeans);

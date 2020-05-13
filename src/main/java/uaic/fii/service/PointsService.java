@@ -12,24 +12,24 @@ import java.util.List;
 @Service
 public class PointsService {
 
-    private HeatMapContributorService heatMapContributorService;
+    private final HeatMapContributorService heatMapContributorService;
 
-    private CommitService commitService;
+    private final AntiPatternsService antiPatternsService;
 
-    private AntiPatternsService antiPatternsService;
+    private final PropertiesService propertiesService;
 
     @Autowired
-    public PointsService(HeatMapContributorService heatMapContributorService, CommitService commitService, AntiPatternsService antiPatternsService) {
+    public PointsService(HeatMapContributorService heatMapContributorService, AntiPatternsService antiPatternsService, PropertiesService propertiesService) {
         this.heatMapContributorService = heatMapContributorService;
-        this.commitService = commitService;
         this.antiPatternsService = antiPatternsService;
+        this.propertiesService = propertiesService;
     }
 
     public long getFewCommittersPoints(List<CommitDiffBean> commits) {
         long points = 0;
         Collection<DateHashSetBean> contributorsPerFile = heatMapContributorService.getPathContributorsCsvFile(commits, false).values();
         for (DateHashSetBean dateHashSetBean : contributorsPerFile) {
-            if (dateHashSetBean.getListOfContributors().size() <= commitService.getProperties().getFewCommittersSize()) {
+            if (dateHashSetBean.getListOfContributors().size() <= propertiesService.getPropertiesMap().get("fewCommitters")) {
                 points++;
             }
         }
@@ -40,7 +40,7 @@ public class PointsService {
         long points = 0;
         Collection<DateHashSetBean> contributorsPerFile = heatMapContributorService.getPathContributorsCsvFile(commits, false).values();
         for (DateHashSetBean dateHashSetBean : contributorsPerFile) {
-            if (dateHashSetBean.getListOfContributors().size() >= commitService.getProperties().getManyCommittersSize()) {
+            if (dateHashSetBean.getListOfContributors().size() >= propertiesService.getPropertiesMap().get("manyCommitters")) {
                 points++;
             }
         }

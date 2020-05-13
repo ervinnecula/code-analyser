@@ -25,7 +25,7 @@
     <div class="row" id="top-bar">
         <div class="mr-auto pl-5 mt-1" style="width:100%">
             <a class="navbar-brand" id="brand">Code Analyser</a>
-            <a class="navbar-brand" id="central-title">Analysis for ${username}'s ${repositoryName}</a>
+            <a class="navbar-brand" id="central-title">Analysis for <span style="color:white"> ${username}'s </span> <span style="color: rgb(255, 190, 0)"> ${repositoryName} </span> project</a>
         </div>
 
         <div class="form-inline custom-logout">
@@ -50,12 +50,12 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#total" aria-controls="total" aria-selected="false" role="tab" onclick="showDateSelector()">
-                        Total Changes
+                        No. of Total Changes
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#user" aria-controls="user" aria-selected="false" role="tab" onclick="showDateSelector()">
-                        Changes by User
+                        No. of Contributors
                     </a>
                 </li>
                 <li class="nav-item">
@@ -92,6 +92,11 @@
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#staticanalysis" aria-controls="total" aria-selected="false" role="tab" onclick="hideDateSelector()">
                         Static Analysis
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#configparams" aria-controls="total" aria-selected="false" role="tab" onclick="hideDateSelector()">
+                        Configure Parameters
                     </a>
                 </li>
             </ul>
@@ -315,7 +320,9 @@
                                                             <c:if test="${item.period == 'VERY_OLD'}">
                                                                 <span style="color: red;"><b>High Chance</b></span>
                                                             </c:if>
+                                                            <c:if test="${item.period == 'OLD'}">
                                                                 <span style="color: #ff922e;"><b>Possible</b></span>
+                                                            </c:if>
                                                         </td>
                                                     </tr>
                                                 </c:forEach>
@@ -538,6 +545,68 @@
                         </div>
                     </div>
                 </div>
+                <div class="tab-pane fade" id="configparams" role="tabpanel" aria-labelledby="configparams">
+                    <form id="update-config-params" action="/update-config" method="POST" >
+                        <div class="alert alert-dismissible alert-success">
+                            <h4 class="alert-heading">Configure your analysis parameters.</h4>
+                            Provide only numeric values for your parameters so that you can addapt and improve your chart, map or graph data.
+                        </div>
+                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                        <input type="hidden" name="username" value="${username}"/>
+                        <input type="hidden" name="repoName" value="${repoName}"/>
+                        <input type="hidden" name="repoGitUrl" value="${repoGitUrl}"/>
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="fewCommittersSize">Few Committers Size</label>
+                                    <input class="form-control" type="number" name="fewCommitters" min="1" value="${fewCommitters}" id="fewCommittersSize" onkeypress='return event.charCode >= 48 && event.charCode <= 57'>
+                                    <small class="form-text text-muted">Anything below this number it will be considered too few committers for a source file.</small>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-form-label" for="largeFileSize">Large File Size</label>
+                                    <input class="form-control" type="number" name="largeFileSize" min="1" value="${largeFileSize}" id="largeFileSize" onkeypress='return event.charCode >= 48 && event.charCode <= 57'>
+                                    <small class="form-text text-muted">Having files with more LOC than this will mean you added a large file.</small>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-form-label" for="mediumChangeSize">Medium Change Size</label>
+                                    <input class="form-control" type="number" name="mediumChangeSize" min="1" value="${mediumChangeSize}" id="mediumChangeSize" onkeypress='return event.charCode >= 48 && event.charCode <= 57'>
+                                    <small class="form-text text-muted">Less LOC than Medium Change Size will mean you pushed a small-size commit. Anything above this number but below Major Change Size, will mark the commit as medium-size commit</small>
+                                </div>
+                                <div>
+                                    <input id="submit-update-config" type="submit" value="Update properties for ${username}" class="btn btn-primary my-2 my-sm-0"/>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="manyCommittersSize">Many Committers Size</label>
+                                    <input class="form-control" type="number" name="manyCommitters" min="1" value="${manyCommitters}" id="manyCommittersSize" onkeypress='return event.charCode >= 48 && event.charCode <= 57'>
+                                    <small class="form-text text-muted">Having more contributors per file than this will be too many committers.</small>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-form-label" for="hugeFileSize">Huge File Size</label>
+                                    <input class="form-control" type="number" name="hugeFileSize" min="1" value="${hugeFileSize}" id="hugeFileSize" onkeypress='return event.charCode >= 48 && event.charCode <= 57'>
+                                    <small class="form-text text-muted">Going above this LOC number in a file will mean you added a huge file.</small>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-form-label" for="majorChangeSize">Major Change Size</label>
+                                    <input class="form-control" type="number" name="majorChangeSize" min="1" value="${majorChangeSize}" id="majorChangeSize" onkeypress='return event.charCode >= 48 && event.charCode <= 57'>
+                                    <small class="form-text text-muted">More LOC than Major Change Size will mean you made a big change</small>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-form-label" for="periodOfTimeSize">Period of Time</label>
+                                    <input class="form-control" type="number" name="periodOfTime" min="1" value="${periodOfTime}" id="periodOfTimeSize" onkeypress='return event.charCode >= 48 && event.charCode <= 57'>
+                                    <small  class="form-text text-muted"
+                                        >Number of days marking a period. It is CodeAnalyser's way of telling the age of files or activity of contributors inside the project. <br>
+                                        Files no older than this number will be marked as RECENT. <br>
+                                        Files with age (in days) between [Period Of Time] (included) and 2x[Period Of Time] will be marked as MEDIUM. <br>
+                                        Files with age (in days) between 2x[Period Of Time] (included) and 6x[Period Of Time] will be marked as OLD. <br>
+                                        Files with age (in days) older than 6x[Period Of Time] (included) will be marked as VERY_OLD.
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -558,7 +627,7 @@
 <script src="<c:url value='/resources/js/antipatterns-spof.js' />"></script>
 <script src="<c:url value='/resources/js/antipatterns-conglomerate.js' />"></script>
 <script src="<c:url value='/resources/js/periodOfTime.js' />"></script>
-
+<script src="<c:url value='/resources/js/validationParameters.js' />"></script>
 <!-- JQ STUFF -->
 <script src="<c:url value='/resources/js/jQRangeSliderMouseTouch.min.js' />"></script>
 <script src="<c:url value='/resources/js/jQRangeSliderDraggable.min.js' />"></script>

@@ -9,10 +9,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @Controller
-@RequestMapping("/enter")
 public class LoginSuccessController {
 
     private static Map<String, String> userPages;
@@ -23,7 +22,7 @@ public class LoginSuccessController {
 //        userPages.put("ROLE_ADM", "redirect:/admin");
     }
 
-    @RequestMapping(method = GET)
+    @RequestMapping(value="/enter", method = POST)
     public String getUserPage() {
         String userPage = "unauthorized";
         for(GrantedAuthority authority : getAuthenticatedUserRoles()) {

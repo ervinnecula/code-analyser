@@ -20,6 +20,9 @@ public class UserDAO {
     @Column(name = "password")
     private String password;
 
+    public UserDAO() {
+    }
+
     public Integer getId() {
         return id;
     }

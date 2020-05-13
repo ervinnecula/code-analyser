@@ -48,8 +48,7 @@
                 <tbody>
                     <c:forEach items="${repoNameHtmlGitUrlsBeans}" var="repoNameHtmlGitUrlsBean">
                         <tr>
-                            <form action="/analysis" method="POST">
-                                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                            <form action="/analysis" method="GET">
                                 <input type="hidden" name="username" value="${username}"/>
                                 <th scope="row">
                                     <input type="hidden" value="${repoNameHtmlGitUrlsBean.repoName}" name="repoName"/>
@@ -57,11 +56,10 @@
                                 </th>
                                 <input type="hidden" value="${repoNameHtmlGitUrlsBean.repoGitUrl}" name="repoGitUrl"/>
                                 <td>
-                                    <input type="hidden" value="${repoNameHtmlGitUrlsBean.repoHtmlUrl}" name="repoHtmlUrl"/>
                                     <a target="_blank" href="${repoNameHtmlGitUrlsBean.repoHtmlUrl}">${repoNameHtmlGitUrlsBean.repoHtmlUrl}</a>
                                 </td>
                                 <td>
-                                    <input type="hidden" value="${repoNameHtmlGitUrlsBean.repoLanguage}" name="repoLanguage"/> ${repoNameHtmlGitUrlsBean.repoLanguage}
+                                     ${repoNameHtmlGitUrlsBean.repoLanguage}
                                 </td>
                                 <td>
                                     <input type="submit" value="Analyse  ${repoNameHtmlGitUrlsBean.repoName}" class="btn btn-primary"/>

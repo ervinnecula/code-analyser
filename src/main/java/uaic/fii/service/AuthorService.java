@@ -70,18 +70,19 @@ public class AuthorService {
         return authorsAndPeriods;
     }
 
-    public Map<String, OwnerLinesAddedBean> getFileOwners(List<CommitDiffBean> commits, boolean withParents) {
+    public Map<String, OwnerLinesAddedBean> getFileOwners(List<CommitDiffBean> commits, boolean withParents, boolean withPrefix) {
         logger.info("AuthorService - getFileOwners() - collecting file owners");
         Map<String, OwnerLinesAddedBean> fileOwners = new TreeMap<>();
         SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd");
         OwnerLinesAddedBean currentFileOwner;
         String potentialOwner;
+        String prefix = withPrefix ?  "__project__/" : "";
 
         for (CommitDiffBean commit : commits) {
             int linesAddedInFile = 0;
             for (DiffBean diff : commit.getDiffs()) {
-                String filePathComplete = "__project__/".concat(diff.getFilePath());
-                if (!filePathComplete.equals("__project__//dev/null")) {
+                String filePathComplete = prefix.concat(diff.getFilePath());
+                if (!filePathComplete.equals(prefix.concat("/dev/null"))) {
                     for (Edit edit : diff.getEdits()) {
                         linesAddedInFile += edit.getLengthB();
                         linesAddedInFile -= edit.getLengthA();

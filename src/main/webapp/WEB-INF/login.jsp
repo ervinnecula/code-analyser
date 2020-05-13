@@ -34,10 +34,15 @@
             <div class="col align-self-center">
                 <h1 class="custom-center">Code Analyser</h1>
                 <div class="container">
-                    <form class="form-signin" name="f" action="/login" method="POST">
-                        <input type="text" id="inputEmail" name="username" class="form-control mt-3" placeholder="Name" required autofocus>
-                        <input type="password" id="inputPassword" name="password" class="form-control mt-3" placeholder="Password" required>
+                    <form class="form-signin" name="f" action="/enter" method="POST">
+                        <div class="form-group ${hasDanger}">
+                            <input type="text" id="inputEmail" name="username" class="form-control mt-3 ${isInvalid}" placeholder="Name" required autofocus>
+                        </div>
+                        <div class="form-group ${hasDanger}">
+                            <input type="password" id="inputPassword" name="password" class="form-control mt-3 ${isInvalid}" placeholder="Password" required>
+                        </div>
                         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                        <div style="color:red">${errorMessage}</div>
                         <button class="btn btn-lg btn-primary btn-block btn-signin mt-3" type="submit">Sign in</button>
                     </form>
                 </div>

@@ -96,7 +96,7 @@ public class RepoService {
         }
     }
 
-    public void cloneOrPullRepo(RepoNameHtmlGitUrlsBean repoBean, File resourceFolder) throws IOException, GitAPIException {
+    public void cloneOrPullRepo(String repoGitUrl, String repoName, File resourceFolder) throws IOException, GitAPIException {
         Git git;
         GitCommand<?> command;
         if (resourceFolder.exists()) {
@@ -104,8 +104,8 @@ public class RepoService {
             command = git.pull();
             logger.info(format("RepoService - cloneOrPullRepo() - Local directory already exists. Pulling latest changes to %s", resourceFolder));
         } else {
-            command = Git.cloneRepository().setURI(repoBean.getRepoGitUrl()).setDirectory(resourceFolder);
-            logger.info(format("RepoService - cloneOrPullRepo() - Cloning repo: %s", repoBean.getRepoName()));
+            command = Git.cloneRepository().setURI(repoGitUrl).setDirectory(resourceFolder);
+            logger.info(format("RepoService - cloneOrPullRepo() - Cloning repo: %s", repoName));
 
         }
         command.call();

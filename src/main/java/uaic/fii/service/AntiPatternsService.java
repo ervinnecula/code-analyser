@@ -26,6 +26,7 @@ import java.util.Map;
 import static java.lang.String.format;
 import static uaic.fii.model.ChangeSize.MAJOR;
 import static uaic.fii.model.ChangeSize.MEDIUM;
+import static uaic.fii.model.ChangeSize.SMALL;
 import static uaic.fii.model.StaticDetectionKind.BASIC;
 import static uaic.fii.model.StaticDetectionKind.CODESIZE;
 import static uaic.fii.model.StaticDetectionKind.COUPLING;
@@ -44,11 +45,14 @@ public class AntiPatternsService {
 
     private final AuthorService authorService;
 
+    private final PropertiesService propertiesService;
+
     @Autowired
-    public AntiPatternsService(RepoService repoService, CommitService commitService, AuthorService authorService) {
+    public AntiPatternsService(RepoService repoService, CommitService commitService, AuthorService authorService, PropertiesService propertiesService) {
         this.repoService = repoService;
         this.commitService = commitService;
         this.authorService = authorService;
+        this.propertiesService = propertiesService;
     }
 
     public Map<String, List<CommitChangeSizeBean>> detectMediumAndMajorChangesPattern(List<CommitDiffBean> commits) {
@@ -114,16 +118,16 @@ public class AntiPatternsService {
     public List<FileOwnerPeriodBean> getOrphanedFiles(List<CommitDiffBean> commits) {
         logger.info("AntiPatternsService - staticAnalyse() - authorsAndPeriods retrieved file owners and periods of time");
         Map<String, Period> authorsAndPeriod = authorService.getAuthorsAndPeriods(commits);
-        Map<String, OwnerLinesAddedBean> fileOwners = authorService.getFileOwners(commits, false);
+        Map<String, OwnerLinesAddedBean> fileOwners = authorService.getFileOwners(commits, false, false);
         List<FileOwnerPeriodBean> orphanedFiles = new ArrayList<>();
 
         for (Map.Entry<String, OwnerLinesAddedBean> entry : fileOwners.entrySet()) {
-            Period period = authorsAndPeriod.get(entry.getValue().getOwner());
-            if (period.equals(Period.OLD) || period.equals(Period.VERY_OLD)) {
-                orphanedFiles.add(new FileOwnerPeriodBean(entry.getKey(), entry.getValue().getOwner(), period));
+            Period periodOfOwner = authorsAndPeriod.get(entry.getValue().getOwner());
+            if (periodOfOwner.equals(Period.OLD) || periodOfOwner.equals(Period.VERY_OLD)) {
+                orphanedFiles.add(new FileOwnerPeriodBean(entry.getKey(), entry.getValue().getOwner(), periodOfOwner));
             }
         }
-        logger.info("AntiPatternsService- getOrphanedFiles() - Successfully retrieved potential orphan files");
+        logger.info("AntiPatternsService - getOrphanedFiles() - Successfully retrieved potential orphan files");
         return orphanedFiles;
     }
 
@@ -175,15 +179,17 @@ public class AntiPatternsService {
     }
 
     private ChangeSize getChangeSizeFromLocChanged(int locChanged) {
-        ChangeSize changeSize = null;
-        if (locChanged >= commitService.getProperties().getMajorChangeSize()) {
+        Map<String, Integer> propertiesMap = propertiesService.getPropertiesMap();
+        ChangeSize changeSize = SMALL;
+        if (locChanged >= propertiesMap.get("majorChangeSize")) {
             changeSize = MAJOR;
         }
-        if (locChanged >= commitService.getProperties().getMediumChangeSize() && locChanged < commitService.getProperties().getMajorChangeSize()) {
+        if (locChanged >= propertiesMap.get("mediumChangeSize") &&
+                locChanged < propertiesMap.get("majorChangeSize")) {
             changeSize = MEDIUM;
         }
-        if (locChanged < commitService.getProperties().getMediumChangeSize()) {
-            changeSize = ChangeSize.SMALL;
+        if (locChanged < propertiesMap.get("mediumChangeSize")) {
+            changeSize = SMALL;
         }
         return changeSize;
     }

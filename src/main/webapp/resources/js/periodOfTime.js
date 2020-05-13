@@ -51,7 +51,7 @@ function periodOfTime(data) {
             return "translate(" + d.x + "," + d.y + ")";
         });
 
-    var circle = node.append("circle")
+    node.append("circle")
         .attr("id", function (d) {
             return d.data.periodInString;
         }).attr("r", function (d) {
@@ -110,7 +110,7 @@ function getNumericPeriod(stringPeriod) {
         number = 10;
     }
     if (stringPeriod === "VERY_OLD") {
-        number = 5;
+        number = 8;
     }
     return number;
 }

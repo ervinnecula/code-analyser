@@ -9,7 +9,6 @@ import uaic.fii.bean.CommitDiffBean;
 import uaic.fii.bean.DateCountBean;
 import uaic.fii.bean.DiffBean;
 import uaic.fii.model.Period;
-import uaic.fii.model.PropertiesDAO;
 
 import java.text.SimpleDateFormat;
 import java.time.temporal.ChronoUnit;
@@ -25,17 +24,11 @@ public class CommitService {
 
     private final static Logger logger = LoggerFactory.getLogger(CommitService.class);
 
-    private PropertiesService propertiesService;
-
-    private PropertiesDAO properties;
+    private final PropertiesService propertiesService;
 
     @Autowired
     public CommitService(PropertiesService propertiesService) {
         this.propertiesService = propertiesService;
-    }
-
-    public void loadProperties(String userName) {
-        properties = propertiesService.getPropertiesByUserId(userName);
     }
 
     public Map<String, DateCountBean> getPathDiffsCsvFile(List<CommitDiffBean> commitList) {
@@ -100,14 +93,15 @@ public class CommitService {
     }
 
     public Period getPeriodOfTimeCommit(CommitDiffBean commit) {
-        Period period;
         long daysBetween = ChronoUnit.DAYS.between(commit.getCommitDate().toInstant(), new Date().toInstant());
+        int periodOfTime = propertiesService.getPropertiesMap().get("periodOfTime");
 
-        if (daysBetween < properties.getPeriodOfTime()) {
+        Period period;
+        if (daysBetween < periodOfTime) {
             period = Period.RECENT;
-        } else if (daysBetween >= properties.getPeriodOfTime() && daysBetween < properties.getPeriodOfTime() * 2) {
+        } else if (daysBetween >= periodOfTime && daysBetween < periodOfTime * 2) {
             period = Period.MEDIUM;
-        } else if (daysBetween >= properties.getPeriodOfTime() * 2 && daysBetween < properties.getPeriodOfTime() * 6) {
+        } else if (daysBetween >= periodOfTime * 2 && daysBetween < periodOfTime * 6) {
             period = Period.OLD;
         } else {
             period = Period.VERY_OLD;
@@ -115,7 +109,4 @@ public class CommitService {
         return period;
     }
 
-    public PropertiesDAO getProperties() {
-        return properties;
-    }
 }
