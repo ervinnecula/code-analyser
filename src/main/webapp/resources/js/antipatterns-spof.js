@@ -77,7 +77,7 @@ function loadSinglePointOfFailure(username, repositoryName, data, fewCommitters)
             })
             .attr("fill", function (d) {
                 var fillColor;
-                if (d.data.size > fewCommitters) {
+                if (Number(d.data.size) > Number(fewCommitters)) {
                     fillColor = '#84e9ac';
                 } else {
                     fillColor = '#ff1700';

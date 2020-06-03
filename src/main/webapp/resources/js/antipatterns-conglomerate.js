@@ -75,10 +75,10 @@ function loadConglomerate(username, repositoryName, data, manyCommitters) {
             })
             .attr("fill", function (d) {
                 var fillColor;
-                if (d.data.size < manyCommitters) {
-                    fillColor = '#84e9ac';
-                } else {
+                if (Number(d.data.size) >= Number(manyCommitters)) {
                     fillColor = '#ff1700';
+                } else {
+                    fillColor = '#84e9ac';
                 }
                 return fillColor;
             });

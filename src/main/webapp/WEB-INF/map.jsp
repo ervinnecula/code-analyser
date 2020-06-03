@@ -74,28 +74,28 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#periodoftime" aria-controls="total" aria-selected="false" role="tab" onclick="hideDateSelector()">
+                    <a class="nav-link" data-toggle="tab" href="#periodoftime" aria-controls="periodoftime" aria-selected="false" role="tab" onclick="hideDateSelector()">
                         Period of Time
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#developers" aria-controls="total" aria-selected="false" role="tab" onclick="hideDateSelector()">
+                    <a class="nav-link" data-toggle="tab" href="#developers" aria-controls="developers" aria-selected="false" role="tab" onclick="hideDateSelector()">
                         Developers
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#antipatterns" aria-controls="total" aria-selected="false" role="tab" onclick="hideDateSelector()">
+                    <a class="nav-link" data-toggle="tab" href="#antipatterns" aria-controls="antipatterns" aria-selected="false" role="tab" onclick="hideDateSelector()">
                         Anti-Patterns
                         <span class="badge badge-danger badge-pill badge-custom">${orphanedFiles.size() + mediumAndHugeChanges.size() + fewCommitterPoints + manyCommitterPoints + forgottenPoints}</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#staticanalysis" aria-controls="total" aria-selected="false" role="tab" onclick="hideDateSelector()">
+                    <a class="nav-link" data-toggle="tab" href="#staticanalysis" aria-controls="staticanalysis" aria-selected="false" role="tab" onclick="hideDateSelector()">
                         Static Analysis
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#configparams" aria-controls="total" aria-selected="false" role="tab" onclick="hideDateSelector()">
+                    <a class="nav-link" data-toggle="tab" href="#configparams" aria-controls="configparams" aria-selected="false" role="tab" onclick="hideDateSelector()">
                         Configure Parameters
                     </a>
                 </li>
@@ -698,7 +698,7 @@
     };
 
     $('#topTablist > .nav-item > .nav-link').on('click', function (e) {
-        var selected = $(e.target.hash);
+        var selected = $(this.hash);
         if (!selected.hasClass('active')) {
             $('.nav-link.active').removeClass('active');
             $('#mainTabContent > .tab-pane').addClass('fade').removeClass('active').removeClass('in');
@@ -708,7 +708,7 @@
     });
 
     $('#v-pills-tab > .nav-link').on('click', function (e) {
-        var selected = $(e.target.hash);
+        var selected = $(this.hash);
         if (!selected.hasClass('active')) {
             $('#v-pills-tab > .nav-link').removeClass('active');
             e.target.classList.add('active');

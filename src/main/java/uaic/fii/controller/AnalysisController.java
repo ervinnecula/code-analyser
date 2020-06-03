@@ -108,7 +108,7 @@ public class AnalysisController {
             model.addAttribute("locData", writeStringIntegerMapToCSVFormat(locChartService.getLOCOverTime(commits, startDate, endDate)));
             model.addAttribute("authorsData", authorService.getAuthorActivityList(commits));
             model.addAttribute("mediumAndHugeChanges", antipatternsService.detectMediumAndMajorChangesPattern(commits));
-            model.addAttribute("filesAndPeriods", writePeriodOfTimeFilesToCSVFormat(antipatternsService.getPeriodOfTimeAllFiles(commits, true)));
+            model.addAttribute("filesAndPeriods", writePeriodOfTimeFilesToCSVFormat(antipatternsService.getPeriodOfTimeAllFiles(commits, false)));
             model.addAttribute("orphanedFiles", antipatternsService.getOrphanedFiles(commits));
             model.addAttribute("forgotten", antipatternsService.getFilteredFilesByPeriod(commits, periods));
             model.addAttribute("forgottenPoints", pointsService.periodOfTimeAllFilesPoints(commits, periods));

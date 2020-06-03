@@ -106,9 +106,7 @@ g.node:hover circle {
 }
 
 #periodoftime {
-    width: 100%;
-    height: 88%;
-    background-color: grey;
+    background-color: lightgrey;
 }
 
 #v-pills-aa-spof {
