@@ -110,6 +110,7 @@ public class AnalysisController {
             model.addAttribute("mediumAndHugeChanges", antipatternsService.detectMediumAndMajorChangesPattern(commits));
             model.addAttribute("filesAndPeriods", writePeriodOfTimeFilesToCSVFormat(antipatternsService.getPeriodOfTimeAllFiles(commits, false)));
             model.addAttribute("orphanedFiles", antipatternsService.getOrphanedFiles(commits));
+            model.addAttribute("increaseDecreaseSpike", antipatternsService.getIncreaseDecreaseSpikeCycles(commits));
             model.addAttribute("forgotten", antipatternsService.getFilteredFilesByPeriod(commits, periods));
             model.addAttribute("forgottenPoints", pointsService.periodOfTimeAllFilesPoints(commits, periods));
             model.addAttribute("fewCommitterPoints", pointsService.getFewCommittersPoints(commits));

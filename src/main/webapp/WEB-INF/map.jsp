@@ -190,14 +190,28 @@
                         </thead>
                         <tbody>
                             <c:forEach items="${authorsData}" var="entry">
-                                <tr>
+                                <tr class="
+                                    <c:if test='${entry.value.developerStatus == "INACTIVE"}'>
+                                        table-danger
+                                    </c:if>
+                                    <c:if test='${entry.value.developerStatus == "ACTIVE"}'>
+                                        table-success
+                                    </c:if>
+                                ">
                                     <th scope="row">
                                             ${entry.key}
                                     </th>
                                     <td style="text-align:center">${entry.value.numberOfCommits}</td>
                                     <td style="text-align:center">${entry.value.totalChanges}</td>
                                     <td style="text-align:center">${entry.value.netContribution}</td>
-                                    <td style="text-align:center">${entry.value.developerStatus}</td>
+                                    <td style="text-align:center">
+                                        <c:if test='${entry.value.developerStatus == "INACTIVE"}'>
+                                            <span style="color:red">${entry.value.developerStatus}</span>
+                                        </c:if>
+                                        <c:if test='${entry.value.developerStatus == "ACTIVE"}'>
+                                            <span style="color:green">${entry.value.developerStatus}</span>
+                                        </c:if>
+                                    </td>
                                 </tr>
                              </c:forEach>
                         </tbody>
@@ -232,6 +246,11 @@
                                     <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-forgotten" role="tab">Forgotten
                                         <c:if test="${forgottenPoints != 0}">
                                             <span class="badge badge-danger badge-pill badge-custom">${forgottenPoints}</span>
+                                        </c:if>
+                                    </a>
+                                    <a class="nav-link bg-primary mb-2" data-toggle="pill" href="#v-pills-increasedecreasespikes" role="tab">V Spikes
+                                        <c:if test="${increaseDecreaseSpike.size() !=0}">
+                                            <span class="badge badge-danger badge-pill badge-custom">${increaseDecreaseSpike.size()}</span>
                                         </c:if>
                                     </a>
                                 </div>
@@ -312,10 +331,24 @@
                                             </thead>
                                             <tbody>
                                                 <c:forEach items="${orphanedFiles}" var="item">
-                                                    <tr>
-                                                        <td style="text-align:center">${item.owner}</td>
+                                                    <tr class="
+                                                        <c:if test='${item.period == "VERY_OLD"}'>
+                                                            table-danger
+                                                        </c:if>
+                                                        <c:if test='${item.period == "OLD"}'>
+                                                            table-warning
+                                                        </c:if>
+                                                    ">
+                                                    <td style="text-align:center">${item.owner}</td>
                                                         <td style="text-align:center">${item.filePath}</td>
-                                                        <td style="text-align:center">${item.period}</td>
+                                                        <td style="text-align:center">
+                                                            <c:if test="${item.period == 'VERY_OLD'}">
+                                                                VERY OLD
+                                                            </c:if>
+                                                            <c:if test="${item.period == 'OLD'}">
+                                                                ${item.period}
+                                                            </c:if>
+                                                        </td>
                                                         <td>
                                                             <c:if test="${item.period == 'VERY_OLD'}">
                                                                 <span style="color: red;"><b>High Chance</b></span>
@@ -339,13 +372,88 @@
                                             </thead>
                                             <tbody>
                                             <c:forEach items="${forgotten}" var="item">
-                                                <tr>
+                                                <tr class="
+                                                    <c:if test='${item.value == "VERY_OLD"}'>
+                                                        table-danger
+                                                    </c:if>
+                                                    <c:if test='${item.value == "OLD"}'>
+                                                        table-warning
+                                                    </c:if>
+                                                ">
                                                     <td>${item.key}</td>
-                                                    <td style="text-align:center">${item.value}</td>
+                                                    <td style="text-align:center">
+                                                        <c:if test='${item.value == "VERY_OLD"}'>
+                                                            VERY OLD
+                                                        </c:if>
+                                                        <c:if test='${item.value == "OLD"}'>
+                                                            ${item.value}
+                                                        </c:if>
+                                                    </td>
                                                 </tr>
                                             </c:forEach>
                                             </tbody>
                                         </table>
+                                    </div>
+                                    <div class="tab-pane fade" id="v-pills-increasedecreasespikes" role="tabpanel" style="text-align:center">
+                                        <c:forEach items="${increaseDecreaseSpike}" var="spike">
+                                            <div class="card mb-3">
+                                                <h3 class="card-header">V Spikes</h3>
+                                                <div class="card-body">
+                                                    <h5 class="card-title">
+                                                        <c:if test="${spike.value.get(1).increaseCommit()}">
+                                                            V-Shaped spike series
+                                                        </c:if>
+                                                        <c:if test="${spike.value.get(1).increaseCommit() == false}">
+                                                            Reverse V-Shaped spike series
+                                                        </c:if>
+                                                    </h5>
+                                                    <h6 class="card-subtitle text-muted">
+                                                        Detected a series of
+                                                        <c:if test="${spike.value.get(1).increaseCommit()}">
+                                                            increase, decrease, increase spikes (V-Shaped) in terms of lines of code. In other words, code-analyser detected a major increase
+                                                            of code, followed by a major decrease of code, followed again by another major increase of code. This is a sign of instability.
+                                                        </c:if>
+                                                        <c:if test="${spike.value.get(1).increaseCommit() == false}">
+                                                            decrease, increase, decrease spikes (Reverse V-Shaped) in terms of lines of code. In other words, code-analyser detected a major increase
+                                                            of code, followed by a major decrease of code, followed again by another major increase of code. This is a sign of instability.
+                                                        </c:if>
+                                                    </h6>
+
+                                                    <c:forEach items="${spike.value}" var="commitInSpike">
+                                                        <div class="card mb-3">
+                                                            <h6 class="card-header">
+                                                                Commit hash <span style="color: #ee8867">${commitInSpike.commitHash}</span>
+                                                            </h6>
+                                                            <ul class="list-group list-group-flush">
+                                                                <li class="list-group-item">
+                                                                    On
+                                                                    <fmt:formatDate value="${commitInSpike.commitDate}" type="date" pattern="dd-MMM-yyyy"/>
+                                                                    there was a MAJOR
+                                                                    <c:if test="${commitInSpike.increaseCommit()}">
+                                                                        <span style="color:lightgreen">increase</span>
+                                                                    </c:if>
+                                                                    <c:if test="${commitInSpike.increaseCommit() == false}">
+                                                                        <span style="color:red">decrease</span>
+                                                                    </c:if>
+                                                                </li>
+                                                                <li class="list-group-item">Author was
+                                                                        <span style="color:rgb(0, 174, 227)">${commitInSpike.committerName}</span>
+                                                                </li>
+                                                                <li class="list-group-item">
+                                                                    <c:if test="${commitInSpike.increaseCommit()}">
+                                                                        <span style="color:lightgreen">Increase commit, where </span>
+                                                                    </c:if>
+                                                                    <c:if test="${commitInSpike.increaseCommit() == false}">
+                                                                        <span style="color:red">Decrease commit, where</span>
+                                                                    </c:if>
+                                                                        ${commitInSpike.linesChanged} lines of code modified
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </c:forEach>
+                                                </div>
+                                            </div>
+                                        </c:forEach>
                                     </div>
                                 </div>
                             </div>

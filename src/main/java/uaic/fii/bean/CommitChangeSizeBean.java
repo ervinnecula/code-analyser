@@ -10,13 +10,15 @@ public class CommitChangeSizeBean {
     private String committerName;
     private int linesChanged;
     private ChangeSize changeSize;
+    private boolean increaseCommit;
 
-    public CommitChangeSizeBean(String commitHash, Date commitDate, String committerName, int linesChanged, ChangeSize changeSize) {
+    public CommitChangeSizeBean(String commitHash, Date commitDate, String committerName, int linesChanged, ChangeSize changeSize, boolean increaseCommit) {
         this.commitHash = commitHash;
         this.commitDate = commitDate;
         this.committerName = committerName;
         this.linesChanged = linesChanged;
         this.changeSize = changeSize;
+        this.increaseCommit = increaseCommit;
     }
 
     public String getCommitHash() {
@@ -37,5 +39,9 @@ public class CommitChangeSizeBean {
 
     public String getCommitterName() {
         return committerName;
+    }
+
+    public boolean increaseCommit() {
+        return increaseCommit;
     }
 }

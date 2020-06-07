@@ -14,10 +14,12 @@ import uaic.fii.model.Period;
 
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import static uaic.fii.service.ChartDataStringWriters.buildParentsOfPath;
 
@@ -52,7 +54,10 @@ public class AuthorService {
         }
 
         logger.info("AuthorService - getAuthorActivityList() - collected author activity");
-        return result;
+        return result.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(AuthorActivityBean::compareTo))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                        (oldValue, newValue) -> oldValue, LinkedHashMap::new));
     }
 
     public Map<String, Period> getAuthorsAndPeriods(List<CommitDiffBean> commits) {

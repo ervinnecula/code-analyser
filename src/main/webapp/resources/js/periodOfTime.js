@@ -58,7 +58,7 @@ function periodOfTime(data) {
 
     var mousemove = function(d) {
         Tooltip
-            .html('<u>' + d.path + '</u>' + "<br>" + d.periodInString)
+            .html('<u>' + d.path + '</u>' + "<br>" + d.periodInString.replace('_', ' '))
             .style("left", (d3.mouse(this)[0]+20) + "px")
             .style("top", (d3.mouse(this)[1]) + "px")
     };

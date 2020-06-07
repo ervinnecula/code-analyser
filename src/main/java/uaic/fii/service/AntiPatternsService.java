@@ -24,6 +24,7 @@ import java.util.ListIterator;
 import java.util.Map;
 
 import static java.lang.String.format;
+import static java.util.Arrays.asList;
 import static uaic.fii.model.ChangeSize.MAJOR;
 import static uaic.fii.model.ChangeSize.MEDIUM;
 import static uaic.fii.model.ChangeSize.SMALL;
@@ -67,8 +68,12 @@ public class AntiPatternsService {
                 }
                 ChangeSize changeSize = getChangeSizeFromLocChanged(linesChangedInDiff);
                 if (changeSize.equals(MAJOR) || changeSize.equals(MEDIUM)) {
-                    CommitChangeSizeBean commitChangeSize =
-                            new CommitChangeSizeBean(commit.getCommitHash(), commit.getCommitDate(), commit.getCommitterName(), linesChangedInDiff, changeSize);
+                    CommitChangeSizeBean commitChangeSize = new CommitChangeSizeBean(commit.getCommitHash(),
+                                                                                        commit.getCommitDate(),
+                                                                                        commit.getCommitterName(),
+                                                                                        linesChangedInDiff,
+                                                                                        changeSize,
+                                                                                        commitService.isIncreaseCommit(commit));
                     List<CommitChangeSizeBean> changesOnFile = mediumAndMajorChangesPattern.getOrDefault(diff.getFilePath(), new ArrayList<>());
                     changesOnFile.add(commitChangeSize);
                     mediumAndMajorChangesPattern.put(diff.getFilePath(), changesOnFile);
@@ -151,6 +156,37 @@ public class AntiPatternsService {
             }
         }
         return filteredMap;
+    }
+
+    public Map<Integer, List<CommitChangeSizeBean>> getIncreaseDecreaseSpikeCycles(List<CommitDiffBean> commits) {
+        Map<Integer, List<CommitChangeSizeBean>> spikeCycles = new HashMap<>();
+        int i = 0;
+        int index = 0;
+        while (i < commits.size() - 2) {
+            CommitDiffBean first = commits.get(i);
+            CommitDiffBean second = commits.get(i+1);
+            CommitDiffBean third = commits.get(i+2);
+
+            boolean firstIsIncreaseCommit = commitService.isIncreaseCommit(first);
+            boolean secondIsIncreaseCommit = commitService.isIncreaseCommit(second);
+            boolean thirdIsIncreaseCommit = commitService.isIncreaseCommit(third);
+
+            if (firstIsIncreaseCommit && !secondIsIncreaseCommit && thirdIsIncreaseCommit || !firstIsIncreaseCommit && secondIsIncreaseCommit && !thirdIsIncreaseCommit) {
+                ChangeSize firstChangeSize = getChangeSizeFromLocChanged(commitService.getLoCChangedInCommit(first));
+                ChangeSize secondChangeSize = getChangeSizeFromLocChanged(commitService.getLoCChangedInCommit(second));
+                ChangeSize thirdChangeSize = getChangeSizeFromLocChanged(commitService.getLoCChangedInCommit(third));
+
+                    if(firstChangeSize == secondChangeSize && secondChangeSize == thirdChangeSize && thirdChangeSize == MAJOR) {
+                        index++;
+                        spikeCycles.put(index, asList(
+                                new CommitChangeSizeBean(first.getCommitHash(), first.getCommitDate(), first.getCommitterName(), commitService.getLoCChangedInCommit(first), firstChangeSize, firstIsIncreaseCommit ),
+                                new CommitChangeSizeBean(second.getCommitHash(), second.getCommitDate(), second.getCommitterName(), commitService.getLoCChangedInCommit(second), secondChangeSize, secondIsIncreaseCommit),
+                                new CommitChangeSizeBean(third.getCommitHash(), third.getCommitDate(), third.getCommitterName(), commitService.getLoCChangedInCommit(third), thirdChangeSize, thirdIsIncreaseCommit)));
+                    }
+            }
+            i++;
+        }
+        return spikeCycles;
     }
 
     public List<RuleViolationBean> getBasicAnalysis() {

@@ -2,7 +2,7 @@ package uaic.fii.bean;
 
 import uaic.fii.model.DeveloperStatus;
 
-public class AuthorActivityBean {
+public class AuthorActivityBean implements Comparable<AuthorActivityBean>{
     private Integer numberOfCommits;
     private Integer totalChanges;
     private Integer netContribution;
@@ -31,4 +31,8 @@ public class AuthorActivityBean {
         return developerStatus;
     }
 
+    @Override
+    public int compareTo(AuthorActivityBean o) {
+        return o.getNetContribution() - this.getNetContribution();
+    }
 }

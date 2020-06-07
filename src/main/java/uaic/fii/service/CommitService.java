@@ -109,4 +109,18 @@ public class CommitService {
         return period;
     }
 
+    public boolean isIncreaseCommit(CommitDiffBean commit) {
+        int linesRemovedInCommit = 0;
+        int linesAddedInCommit = 0;
+
+        for (DiffBean diff : commit.getDiffs()) {
+            if (!diff.getFilePath().equals("/dev/null"))
+                for (Edit edit : diff.getEdits()) {
+                    linesRemovedInCommit += edit.getLengthA();
+                    linesAddedInCommit += edit.getLengthB();
+                }
+        }
+        return linesAddedInCommit > linesRemovedInCommit;
+    }
+
 }
