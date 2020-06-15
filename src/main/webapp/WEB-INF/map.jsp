@@ -395,37 +395,34 @@
                                         </table>
                                     </div>
                                     <div class="tab-pane fade" id="v-pills-increasedecreasespikes" role="tabpanel" style="text-align:center">
+                                        <div class="text-white bg-secondary mb-3">
+                                            <div class="card-body">
+                                                <h4 class="card-title">V-Spikes Antipattern</h4>
+                                                <p class="card-text">
+                                                    Detected an increase, decrease, increase spikes (V-Shaped) or a decrease, increase, decrease (Reverse V-Shaped) in terms of lines of code.
+                                                    In other words, code-analyser detected a major increase of code, followed by a major decrease of code, followed again by another major increase of code.
+                                                    This is a sign of instability.</p>
+                                            </div>
+                                        </div>
                                         <c:forEach items="${increaseDecreaseSpike}" var="spike">
-                                            <div class="card mb-3">
-                                                <h3 class="card-header">V Spikes</h3>
-                                                <div class="card-body">
-                                                    <h5 class="card-title">
-                                                        <c:if test="${spike.value.get(1).increaseCommit()}">
-                                                            V-Shaped spike series
-                                                        </c:if>
-                                                        <c:if test="${spike.value.get(1).increaseCommit() == false}">
-                                                            Reverse V-Shaped spike series
-                                                        </c:if>
-                                                    </h5>
-                                                    <h6 class="card-subtitle text-muted">
-                                                        Detected a series of
-                                                        <c:if test="${spike.value.get(1).increaseCommit()}">
-                                                            increase, decrease, increase spikes (V-Shaped) in terms of lines of code. In other words, code-analyser detected a major increase
-                                                            of code, followed by a major decrease of code, followed again by another major increase of code. This is a sign of instability.
-                                                        </c:if>
-                                                        <c:if test="${spike.value.get(1).increaseCommit() == false}">
-                                                            decrease, increase, decrease spikes (Reverse V-Shaped) in terms of lines of code. In other words, code-analyser detected a major increase
-                                                            of code, followed by a major decrease of code, followed again by another major increase of code. This is a sign of instability.
-                                                        </c:if>
-                                                    </h6>
-
+                                            <div class="mb-3">
+                                                <h3 class="card-header">
+                                                    <c:if test="${spike.value.get(1).increaseCommit()}">
+                                                        V-Shaped spike series
+                                                    </c:if>
+                                                    <c:if test="${spike.value.get(1).increaseCommit() == false}">
+                                                        Reverse V-Shaped spike series
+                                                    </c:if>
+                                                </h3>
+                                            </div>
+                                                <div class="row">
                                                     <c:forEach items="${spike.value}" var="commitInSpike">
-                                                        <div class="card mb-3">
-                                                            <h6 class="card-header">
+                                                        <div class="card col">
+                                                            <div class="card-header">
                                                                 Commit hash <span style="color: #ee8867">${commitInSpike.commitHash}</span>
-                                                            </h6>
-                                                            <ul class="list-group list-group-flush">
-                                                                <li class="list-group-item">
+                                                            </div>
+                                                            <div class="card-body">
+                                                                <h4 class="card-title">
                                                                     On
                                                                     <fmt:formatDate value="${commitInSpike.commitDate}" type="date" pattern="dd-MMM-yyyy"/>
                                                                     there was a MAJOR
@@ -434,12 +431,11 @@
                                                                     </c:if>
                                                                     <c:if test="${commitInSpike.increaseCommit() == false}">
                                                                         <span style="color:red">decrease</span>
-                                                                    </c:if>
-                                                                </li>
-                                                                <li class="list-group-item">Author was
-                                                                        <span style="color:rgb(0, 174, 227)">${commitInSpike.committerName}</span>
-                                                                </li>
-                                                                <li class="list-group-item">
+                                                                    </c:if></h4>
+                                                                <p class="card-text">
+                                                                    Author was <span style="color:rgb(0, 174, 227)">${commitInSpike.committerName}</span>
+                                                                </p>
+                                                                <p class="card-text">
                                                                     <c:if test="${commitInSpike.increaseCommit()}">
                                                                         <span style="color:lightgreen">Increase commit, where </span>
                                                                     </c:if>
@@ -447,12 +443,11 @@
                                                                         <span style="color:red">Decrease commit, where</span>
                                                                     </c:if>
                                                                         ${commitInSpike.linesChanged} lines of code modified
-                                                                </li>
-                                                            </ul>
+                                                                </p>
+                                                            </div>
                                                         </div>
                                                     </c:forEach>
                                                 </div>
-                                            </div>
                                         </c:forEach>
                                     </div>
                                 </div>
