@@ -117,12 +117,12 @@ public class RepoService {
         List<CommitDiffBean> commits = new ArrayList<>();
 
         try (Repository repository = git.getRepository()) {
-            Collection<Ref> allRefs = repository.getAllRefs().values();
+            Ref headRef = repository.exactRef("HEAD");
 
             try (RevWalk revWalk = new RevWalk(repository)) {
-                for (Ref ref : allRefs) {
-                    revWalk.markStart(revWalk.parseCommit(ref.getObjectId()));
-                }
+
+                revWalk.markStart(revWalk.parseCommit(headRef.getObjectId()));
+
                 for (RevCommit commit : revWalk) {
                     AbstractTreeIterator tree, parentTree;
                     ObjectReader reader = repository.newObjectReader();
