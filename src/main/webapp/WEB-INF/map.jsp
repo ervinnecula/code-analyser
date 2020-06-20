@@ -408,10 +408,10 @@
                                             <div class="mb-3">
                                                 <h3 class="card-header">
                                                     <c:if test="${spike.value.get(1).increaseCommit()}">
-                                                        V-Shaped spike series
+                                                        Reverse V-Shaped spike series
                                                     </c:if>
                                                     <c:if test="${spike.value.get(1).increaseCommit() == false}">
-                                                        Reverse V-Shaped spike series
+                                                        V-Shaped spike series
                                                     </c:if>
                                                 </h3>
                                             </div>
