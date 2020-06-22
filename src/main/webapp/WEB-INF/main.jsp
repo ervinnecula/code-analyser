@@ -42,7 +42,7 @@
                 <div class="container">
 
                     <form class="form-signin" name="f" action="/repos" method="GET">
-                        <input type="text" name="username" id="username" class="form-control mt-3 ${isInvalid}" placeholder="GitHub user name" required autofocus>
+                        <input type="text" name="repoOwner" class="form-control mt-3 ${isInvalid}" placeholder="GitHub user name" required autofocus>
                         <div style="color:red">${errorMessage}</div>
 
                         <button class="btn btn-lg btn-primary btn-block btn-signin mt-3" type="submit">

@@ -22,6 +22,7 @@ import uaic.fii.service.PointsService;
 import uaic.fii.service.PropertiesService;
 import uaic.fii.service.RepoService;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -82,7 +83,7 @@ public class AnalysisController {
     }
 
     @RequestMapping(value = "/analysis", method = RequestMethod.GET)
-    public String getCommits(@ModelAttribute("repoGitUrl") String repoGitUrl, @ModelAttribute("repoName") String repoName, @ModelAttribute("username") String username, Model model) {
+    public String getCommits(@ModelAttribute("repoGitUrl") String repoGitUrl, @ModelAttribute("repoName") String repoName, @ModelAttribute("repoOwner") String repoOwner, HttpServletRequest request, Model model) {
         File resourceFolder = new File(repoService.getPathToCloneDir() + "//" + repoName);
         DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
         try {
@@ -117,7 +118,7 @@ public class AnalysisController {
             model.addAttribute("manyCommitterPoints", pointsService.getManyCommittersPoints(commits));
             model.addAllAttributes(preparePMDAntiPatternsMap());
             model.addAttribute("repositoryName", repoName);
-            model.addAttribute("username", username);
+            model.addAttribute("repoOwner", repoOwner);
 
         } catch (IOException e) {
             logger.error(format("AnalysisController - analysis() - Git exception happened when opening folder %s. Full exception: %s", resourceFolder, e));

@@ -23,21 +23,21 @@ public class ReposPageController {
     private final static Logger logger = LoggerFactory.getLogger(ReposPageController.class);
 
     @RequestMapping(value = "/repos", method = GET)
-    public String getReposPage(@ModelAttribute("username") String username, Model model) {
+    public String getReposPage(@ModelAttribute("repoOwner") String repoOwner, Model model) {
         List<RepoNameHtmlGitUrlsBean> repoBeans = new ArrayList<>();
         GitHubClient client = new GitHubClient();
         RepositoryService service = new RepositoryService(client);
 
         client.setCredentials(System.getenv("GITHUB_USER"), System.getenv("GITHUB_PASS"));
         try {
-            for (Repository repo : service.getRepositories(username)) {
+            for (Repository repo : service.getRepositories(repoOwner)) {
                 repoBeans.add(new RepoNameHtmlGitUrlsBean(repo.getName(), repo.getHtmlUrl(), repo.getGitUrl(), repo.getLanguage(), false));
             }
 
         } catch (IOException e) {
-            logger.error("ReposPageController - getReposPage() - Could not get repositories for username {}", username, e);
+            logger.error("ReposPageController - getReposPage() - Could not get repositories for username {}", repoOwner, e);
             model.addAttribute("isInvalid", "is-invalid");
-            model.addAttribute("errorMessage", "Couldn't find such user named \"" + username + "\"");
+            model.addAttribute("errorMessage", "Couldn't find such user named \"" + repoOwner + "\"");
             return "main";
         }
 

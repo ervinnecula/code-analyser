@@ -25,7 +25,7 @@
     <div class="row" id="top-bar">
         <div class="mr-auto pl-5 mt-1" style="width:100%">
             <a class="navbar-brand" id="brand">Code Analyser</a>
-            <a class="navbar-brand" id="central-title">Analysis for <span style="color:white"> ${username}'s </span> <span style="color: rgb(255, 190, 0)"> ${repositoryName} </span> project</a>
+            <a class="navbar-brand" id="central-title">Analysis for <span style="color:white"> ${repoOwner}'s </span> <span style="color: rgb(255, 190, 0)"> ${repositoryName} </span> project</a>
         </div>
 
         <div class="form-inline custom-logout">
@@ -655,7 +655,7 @@
                             Provide only numeric values for your parameters so that you can addapt and improve your chart, map or graph data.
                         </div>
                         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                        <input type="hidden" name="username" value="${username}"/>
+                        <input type="hidden" name="repoOwner" value="${repoOwner}"/>
                         <input type="hidden" name="repoName" value="${repoName}"/>
                         <input type="hidden" name="repoGitUrl" value="${repoGitUrl}"/>
                         <div class="row">

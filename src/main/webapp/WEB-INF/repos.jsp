@@ -35,7 +35,7 @@
     <div class="row mt-3 custom-wrapper">
         <t:navTemplate/>
         <div class="col-md-10">
-            <h2>Repos available for ${username}</h2>
+            <h2>Repos available for ${repoOwner}</h2>
             <table class="table table-hover">
                 <thead>
                     <tr>
@@ -49,7 +49,7 @@
                     <c:forEach items="${repoNameHtmlGitUrlsBeans}" var="repoNameHtmlGitUrlsBean">
                         <tr>
                             <form action="/analysis" method="GET">
-                                <input type="hidden" name="username" value="${username}"/>
+                                <input type="hidden" name="repoOwner" value="${repoOwner}"/>
                                 <th scope="row">
                                     <input type="hidden" value="${repoNameHtmlGitUrlsBean.repoName}" name="repoName"/>
                                         ${repoNameHtmlGitUrlsBean.repoName}

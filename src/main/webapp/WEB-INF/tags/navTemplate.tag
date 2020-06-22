@@ -4,9 +4,9 @@
     <ul class="list-group">
         <li class="list-group-item d-flex justify-content-between align-items-center">
             <form action="/repos" method="GET" id="username-form">
-                <input type="hidden" value="${username}" name="username"/>
+                <input type="hidden" value="${repoOwner}" name="repoOwner"/>
                 <a href="javascript:{}"
-                   onclick="document.getElementById('username-form').submit(); return false;">${username}'s
+                   onclick="document.getElementById('username-form').submit(); return false;">${repoOwner}'s
                     repos</a>
             </form>
         </li>

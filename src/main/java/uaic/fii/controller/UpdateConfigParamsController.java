@@ -26,6 +26,7 @@ public class UpdateConfigParamsController {
     @RequestMapping(value="/update-config", method = POST)
     public String updateConfigParams(HttpServletRequest request,
                                      RedirectAttributes redirectAttributes,
+                                     @ModelAttribute("repoOwner") String repoOwner,
                                      @Valid @ModelAttribute PropertiesBean propertiesBean) {
 
         String sessionUsername = (String)request.getSession().getAttribute("username");
@@ -37,7 +38,7 @@ public class UpdateConfigParamsController {
 
         redirectAttributes.addAttribute("repoGitUrl", propertiesBean.getRepoGitUrl());
         redirectAttributes.addAttribute("repoName", propertiesBean.getRepoName());
-        redirectAttributes.addAttribute("username", sessionUsername);
+        redirectAttributes.addAttribute("repoOwner", repoOwner);
         return "redirect:/analysis";
 
     }

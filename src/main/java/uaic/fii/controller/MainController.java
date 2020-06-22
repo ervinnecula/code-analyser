@@ -34,7 +34,7 @@ public class MainController {
     }
 
     @RequestMapping(value = "/main", method = GET)
-    public String loadMainPage(HttpServletRequest request, Model model) {
+    public String loadMainPage(HttpServletRequest request) {
         logger.info("MainController() - loadMainPage - Loading main page");
         Integer id = getAuthenticatedEntity().getUserId();
         UserDAO user = userService.getUserById(id);
@@ -42,7 +42,6 @@ public class MainController {
         propertiesService.loadPropertiesByUsername(user.getName());
 
         request.getSession().setAttribute("username", user.getName());
-        model.addAttribute("username", user.getName());
         return "main";
     }
 
