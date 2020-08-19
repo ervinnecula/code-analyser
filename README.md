@@ -2,12 +2,11 @@
 Dissertation project meant to offer any GitHub passionate the possibility to perform analysis based on git commits over public GitHub repositories.
 
 ## Purpose
-Currently GitHub does offer a menu called "insights" where the user is able to inspect, analyse and visualize some statistics about the
-repository. However, there are way more advanced statistics or charts that can be produced that would allow us have a deeper
-understanding.
-This project allows anyone to analyse public work on GitHub, by inserting any GitHub username. This operation will retrieve all its 
-repositories, and enable the user to view each one of them. This will produce some visualization and charts while also detecting antipatterns based
-on *git commits* and code itself. 
+Currently GitHub does offer a menu called "insights" where the user is able to inspect, analyse and visualize some statistics about the repository. However, there are way more advanced statistics or charts that can be produced with code-analyser, which would give us a deeper understanding. 
+
+This project allows anyone to analyse public work on GitHub, by inserting any GitHub username. This operation will retrieve all its repositories, and enable the user to view each one of them. The application will produce some visualisations and charts while also detecting antipatterns based
+on git commits and code itself. 
+
 
 ### Features
 - Incorporates JGit and eGit libraries to navigate through commits in a repository
